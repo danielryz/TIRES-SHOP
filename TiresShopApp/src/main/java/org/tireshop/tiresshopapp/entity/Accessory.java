@@ -12,6 +12,6 @@ import lombok.*;
 public class Accessory extends Product {
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AccessoryType type;
+    @Column(nullable = false, name = "type")
+    private AccessoryType accessoryType;
 }
