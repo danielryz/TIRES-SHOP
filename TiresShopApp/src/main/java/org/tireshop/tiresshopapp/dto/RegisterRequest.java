@@ -28,8 +28,10 @@ public class RegisterRequest {
 
     @NotBlank(message = "Hasło jest wymagane")
     @Size(min = 8, message = "Hasło musi mieć co najmniej 8 znaków")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@$!%*?&])[A-Za-z\\\\d@$!%*?&]+$",
-            message = "Hasło musi zawierać wielką literę, małą literę, cyfrę i znak specjalny")
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
+            message = "Hasło musi zawierać wielką literę, małą literę, cyfrę i znak specjalny"
+    )
     @Schema(example = "Pa$$word1")
     private String password;
 }

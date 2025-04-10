@@ -2,9 +2,11 @@ package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ import org.tireshop.tiresshopapp.service.security.AuthenticationService;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication")
 public class AuthController {
     private final AuthenticationService authService;
 
@@ -28,7 +31,12 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Rejestracja zakończona sukcesem",
                     content = @Content(schema = @Schema(implementation = AuthResponse.class))),
             @ApiResponse(responseCode = "400", description = "Błąd walidacji lub użytkownik już istnieje",
-            content = @Content)
+            content = @Content(
+                    mediaType = "aplication/json",
+                    examples = @ExampleObject("{\n" +
+                            "  \"error\": \"Email już istnieje\"\n" +
+                            "}")
+            ))
     })
 
     @PostMapping("/register")
@@ -41,7 +49,12 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Zalogowano pomyślnie",
                     content = @Content(schema = @Schema(implementation = AuthResponse.class))),
             @ApiResponse(responseCode = "401", description = "Nieprawidłowy email lub hasło",
-                    content = @Content)
+                    content = @Content(
+                            mediaType = "aplication/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"error\": \"Nieprawidłowy email lub hasło\"\n" +
+                                    "}")
+                    ))
     })
     @PostMapping("/login")
         public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
