@@ -8,9 +8,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.tireshop.tiresshopapp.dto.Response.AuthResponse;
-import org.tireshop.tiresshopapp.dto.Request.LoginRequest;
-import org.tireshop.tiresshopapp.dto.Request.RegisterRequest;
+import org.tireshop.tiresshopapp.dto.response.AuthResponse;
+import org.tireshop.tiresshopapp.dto.request.LoginRequest;
+import org.tireshop.tiresshopapp.dto.request.RegisterRequest;
 import org.tireshop.tiresshopapp.entity.Role;
 import org.tireshop.tiresshopapp.entity.User;
 import org.tireshop.tiresshopapp.repository.RoleRepository;
@@ -31,18 +31,18 @@ public class AuthenticationService {
     public AuthResponse register(RegisterRequest request){
         Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("Rola USER nie istnieje"));
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("Email już istnieje");
         }
 
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new RuntimeException("Nazwa użytkownika już istnieje");
         }
 
     User user = new User();
-    user.setUsername(request.getUsername());
-    user.setEmail(request.getEmail());
-    user.setPassword(passwordEncoder.encode(request.getPassword()));
+    user.setUsername(request.username());
+    user.setEmail(request.email());
+    user.setPassword(passwordEncoder.encode(request.password()));
     user.setRoles(Collections.singleton(userRole));
     user.setEnabled(true);
 
@@ -55,11 +55,11 @@ public class AuthenticationService {
     public AuthResponse login(LoginRequest request){
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
+                        request.email(),
+                        request.password()
                 )
         );
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new BadCredentialsException("Nieprawidłowy email lub hasło"));
 
         String token = jwtService.generateToken(mapToUserDetails(user));

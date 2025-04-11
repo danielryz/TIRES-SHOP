@@ -13,8 +13,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 @OpenAPIDefinition(
         info = @Info(
                 contact = @Contact(
-                        name = "Daniel",
-                        email = ""
+                        name = "Daniel"
                 ),
                 description = "Dokumentacja REST API sklepu z oponami",
                 title = "Tires Shop API",
@@ -26,8 +25,7 @@ import io.swagger.v3.oas.annotations.info.Info;
                         url = "http://localhost:8080"
                 ),
                 @Server(
-                        description = "PROD ENV",
-                        url = ""
+                        description = "PROD ENV"
                 )
         },
         security = {

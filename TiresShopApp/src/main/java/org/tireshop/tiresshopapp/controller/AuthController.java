@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tireshop.tiresshopapp.dto.Response.AuthResponse;
-import org.tireshop.tiresshopapp.dto.Request.LoginRequest;
-import org.tireshop.tiresshopapp.dto.Request.RegisterRequest;
+import org.tireshop.tiresshopapp.dto.response.AuthResponse;
+import org.tireshop.tiresshopapp.dto.request.LoginRequest;
+import org.tireshop.tiresshopapp.dto.request.RegisterRequest;
 import org.tireshop.tiresshopapp.service.security.AuthenticationService;
 
 @RestController
@@ -33,9 +33,10 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Błąd walidacji lub użytkownik już istnieje",
             content = @Content(
                     mediaType = "aplication/json",
-                    examples = @ExampleObject("{\n" +
-                            "  \"error\": \"Email już istnieje\"\n" +
-                            "}")
+                    examples = @ExampleObject("""
+                            {
+                              "error": "Email już istnieje"
+                            }""")
             ))
     })
 
@@ -51,9 +52,10 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Nieprawidłowy email lub hasło",
                     content = @Content(
                             mediaType = "aplication/json",
-                            examples = @ExampleObject(value = "{\n" +
-                                    "  \"error\": \"Nieprawidłowy email lub hasło\"\n" +
-                                    "}")
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "error": "Nieprawidłowy email lub hasło"
+                                    }""")
                     ))
     })
     @PostMapping("/login")

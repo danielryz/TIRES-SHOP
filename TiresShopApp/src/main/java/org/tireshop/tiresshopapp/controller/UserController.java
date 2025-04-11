@@ -13,9 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.tireshop.tiresshopapp.dto.Request.UpdateUserRequest;
-import org.tireshop.tiresshopapp.dto.Request.UpdateUserRolesRequest;
-import org.tireshop.tiresshopapp.dto.Response.UserResponse;
+import org.tireshop.tiresshopapp.dto.request.UpdateUserRequest;
+import org.tireshop.tiresshopapp.dto.request.UpdateUserRolesRequest;
+import org.tireshop.tiresshopapp.dto.response.UserResponse;
 import org.tireshop.tiresshopapp.entity.User;
 import org.tireshop.tiresshopapp.service.UserService;
 
@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Tag(name = "User")
+@Tag(name = "User", description = "Obsługa użytkownika, pobieranie danych o użytkowniku, update użytkownika, usuwanie konta")
 public class UserController {
 
     private final UserService userService;
@@ -62,9 +62,10 @@ public class UserController {
                     examples = @ExampleObject(value = " ")
             )),
             @ApiResponse(responseCode = "404", description = "Użytkownik nie istnieje", content = @Content(
-                    examples = @ExampleObject(value = "can't parse JSON.  Raw result:\n" +
-                            "\n" +
-                            "Użytkownik o ID: 7 nie istnieje")
+                    examples = @ExampleObject(value = """
+                            can't parse JSON.  Raw result:
+                            
+                            Użytkownik o ID: 7 nie istnieje""")
             ))
     })
     @GetMapping("/{id:[0-9]+}")
@@ -98,13 +99,13 @@ public class UserController {
     @Operation(summary = "Aktualizacja danych konta (username, password")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Dane zostały zmienione", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
             @ApiResponse(responseCode = "400", description = "Nieprawidłowe dane", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
             @ApiResponse(responseCode = "401", description = "Brak autoryzacji", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             ))
     })
     @PatchMapping("/me")
@@ -116,32 +117,32 @@ public class UserController {
     @Operation(summary = "Aktualizacja ról użytkownika (Admin")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Rola została zmieniona", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
             @ApiResponse(responseCode = "404", description = "Użytkownik lub rola nie istnieje", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
             @ApiResponse(responseCode = "403", description = "Brak uprawnień (ADMIN)", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             ))
     })
     @PatchMapping("/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> updateUsersRoles(@PathVariable Long id, @RequestBody UpdateUserRolesRequest request){
-        return ResponseEntity.ok(userService.updateUserRoles(id, request.getRoles()));
+        return ResponseEntity.ok(userService.updateUserRoles(id, request.roles()));
     }
 
     @Operation(summary = "Usuwa konkretną rolę użytkownika (ADMIN)",
     description = "Przekaż nazwe roli jako parametr zapytania: DELETE /api/users/5/role?role=ROLE_ADMIN")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Rola usunięta", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
             @ApiResponse(responseCode = "404", description = "Użytkownik lub rola nie istnieje", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
             @ApiResponse(responseCode = "403", description = "Brak uprawnień", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             ))
     })
     @DeleteMapping("/{id}/role")
@@ -155,13 +156,13 @@ public class UserController {
             description = "Usunięcie jednego użytkownika o id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Użytkownik usunięty", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
             @ApiResponse(responseCode = "404", description = "Użytkownik nie istnieje", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
             @ApiResponse(responseCode = "403", description = "Brak uprawnień", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             ))
     })
     @DeleteMapping("/{id}")
@@ -176,10 +177,10 @@ public class UserController {
             description = "Usunięcie swojego konta")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Konto zostało usunięte", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
             @ApiResponse(responseCode = "401", description = "Brak autoryzacji", content = @Content(
-                    examples = @ExampleObject(value = "")
+                    examples = @ExampleObject()
             )),
     })
     @DeleteMapping("/me")
