@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tireshop.tiresshopapp.dto.AuthResponse;
-import org.tireshop.tiresshopapp.dto.LoginRequest;
-import org.tireshop.tiresshopapp.dto.RegisterRequest;
+import org.tireshop.tiresshopapp.dto.Response.AuthResponse;
+import org.tireshop.tiresshopapp.dto.Request.LoginRequest;
+import org.tireshop.tiresshopapp.dto.Request.RegisterRequest;
 import org.tireshop.tiresshopapp.service.security.AuthenticationService;
 
 @RestController
