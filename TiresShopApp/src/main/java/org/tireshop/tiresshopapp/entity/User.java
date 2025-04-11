@@ -29,9 +29,25 @@ public class User {
     @Schema(example = "tires@tiresshop.pl", description = "Adres email użytkownika")
     private String email;
 
+    @Column(length = 50)
+    @Schema(example = "Jan", description = "Imię użytkownika")
+    private String firstName;
+
+    @Column(length = 80)
+    @Schema(example = "Kowalski", description = "Nazwisko użytkownika")
+    private String lastName;
+
     @Schema(example = "$2a$10$hashedpassword", description = "Zahasłowane hasło użytkownika", accessMode = Schema.AccessMode.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
+
+    @Schema(description = "Adresy użytkownika")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Address> addresses = new HashSet<>();
+
+    @Column(length = 20)
+    @Schema(example = "+48 123456789", description = "Numer telefonu")
+    private String phoneNumber;
 
     @Column(nullable = false)
     @Schema(example = "true", description = "Czy konto użytkownika jest aktywne")
@@ -45,4 +61,12 @@ public class User {
     )
     @Schema(description = "Role przypisane do użytkownika")
     private Set<Role> roles = new HashSet<>();
+
+    @Schema(description = "Zamównienia użytkownika")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Order> orders = new HashSet<>();
+
+
+
+
 }
