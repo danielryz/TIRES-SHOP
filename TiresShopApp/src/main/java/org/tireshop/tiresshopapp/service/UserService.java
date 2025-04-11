@@ -1,23 +1,32 @@
 package org.tireshop.tiresshopapp.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.tireshop.tiresshopapp.dto.Request.UpdateUserRequest;
+import org.tireshop.tiresshopapp.dto.Response.UserResponse;
+import org.tireshop.tiresshopapp.entity.Role;
 import org.tireshop.tiresshopapp.entity.User;
+import org.tireshop.tiresshopapp.repository.RoleRepository;
 import org.tireshop.tiresshopapp.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers(){
+        return userRepository.findAll().stream().map(this::toUserResponse).toList();
     }
 
     public User getUserById(Long id){
@@ -39,5 +48,74 @@ public class UserService {
                 .orElseThrow(()-> new RuntimeException("Nie znaleziono zalogowanego użytkownika"));
     }
 
+    public User updateCurrentUser(UpdateUserRequest request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono użytkownika"));
+
+        if(request.getUsername() != null && !request.getUsername().isBlank()) {
+            user.setUsername(request.getUsername());
+        }
+
+        if(request.getPassword() != null && !request.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        return userRepository.save(user);
+    }
+
+    public User updateUserRoles(Long userId, Set<String> roleNames){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje"));
+
+        Set<Role> roles = roleNames.stream()
+                .map(roleName -> roleRepository.findByName(roleName)
+                        .orElseThrow(()->new RuntimeException("Rola nie istnieje: " + roleName)))
+                .collect(Collectors.toSet());
+
+        user.setRoles(roles);
+        return userRepository.save(user);
+    }
+
+    public User removeUserRole(Long userId, String roleName){
+        User user  = userRepository.findById(userId)
+                .orElseThrow(()->new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje"));
+
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(()->new RuntimeException("Rola nie istnieje: " + roleName));
+
+        user.getRoles().remove(role);
+        return userRepository.save(user);
+    }
+
+    public void deleteUserById(Long id){
+        if(!userRepository.existsById(id)){
+            throw new RuntimeException("Użytkownik o ID: " + id + " nie istnieje");
+        }
+        userRepository.deleteById(id);
+    }
+
+    public void deleteCurrentUser(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new RuntimeException("Nie znaleziono konta"));
+
+        userRepository.delete(user);
+    }
+
+    public UserResponse toUserResponse(User user){
+
+        List<String> roleNames = user.getRoles().stream().map(Role::getName).toList();
+
+        return new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhoneNumber(),
+                roleNames
+        );
+    }
 
 }
