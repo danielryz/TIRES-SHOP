@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.tireshop.tiresshopapp.dto.request.CreateTireRequest;
 import org.tireshop.tiresshopapp.dto.response.TireResponse;
+import org.tireshop.tiresshopapp.exception.GlobalExceptionHandler;
 import org.tireshop.tiresshopapp.service.TireService;
 
 import java.util.List;
@@ -45,7 +46,11 @@ public class TireController {
         if (season == null) {
             return tireService.getAllTire();
         }
-        return tireService.getTireBySeason(season);
+        List<TireResponse> tires = tireService.getTireBySeason(season);
+        if (tires.isEmpty()) {
+            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak opon dla season = " + season);
+        }
+        return tires;
     }
 
     @Operation(summary = "Opona po id", description = "Endpoint publiczny")
@@ -55,7 +60,11 @@ public class TireController {
         if (size == null) {
             return tireService.getAllTire();
         }
-        return tireService.getTireBySize(size);
+        List<TireResponse> tires = tireService.getTireBySize(size);
+        if (tires.isEmpty()) {
+            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak opon dla size = " + size);
+        }
+        return tires;
     }
 
     @Operation(summary = "Dodawanie opon", description = "ADMIN")

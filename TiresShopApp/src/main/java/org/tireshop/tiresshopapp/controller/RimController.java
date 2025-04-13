@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.tireshop.tiresshopapp.dto.request.RimRequest;
 import org.tireshop.tiresshopapp.dto.response.RimResponse;
+import org.tireshop.tiresshopapp.dto.response.TireResponse;
+import org.tireshop.tiresshopapp.exception.GlobalExceptionHandler;
 import org.tireshop.tiresshopapp.service.RimService;
 
 
@@ -57,7 +59,11 @@ public class RimController {
         if(size == null) {
            return rimService.getAllRim();
         }
-        return rimService.getRimByMaterial(material);
+        List<RimResponse> rims = rimService.getRimByMaterial(material);
+        if (rims.isEmpty()) {
+            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak felg dla materiału = " + material);
+        }
+        return rims;
     }
 
     @Operation(summary = "Felga po id", description = "Endpoint publiczny")
@@ -70,7 +76,11 @@ public class RimController {
         if(size == null) {
             return rimService.getAllRim();
         }
-        return rimService.getRimBySize(size);
+        List<RimResponse> rims = rimService.getRimBySize(size);
+        if (rims.isEmpty()) {
+            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak felg dla rozmiaru = " + size);
+        }
+        return rims;
     }
 
     @Operation(summary = "Dodawanie felgi", description = "ADMIN")

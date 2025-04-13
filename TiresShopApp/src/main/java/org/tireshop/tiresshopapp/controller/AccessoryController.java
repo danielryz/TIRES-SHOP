@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.tireshop.tiresshopapp.dto.request.AccessoryRequest;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
+import org.tireshop.tiresshopapp.dto.response.RimResponse;
+import org.tireshop.tiresshopapp.exception.GlobalExceptionHandler;
 import org.tireshop.tiresshopapp.service.AccessoryService;
 
 import java.util.List;
@@ -40,12 +42,16 @@ public class AccessoryController {
 
     @Operation(summary = "Felga po typie akcesorium", description = "Endpoint publiczny")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono akcesorium"), @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesorium")})
-    @GetMapping("/api/accessory/accessory-type")
+    @GetMapping("/api/accessory/type")
     public List<AccessoryResponse> getAccessoryByAccessoryType(@RequestParam(required = false) String accessoryType) {
         if (accessoryType == null) {
             return accessoryService.getAllAccessory();
         }
-        return accessoryService.getAccessoryByAccessoryType(accessoryType);
+        List<AccessoryResponse> accessory = accessoryService.getAccessoryByAccessoryType(accessoryType);
+        if (accessory.isEmpty()) {
+            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak akcesorów dla typu = " + accessoryType);
+        }
+        return accessory;
     }
 
     @Operation(summary = "Dodawanie akcesorium", description = "ADMIN")
