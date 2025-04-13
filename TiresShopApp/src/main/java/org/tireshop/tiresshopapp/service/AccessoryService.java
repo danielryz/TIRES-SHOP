@@ -2,10 +2,9 @@ package org.tireshop.tiresshopapp.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.tireshop.tiresshopapp.dto.request.AccessoryRequest;
+import org.tireshop.tiresshopapp.dto.request.create.CreateAccessoryRequest;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
 import org.tireshop.tiresshopapp.entity.Accessory;
-import org.tireshop.tiresshopapp.entity.AccessoryType;
 import org.tireshop.tiresshopapp.repository.AccessoryRepository;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public class AccessoryService {
     }
 
     //POST
-    public AccessoryResponse createNewAccessory(AccessoryRequest request) {
+    public AccessoryResponse createNewAccessory(CreateAccessoryRequest request) {
         Accessory accessory = new Accessory();
         accessory.setName(request.name());
         accessory.setPrice(request.price());
@@ -46,15 +45,15 @@ public class AccessoryService {
     }
 
     //PATCH
-    public AccessoryResponse updateAccessory(Long id, AccessoryRequest request) {
+    public AccessoryResponse updateAccessory(Long id, CreateAccessoryRequest request) {
         Accessory accessory = accessoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Akcesorium o id " + id + " nie znaleziona"));
 
-        if (request.name() != null && request.name().isBlank()) accessory.setName(request.name());
+        if (request.name() != null && !request.name().isBlank()) accessory.setName(request.name());
         if (request.price() != null) accessory.setPrice(request.price());
-        if (request.description() != null && request.description().isBlank())
+        if (request.description() != null && !request.description().isBlank())
             accessory.setDescription(request.description());
-        if (request.stock() < 0) accessory.setStock(request.stock());
+        if (request.stock() >= 0) accessory.setStock(request.stock());
         if (request.type() != null) accessory.setType(request.type());
         if (request.accessoryType() != null) accessory.setAccessoryType(request.accessoryType());
 

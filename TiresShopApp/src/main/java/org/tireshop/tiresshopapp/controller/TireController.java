@@ -10,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.tireshop.tiresshopapp.dto.request.CreateTireRequest;
+import org.tireshop.tiresshopapp.dto.request.create.CreateTireRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateTireRequest;
 import org.tireshop.tiresshopapp.dto.response.TireResponse;
-import org.tireshop.tiresshopapp.exception.GlobalExceptionHandler;
 import org.tireshop.tiresshopapp.exception.ResourceNotFoundException;
 import org.tireshop.tiresshopapp.service.TireService;
 
@@ -81,7 +81,7 @@ public class TireController {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Edytowano opone"), @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
     @PatchMapping("/api/admin/tire/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateTire(@PathVariable Long id, @RequestBody CreateTireRequest request) {
+    public ResponseEntity<?> updateTire(@PathVariable Long id, @RequestBody UpdateTireRequest request) {
         try {
             TireResponse tire = tireService.updateTire(id, request);
             return ResponseEntity.ok(tire);

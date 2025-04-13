@@ -6,7 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.tireshop.tiresshopapp.dto.request.UpdateUserRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateUserRequest;
 import org.tireshop.tiresshopapp.dto.response.UserResponse;
 import org.tireshop.tiresshopapp.entity.Role;
 import org.tireshop.tiresshopapp.entity.User;
@@ -24,9 +24,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-
+//GET
     public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(this::toUserResponse).toList();
+        return userRepository.findAll().stream().map(this::toMapResponse).toList();
     }
 
     public User getUserById(Long id) {
@@ -36,18 +36,16 @@ public class UserService {
 
     public User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         String email;
         if (principal instanceof UserDetails userDetails) {
             email = userDetails.getUsername();
         } else {
             email = principal.toString();
         }
-
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Nie znaleziono zalogowanego użytkownika"));
     }
-
+//PATCH
     public User updateCurrentUser(UpdateUserRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -85,7 +83,7 @@ public class UserService {
         user.setRoles(roles);
         return userRepository.save(user);
     }
-
+//DELETE
     public void removeUserRole(Long userId, String roleName) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje"));
@@ -112,7 +110,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public UserResponse toUserResponse(User user) {
+    public UserResponse toMapResponse(User user) {
 
         List<String> roleNames = user.getRoles().stream().map(Role::getName).toList();
 

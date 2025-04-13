@@ -10,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.tireshop.tiresshopapp.dto.request.CreateProductRequest;
-import org.tireshop.tiresshopapp.dto.request.UpdateProductRequest;
+import org.tireshop.tiresshopapp.dto.request.create.CreateProductRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateProductRequest;
 import org.tireshop.tiresshopapp.dto.response.ProductResponse;
 import org.tireshop.tiresshopapp.service.ProductService;
 

@@ -10,10 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.tireshop.tiresshopapp.dto.request.AccessoryRequest;
+import org.tireshop.tiresshopapp.dto.request.create.CreateAccessoryRequest;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
-import org.tireshop.tiresshopapp.dto.response.RimResponse;
-import org.tireshop.tiresshopapp.exception.GlobalExceptionHandler;
 import org.tireshop.tiresshopapp.exception.ResourceNotFoundException;
 import org.tireshop.tiresshopapp.service.AccessoryService;
 
@@ -59,7 +57,7 @@ public class AccessoryController {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Dodano akcesorium"), @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
     @PostMapping("/api/admin/accessory")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AccessoryResponse> createNewAccessory(@RequestBody AccessoryRequest request) {
+    public ResponseEntity<AccessoryResponse> createNewAccessory(@RequestBody CreateAccessoryRequest request) {
         AccessoryResponse accessory = accessoryService.createNewAccessory(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(accessory);
     }
@@ -68,7 +66,7 @@ public class AccessoryController {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "Edytowano akcesorium"), @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
     @PatchMapping("/api/admin/accessory/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateAccessory(@PathVariable Long id, @RequestBody AccessoryRequest request) {
+    public ResponseEntity<?> updateAccessory(@PathVariable Long id, @RequestBody CreateAccessoryRequest request) {
         try {
             AccessoryResponse accessory = accessoryService.updateAccessory(id, request);
             return ResponseEntity.ok(accessory);

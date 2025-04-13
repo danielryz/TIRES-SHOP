@@ -1,4 +1,4 @@
-package org.tireshop.tiresshopapp.dto.request;
+package org.tireshop.tiresshopapp.dto.request.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

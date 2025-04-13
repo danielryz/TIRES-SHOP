@@ -13,8 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.tireshop.tiresshopapp.dto.request.UpdateUserRequest;
-import org.tireshop.tiresshopapp.dto.request.UpdateUserRolesRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateUserRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateUserRolesRequest;
 import org.tireshop.tiresshopapp.dto.response.UserResponse;
 import org.tireshop.tiresshopapp.entity.User;
 import org.tireshop.tiresshopapp.service.UserService;
@@ -47,7 +47,7 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         try {
             User user = userService.getUserById(id);
-            return ResponseEntity.ok(userService.toUserResponse(user));
+            return ResponseEntity.ok(userService.toMapResponse(user));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -59,7 +59,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<UserResponse> getCurrentUser() {
         User user = userService.getCurrentUser();
-        return ResponseEntity.ok(userService.toUserResponse(user));
+        return ResponseEntity.ok(userService.toMapResponse(user));
 
     }
 

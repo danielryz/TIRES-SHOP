@@ -2,7 +2,8 @@ package org.tireshop.tiresshopapp.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.tireshop.tiresshopapp.dto.request.CreateTireRequest;
+import org.tireshop.tiresshopapp.dto.request.create.CreateTireRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateTireRequest;
 import org.tireshop.tiresshopapp.dto.response.TireResponse;
 import org.tireshop.tiresshopapp.entity.Tire;
 import org.tireshop.tiresshopapp.repository.TireRepository;
@@ -50,17 +51,17 @@ public class TireService {
     }
 
     //PATCH
-    public TireResponse updateTire(Long id, CreateTireRequest request) {
+    public TireResponse updateTire(Long id, UpdateTireRequest request) {
         Tire tire = tireRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Opona o id " + id + " nie znaleziona"));
 
-        if (request.name() != null && request.name().isBlank()) tire.setName(request.name());
+        if (request.name() != null && !request.name().isBlank()) tire.setName(request.name());
         if (request.price() != null) tire.setPrice(request.price());
-        if (request.description() != null && request.description().isBlank())
+        if (request.description() != null && !request.description().isBlank())
             tire.setDescription(request.description());
-        if (request.stock() < 0) tire.setStock(request.stock());
+        if (request.stock() >= 0) tire.setStock(request.stock());
         if (request.type() != null) tire.setType(request.type());
-        if (request.season() != null && request.season().isBlank()) tire.setSeason(request.season());
+        if (request.season() != null && !request.season().isBlank()) tire.setSeason(request.season());
         if (request.size() != null) tire.setSize(request.size());
 
         return mapToResponse(tireRepository.save(tire));

@@ -2,8 +2,8 @@ package org.tireshop.tiresshopapp.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.tireshop.tiresshopapp.dto.request.CreateProductRequest;
-import org.tireshop.tiresshopapp.dto.request.UpdateProductRequest;
+import org.tireshop.tiresshopapp.dto.request.create.CreateProductRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateProductRequest;
 import org.tireshop.tiresshopapp.dto.response.ProductResponse;
 import org.tireshop.tiresshopapp.entity.Product;
 import org.tireshop.tiresshopapp.repository.ProductRepository;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-
+//GET
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(this::mapToResponse)
@@ -26,7 +26,7 @@ public class ProductService {
     public Optional<ProductResponse> getProductById(Long id) {
         return productRepository.findById(id).map(this::mapToResponse);
     }
-
+//POST
     public ProductResponse createProduct(CreateProductRequest request) {
         Product product = new Product();
         product.setName(request.name());
@@ -37,7 +37,7 @@ public class ProductService {
 
         return mapToResponse(productRepository.save(product));
     }
-
+//PATCH
     public ProductResponse updateProduct(Long id, UpdateProductRequest request) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produkt o id " + id + " nie znaleziony"));
@@ -45,12 +45,12 @@ public class ProductService {
         if(request.name() != null && request.name().isBlank()) product.setName(request.name());
         if(request.price() != null) product.setPrice(request.price());
         if(request.description() != null && request.description().isBlank()) product.setDescription(request.description());
-        if(request.stock() != null) product.setStock(request.stock());
+        if(request.stock() >= 0) product.setStock(request.stock());
         if(request.type() != null) product.setType(request.type());
 
         return mapToResponse(productRepository.save(product));
     }
-
+//DELETE
     public void deleteProduct(Long id) {
         if(!productRepository.existsById(id)){
             throw new RuntimeException("Produkt o id " + id + " nie znaleziony");

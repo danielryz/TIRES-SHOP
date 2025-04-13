@@ -3,8 +3,8 @@ package org.tireshop.tiresshopapp.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tireshop.tiresshopapp.dto.request.AddToCartRequest;
-import org.tireshop.tiresshopapp.dto.request.UpdateCartItemRequest;
+import org.tireshop.tiresshopapp.dto.request.create.AddToCartRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateCartItemRequest;
 import org.tireshop.tiresshopapp.dto.response.CartItemResponse;
 import org.tireshop.tiresshopapp.dto.response.CartSummaryResponse;
 import org.tireshop.tiresshopapp.entity.CartItem;
@@ -23,11 +23,11 @@ public class CartItemService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final UserService userService;
-
     public User getCurrentUser() {
         return userService.getCurrentUser();
     }
 
+//GET
     public List<CartItemResponse> getCartForCurrentUser() {
         User user = userService.getCurrentUser();
         return cartItemRepository.findByUser(user).stream().map(this::mapToResponse).toList();
@@ -41,7 +41,7 @@ public class CartItemService {
 
         return new CartSummaryResponse(cartItems, total);
     }
-
+//POST
     public CartItemResponse addCartItem(AddToCartRequest request) {
         User user = userService.getCurrentUser();
         Product product = productRepository.findById(request.productId())
@@ -57,7 +57,7 @@ public class CartItemService {
         cartItem.setQuantity(cartItem.getQuantity() + request.quantity());
         return mapToResponse(cartItemRepository.save(cartItem));
     }
-
+//PATCH
     public CartItemResponse updateCartItem(Long id, UpdateCartItemRequest request) {
         CartItem cartItem = cartItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pozycja w koszyku nie istnieje"));
@@ -68,7 +68,7 @@ public class CartItemService {
         cartItem.setQuantity(request.quantity());
         return mapToResponse(cartItemRepository.save(cartItem));
     }
-
+//DELETE
     public void deleteCartItem(Long id) {
         cartItemRepository.deleteById(id);
     }

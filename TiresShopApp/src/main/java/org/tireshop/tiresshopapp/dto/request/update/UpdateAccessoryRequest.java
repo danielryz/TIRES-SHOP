@@ -1,4 +1,4 @@
-package org.tireshop.tiresshopapp.dto.request;
+package org.tireshop.tiresshopapp.dto.request.update;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.tireshop.tiresshopapp.entity.AccessoryType;
@@ -6,7 +6,7 @@ import org.tireshop.tiresshopapp.entity.ProductType;
 
 import java.math.BigDecimal;
 
-public record AccessoryRequest(
+public record UpdateAccessoryRequest(
         @Schema(example = "Komplet śrub do kół")
         String name,
         @Schema(example = "60,00")

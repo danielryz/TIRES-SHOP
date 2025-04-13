@@ -1,11 +1,11 @@
-package org.tireshop.tiresshopapp.dto.request;
+package org.tireshop.tiresshopapp.dto.request.update;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.tireshop.tiresshopapp.entity.ProductType;
 
 import java.math.BigDecimal;
 
-public record RimRequest(
+public record UpdateRimRequest(
         @Schema(example = "Felga aluminiowa 17\" 5x112")
         String name,
         @Schema(example = "420,00")

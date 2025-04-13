@@ -10,10 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.tireshop.tiresshopapp.dto.request.RimRequest;
+import org.tireshop.tiresshopapp.dto.request.create.CreateRimRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateRimRequest;
 import org.tireshop.tiresshopapp.dto.response.RimResponse;
-import org.tireshop.tiresshopapp.dto.response.TireResponse;
-import org.tireshop.tiresshopapp.exception.GlobalExceptionHandler;
 import org.tireshop.tiresshopapp.exception.ResourceNotFoundException;
 import org.tireshop.tiresshopapp.service.RimService;
 
@@ -91,7 +90,7 @@ public class RimController {
     })
     @PostMapping("/api/admin/rim")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<RimResponse> createNewRim(@RequestBody RimRequest request) {
+    public ResponseEntity<RimResponse> createNewRim(@RequestBody CreateRimRequest request) {
         RimResponse rim = rimService.createNewRim(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(rim);
     }
@@ -103,7 +102,7 @@ public class RimController {
     })
     @PatchMapping("/api/admin/rim/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateRim(@PathVariable Long id, @RequestBody RimRequest request) {
+    public ResponseEntity<?> updateRim(@PathVariable Long id, @RequestBody UpdateRimRequest request) {
         try {
             RimResponse rim = rimService.updateRim(id, request);
             return ResponseEntity.ok(rim);
