@@ -2,6 +2,7 @@ package org.tireshop.tiresshopapp.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tireshop.tiresshopapp.dto.request.AddToCartRequest;
 import org.tireshop.tiresshopapp.dto.request.UpdateCartItemRequest;
 import org.tireshop.tiresshopapp.dto.response.CartItemResponse;
@@ -22,6 +23,7 @@ public class CartItemService {
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
     private final UserService userService;
+
     public User getCurrentUser() {
         return userService.getCurrentUser();
     }
@@ -71,13 +73,14 @@ public class CartItemService {
         cartItemRepository.deleteById(id);
     }
 
+    @Transactional
     public void clearCartForUser(User user) {
         cartItemRepository.deleteByUser(user);
     }
 
     private CartItemResponse mapToResponse(CartItem cartItem) {
         BigDecimal pricePerItem = cartItem.getProduct().getPrice();
-                BigDecimal totalPrice = pricePerItem.multiply(new BigDecimal(cartItem.getQuantity()));
+        BigDecimal totalPrice = pricePerItem.multiply(new BigDecimal(cartItem.getQuantity()));
         return new CartItemResponse(
                 cartItem.getId(),
                 cartItem.getProduct().getId(),
