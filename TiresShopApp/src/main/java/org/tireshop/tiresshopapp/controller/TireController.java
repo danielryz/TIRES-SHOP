@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.tireshop.tiresshopapp.dto.request.CreateTireRequest;
 import org.tireshop.tiresshopapp.dto.response.TireResponse;
 import org.tireshop.tiresshopapp.exception.GlobalExceptionHandler;
+import org.tireshop.tiresshopapp.exception.ResourceNotFoundException;
 import org.tireshop.tiresshopapp.service.TireService;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class TireController {
         }
         List<TireResponse> tires = tireService.getTireBySeason(season);
         if (tires.isEmpty()) {
-            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak opon dla season = " + season);
+            throw new ResourceNotFoundException("Brak opon dla season = " + season);
         }
         return tires;
     }
@@ -62,7 +63,7 @@ public class TireController {
         }
         List<TireResponse> tires = tireService.getTireBySize(size);
         if (tires.isEmpty()) {
-            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak opon dla size = " + size);
+            throw new ResourceNotFoundException("Brak opon dla size = " + size);
         }
         return tires;
     }

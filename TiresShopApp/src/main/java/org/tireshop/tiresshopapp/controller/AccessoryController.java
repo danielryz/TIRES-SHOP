@@ -14,6 +14,7 @@ import org.tireshop.tiresshopapp.dto.request.AccessoryRequest;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
 import org.tireshop.tiresshopapp.dto.response.RimResponse;
 import org.tireshop.tiresshopapp.exception.GlobalExceptionHandler;
+import org.tireshop.tiresshopapp.exception.ResourceNotFoundException;
 import org.tireshop.tiresshopapp.service.AccessoryService;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class AccessoryController {
         }
         List<AccessoryResponse> accessory = accessoryService.getAccessoryByAccessoryType(accessoryType);
         if (accessory.isEmpty()) {
-            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak akcesorów dla typu = " + accessoryType);
+            throw new ResourceNotFoundException("Brak akcesorów dla typu = " + accessoryType);
         }
         return accessory;
     }

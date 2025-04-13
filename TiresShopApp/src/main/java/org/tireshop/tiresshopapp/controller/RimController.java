@@ -14,6 +14,7 @@ import org.tireshop.tiresshopapp.dto.request.RimRequest;
 import org.tireshop.tiresshopapp.dto.response.RimResponse;
 import org.tireshop.tiresshopapp.dto.response.TireResponse;
 import org.tireshop.tiresshopapp.exception.GlobalExceptionHandler;
+import org.tireshop.tiresshopapp.exception.ResourceNotFoundException;
 import org.tireshop.tiresshopapp.service.RimService;
 
 
@@ -61,7 +62,7 @@ public class RimController {
         }
         List<RimResponse> rims = rimService.getRimByMaterial(material);
         if (rims.isEmpty()) {
-            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak felg dla materiału = " + material);
+            throw new ResourceNotFoundException("Brak felg dla materiału = " + material);
         }
         return rims;
     }
@@ -78,7 +79,7 @@ public class RimController {
         }
         List<RimResponse> rims = rimService.getRimBySize(size);
         if (rims.isEmpty()) {
-            throw new GlobalExceptionHandler.ResourceNotFoundException("Brak felg dla rozmiaru = " + size);
+            throw new ResourceNotFoundException("Brak felg dla rozmiaru = " + size);
         }
         return rims;
     }

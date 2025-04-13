@@ -49,14 +49,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(Map.of("error", Objects.requireNonNull(message)));
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public static class ResourceNotFoundException extends RuntimeException {
-        public ResourceNotFoundException(String message) {
-            super(message);
-        }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseBody
+    @Operation(hidden = true)
+    public ResponseEntity<String> handleNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
-
-
-
-
 }
+
+
