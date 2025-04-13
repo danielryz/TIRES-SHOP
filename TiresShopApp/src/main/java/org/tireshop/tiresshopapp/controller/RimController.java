@@ -51,7 +51,7 @@ public class RimController {
             @ApiResponse(responseCode = "200", description = "Zwrócono felge"),
             @ApiResponse(responseCode = "404", description = "Nie znaleziono felgi")
     })
-    @GetMapping("/api/rim/{material}")
+    @GetMapping("/api/rim/material/{material}")
     public List<RimResponse> getRimByMaterial(@PathVariable String material) {
         return rimService.getRimByMaterial(material);
     }
@@ -61,7 +61,7 @@ public class RimController {
             @ApiResponse(responseCode = "200", description = "Zwrócono felge"),
             @ApiResponse(responseCode = "404", description = "Nie znaleziono felgi")
     })
-    @GetMapping("/api/rim/{size}")
+    @GetMapping("/api/rim/size/{size}")
     public List<RimResponse> getRimBySize(@PathVariable String size) {
         return rimService.getRimBySize(size);
     }

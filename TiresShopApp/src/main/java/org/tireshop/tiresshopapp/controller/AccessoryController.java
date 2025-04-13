@@ -51,7 +51,7 @@ public class AccessoryController {
             @ApiResponse(responseCode = "200", description = "Zwrócono akcesorium"),
             @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesorium")
     })
-    @GetMapping("/api/accessory/{accessoryType}")
+    @GetMapping("/api/accessory/type{accessoryType}")
     public List<AccessoryResponse> getAccessoryByAccessoryType(@PathVariable String accessoryType) {
         return accessoryService.getAccessoryByAccessoryType(accessoryType);
     }

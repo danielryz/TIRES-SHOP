@@ -50,7 +50,7 @@ public class TireController {
             @ApiResponse(responseCode = "200", description = "Zwrócono opone"),
             @ApiResponse(responseCode = "404", description = "Nie znaleziono opony")
     })
-    @GetMapping("/api/tire/{season}")
+    @GetMapping("/api/tire/season/{season}")
     public List<TireResponse> getTireBySeason(@PathVariable String season) {
         return tireService.getTireBySeason(season);
     }
@@ -60,7 +60,7 @@ public class TireController {
             @ApiResponse(responseCode = "200", description = "Zwrócono opone"),
             @ApiResponse(responseCode = "404", description = "Nie znaleziono opony")
     })
-    @GetMapping("/api/tire/{size}")
+    @GetMapping("/api/tire/size/{size}")
     public List<TireResponse> getTireBySize(@PathVariable String size) {
         return tireService.getTireBySize(size);
     }
