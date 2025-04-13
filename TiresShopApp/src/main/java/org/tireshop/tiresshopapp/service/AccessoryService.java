@@ -29,7 +29,7 @@ public class AccessoryService {
     }
 
     public List<AccessoryResponse> getAccessoryByAccessoryType(String accessoryType) {
-        return accessoryRepository.getAccessoryByAccessoryType(accessoryType);
+        return accessoryRepository.findAccessoryByAccessoryType(accessoryType);
     }
 
     //POST

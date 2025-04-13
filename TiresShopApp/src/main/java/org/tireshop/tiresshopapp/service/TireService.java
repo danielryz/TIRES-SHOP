@@ -28,11 +28,11 @@ public class TireService {
     }
 
     public List<TireResponse> getTireBySeason(String seasonName) {
-        return tireRepository.getTireBySeason(seasonName);
+        return tireRepository.findTireBySeason(seasonName);
     }
 
     public List<TireResponse> getTireBySize(String sizeName) {
-        return tireRepository.getTireBySize(sizeName);
+        return tireRepository.findTireBySize(sizeName);
     }
 
     //POST

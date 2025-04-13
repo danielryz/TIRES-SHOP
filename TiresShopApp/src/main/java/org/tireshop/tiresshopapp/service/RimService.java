@@ -28,11 +28,11 @@ public class RimService {
     }
 
     public List<RimResponse> getRimByMaterial(String material) {
-        return rimRepository.getRimByMaterial(material);
+        return rimRepository.findRimByMaterial(material);
     }
 
     public List<RimResponse> getRimBySize(String size) {
-        return rimRepository.getRimBySize(size);
+        return rimRepository.findRimBySize(size);
     }
 
     //POST
