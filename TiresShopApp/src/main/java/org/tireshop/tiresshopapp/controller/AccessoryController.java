@@ -14,7 +14,6 @@ import org.tireshop.tiresshopapp.dto.request.AccessoryRequest;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
 import org.tireshop.tiresshopapp.service.AccessoryService;
 
-
 import java.util.List;
 
 @RestController
@@ -25,44 +24,32 @@ public class AccessoryController {
     private final AccessoryService accessoryService;
 
     @Operation(summary = "Lista wszystkich Akcesoriów", description = "Endpoint publiczny")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Zwrócono listę akcesoriów"),
-            @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesoriów")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono listę akcesoriów"), @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesoriów")})
     @GetMapping("/api/accessory")
     public List<AccessoryResponse> getAllAccessory() {
         return accessoryService.getAllAccessory();
     }
 
     @Operation(summary = "Felga po id", description = "Endpoint publiczny")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Zwrócono akcesorium"),
-            @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesorium")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono akcesorium"), @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesorium")})
     @GetMapping("/api/accessory/{id}")
     public ResponseEntity<AccessoryResponse> getAccessoryById(@PathVariable Long id) {
-        AccessoryResponse accessory = accessoryService.getAccessoryById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono akcesorium"));
+        AccessoryResponse accessory = accessoryService.getAccessoryById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono akcesorium"));
         return ResponseEntity.ok(accessory);
     }
 
     @Operation(summary = "Felga po typie akcesorium", description = "Endpoint publiczny")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Zwrócono akcesorium"),
-            @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesorium")
-    })
-    @GetMapping("/api/accessory/type{accessoryType}")
-    public List<AccessoryResponse> getAccessoryByAccessoryType(@PathVariable String accessoryType) {
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono akcesorium"), @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesorium")})
+    @GetMapping("/api/accessory/accessory-type")
+    public List<AccessoryResponse> getAccessoryByAccessoryType(@RequestParam(required = false) String accessoryType) {
+        if (accessoryType == null) {
+            return accessoryService.getAllAccessory();
+        }
         return accessoryService.getAccessoryByAccessoryType(accessoryType);
     }
 
-
-
     @Operation(summary = "Dodawanie akcesorium", description = "ADMIN")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Dodano akcesorium"),
-            @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Dodano akcesorium"), @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
     @PostMapping("/api/admin/accessory")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AccessoryResponse> createNewAccessory(@RequestBody AccessoryRequest request) {
@@ -71,10 +58,7 @@ public class AccessoryController {
     }
 
     @Operation(summary = "Edycja akcesorium", description = "ADMIN")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Edytowano akcesorium"),
-            @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Edytowano akcesorium"), @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
     @PatchMapping("/api/admin/accessory/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateAccessory(@PathVariable Long id, @RequestBody AccessoryRequest request) {
@@ -87,11 +71,8 @@ public class AccessoryController {
     }
 
     @Operation(summary = "Usuwanie akcesorium", description = "ADMIN")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usunięto akcesorium"),
-            @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")
-    })
-    @DeleteMapping("/api/admin/accessory")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Usunięto akcesorium"), @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
+    @DeleteMapping("/api/admin/accessory/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteAccessory(@PathVariable Long id) {
         accessoryService.deleteAccessory(id);

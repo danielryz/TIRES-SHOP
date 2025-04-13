@@ -24,52 +24,42 @@ public class TireController {
     private final TireService tireService;
 
     @Operation(summary = "Lista wszystkich Opon", description = "Endpoint publiczny")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Zwrócono listę opon"),
-            @ApiResponse(responseCode = "404", description = "Nie znaleziono opon")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono listę opon"), @ApiResponse(responseCode = "404", description = "Nie znaleziono opon")})
     @GetMapping("/api/tire")
     public List<TireResponse> getAllTire() {
         return tireService.getAllTire();
     }
 
     @Operation(summary = "Opona po id", description = "Endpoint publiczny")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Zwrócono opone"),
-            @ApiResponse(responseCode = "404", description = "Nie znaleziono opony")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono opone"), @ApiResponse(responseCode = "404", description = "Nie znaleziono opony")})
     @GetMapping("/api/tire/{id}")
     public ResponseEntity<TireResponse> getTireById(@PathVariable Long id) {
-        TireResponse tire = tireService.getTireById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono opony"));
+        TireResponse tire = tireService.getTireById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono opony"));
         return ResponseEntity.ok(tire);
     }
 
     @Operation(summary = "Opona po sezonie", description = "Endpoint publiczny")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Zwrócono opone"),
-            @ApiResponse(responseCode = "404", description = "Nie znaleziono opony")
-    })
-    @GetMapping("/api/tire/season/{season}")
-    public List<TireResponse> getTireBySeason(@PathVariable String season) {
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono opone"), @ApiResponse(responseCode = "404", description = "Nie znaleziono opony")})
+    @GetMapping("/api/tire/season")
+    public List<TireResponse> getTireBySeason(@RequestParam(required = false) String season) {
+        if (season == null) {
+            return tireService.getAllTire();
+        }
         return tireService.getTireBySeason(season);
     }
 
     @Operation(summary = "Opona po id", description = "Endpoint publiczny")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Zwrócono opone"),
-            @ApiResponse(responseCode = "404", description = "Nie znaleziono opony")
-    })
-    @GetMapping("/api/tire/size/{size}")
-    public List<TireResponse> getTireBySize(@PathVariable String size) {
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono opone"), @ApiResponse(responseCode = "404", description = "Nie znaleziono opony")})
+    @GetMapping("/api/tire/size")
+    public List<TireResponse> getTireBySize(@RequestParam(required = false) String size) {
+        if (size == null) {
+            return tireService.getAllTire();
+        }
         return tireService.getTireBySize(size);
     }
 
     @Operation(summary = "Dodawanie opon", description = "ADMIN")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Dodano opone"),
-            @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Dodano opone"), @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
     @PostMapping("/api/admin/tire")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TireResponse> createNewTire(@RequestBody CreateTireRequest request) {
@@ -78,10 +68,7 @@ public class TireController {
     }
 
     @Operation(summary = "Edycja opony", description = "ADMIN")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Edytowano opone"),
-            @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Edytowano opone"), @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
     @PatchMapping("/api/admin/tire/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateTire(@PathVariable Long id, @RequestBody CreateTireRequest request) {
@@ -94,11 +81,8 @@ public class TireController {
     }
 
     @Operation(summary = "Usuwanie opony", description = "ADMIN")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Usunięto opone"),
-            @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")
-    })
-    @DeleteMapping("/api/admin/tire")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Usunięto opone"), @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
+    @DeleteMapping("/api/admin/tire/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteTire(@PathVariable Long id) {
         tireService.deleteTire(id);

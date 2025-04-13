@@ -23,6 +23,7 @@ import java.util.List;
 public class RimController {
 
     private final RimService rimService;
+    private String size;
 
     @Operation(summary = "Lista wszystkich Felg", description = "Endpoint publiczny")
     @ApiResponses({
@@ -51,8 +52,11 @@ public class RimController {
             @ApiResponse(responseCode = "200", description = "Zwrócono felge"),
             @ApiResponse(responseCode = "404", description = "Nie znaleziono felgi")
     })
-    @GetMapping("/api/rim/material/{material}")
-    public List<RimResponse> getRimByMaterial(@PathVariable String material) {
+    @GetMapping("/api/rim/material")
+    public List<RimResponse> getRimByMaterial(@RequestParam(required = false) String material) {
+        if(size == null) {
+           return rimService.getAllRim();
+        }
         return rimService.getRimByMaterial(material);
     }
 
@@ -61,8 +65,11 @@ public class RimController {
             @ApiResponse(responseCode = "200", description = "Zwrócono felge"),
             @ApiResponse(responseCode = "404", description = "Nie znaleziono felgi")
     })
-    @GetMapping("/api/rim/size/{size}")
-    public List<RimResponse> getRimBySize(@PathVariable String size) {
+    @GetMapping("/api/rim/size")
+    public List<RimResponse> getRimBySize(@RequestParam(required = false) String size) {
+        if(size == null) {
+            return rimService.getAllRim();
+        }
         return rimService.getRimBySize(size);
     }
 
@@ -99,7 +106,7 @@ public class RimController {
             @ApiResponse(responseCode = "200", description = "Usunięto felge"),
             @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")
     })
-    @DeleteMapping("/api/admin/rim")
+    @DeleteMapping("/api/admin/rim/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteRim(@PathVariable Long id) {
         rimService.deleteRim(id);
