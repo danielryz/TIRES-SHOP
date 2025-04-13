@@ -29,10 +29,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
-                                "/api/products**",
-                                "/api/tire**",
-                                "/api/rim**",
-                                "/api/accessory**",
+                                "/api/products",
+                                "/api/tire",
+                                "/api/rim",
+                                "/api/accessory",
+                                "/api/products/**",
+                                "/api/tire/**",
+                                "/api/rim/**",
+                                "/api/accessory/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
