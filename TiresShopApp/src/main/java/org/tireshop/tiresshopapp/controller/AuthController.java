@@ -22,7 +22,7 @@ import org.tireshop.tiresshopapp.service.security.AuthenticationService;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication")
+@Tag(name = "Authentication", description = "Logowanie i rejsetracja")
 public class AuthController {
     private final AuthenticationService authService;
 
