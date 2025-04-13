@@ -98,7 +98,7 @@ public class TireController {
             @ApiResponse(responseCode = "200", description = "Usunięto opone"),
             @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")
     })
-    @PatchMapping("/api/admin/tire")
+    @DeleteMapping("/api/admin/tire")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteTire(@PathVariable Long id) {
         tireService.deleteTire(id);
