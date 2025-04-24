@@ -16,16 +16,16 @@ import java.util.Set;
 
 public class Role {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(example = "1", description = "Unikalne id Roli")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Schema(example = "1", description = "Unikalne id Roli")
+  private Long id;
 
-    @Column(nullable = false, unique = true)
-    @Schema(example = "ROLE_ADMIN", description = "Role jakie są przypisane do użytkwonika")
-    private String name;
+  @Column(nullable = false, unique = true)
+  @Schema(example = "ROLE_ADMIN", description = "Role jakie są przypisane do użytkwonika")
+  private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
+  @ManyToMany(mappedBy = "roles")
+  private Set<User> users = new HashSet<>();
 
 }

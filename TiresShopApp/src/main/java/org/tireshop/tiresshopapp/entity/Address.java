@@ -14,20 +14,20 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Address {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String street;
-    private String houseNumber;
-    private String apartmentNumber;
-    private String postalCode;
-    private String city;
+  private String street;
+  private String houseNumber;
+  private String apartmentNumber;
+  private String postalCode;
+  private String city;
 
-    @Enumerated(EnumType.STRING)
-    private AddressType type;
+  @Enumerated(EnumType.STRING)
+  private AddressType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private User user;
 }

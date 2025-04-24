@@ -1,13 +1,13 @@
-//package org.tireshop.tiresshopapp;
+// package org.tireshop.tiresshopapp;
 //
-//import org.junit.jupiter.api.Test;
-//import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 //
-//@SpringBootTest
-//class TiresShopAppApplicationTests {
+// @SpringBootTest
+// class TiresShopAppApplicationTests {
 //
-//    @Test
-//    void contextLoads() {
-//    }
+// @Test
+// void contextLoads() {
+// }
 //
-//}
+// }

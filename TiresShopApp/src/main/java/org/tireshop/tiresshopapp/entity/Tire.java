@@ -11,9 +11,9 @@ import lombok.*;
 @AllArgsConstructor
 public class Tire extends Product {
 
-    @Column(nullable = false)
-    private String season; // np. SUMMER, WINTER, ALL_SEASON
+  @Column(nullable = false)
+  private String season; // np. SUMMER, WINTER, ALL_SEASON
 
-    @Column(nullable = false)
-    private String size;   // np. 205/55R16
+  @Column(nullable = false)
+  private String size; // np. 205/55R16
 }

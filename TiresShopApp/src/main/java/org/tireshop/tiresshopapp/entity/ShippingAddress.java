@@ -14,16 +14,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ShippingAddress {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String street;
-    private String houseNumber;
-    private String apartmentNumber;
-    private String postalCode;
-    private String city;
+  private String street;
+  private String houseNumber;
+  private String apartmentNumber;
+  private String postalCode;
+  private String city;
 
-    @OneToOne(mappedBy = "shippingAddress", cascade = CascadeType.ALL)
-    private Order order;
+  @OneToOne(mappedBy = "shippingAddress", cascade = CascadeType.ALL)
+  private Order order;
 }

@@ -6,9 +6,11 @@ import org.tireshop.tiresshopapp.dto.response.TireResponse;
 import org.tireshop.tiresshopapp.entity.Tire;
 
 import java.util.List;
+
 @Repository
 public interface TireRepository extends JpaRepository<Tire, Long> {
 
-    List<TireResponse> findTireBySeason(String seasonName);
-    List<TireResponse> findTireBySize(String sizeName);
+  List<TireResponse> findTireBySeason(String seasonName);
+
+  List<TireResponse> findTireBySize(String sizeName);
 }

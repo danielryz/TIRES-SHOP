@@ -11,12 +11,12 @@ import lombok.*;
 @AllArgsConstructor
 public class Rim extends Product {
 
-    @Column(nullable = false)
-    private String material; // np. aluminum, steel
+  @Column(nullable = false)
+  private String material; // np. aluminum, steel
 
-    @Column(nullable = false)
-    private String size;     // np. 16", 17"
+  @Column(nullable = false)
+  private String size; // np. 16", 17"
 
-    @Column(name = "bolt_pattern", nullable = false)
-    private String boltPattern; // np. 5x112
+  @Column(name = "bolt_pattern", nullable = false)
+  private String boltPattern; // np. 5x112
 }

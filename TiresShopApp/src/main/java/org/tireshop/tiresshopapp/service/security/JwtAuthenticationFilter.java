@@ -18,57 +18,46 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
-    private final UserDetailsServiceImpl userDetailsService;
+  private final JwtService jwtService;
+  private final UserDetailsServiceImpl userDetailsService;
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
 
-        String path = request.getRequestURI();
-        if (
-                path.startsWith("/swagger-ui") ||
-                        path.startsWith("/v3/api-docs") ||
-                        path.startsWith("/swagger-resources") ||
-                        path.startsWith("/webjars") ||
-                        path.startsWith("/swagger-ui.html")
-        ) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
-
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-
-            if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
-        }
-        filterChain.doFilter(request, response);
+    String path = request.getRequestURI();
+    if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs")
+        || path.startsWith("/swagger-resources") || path.startsWith("/webjars")
+        || path.startsWith("/swagger-ui.html")) {
+      filterChain.doFilter(request, response);
+      return;
     }
+
+    final String authHeader = request.getHeader("Authorization");
+    final String jwt;
+    final String userEmail;
+
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    jwt = authHeader.substring(7);
+    userEmail = jwtService.extractUsername(jwt);
+
+    if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+      UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+
+      if (jwtService.isTokenValid(jwt, userDetails)) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+            userDetails, null, userDetails.getAuthorities());
+
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+      }
+    }
+    filterChain.doFilter(request, response);
+  }
 
 }

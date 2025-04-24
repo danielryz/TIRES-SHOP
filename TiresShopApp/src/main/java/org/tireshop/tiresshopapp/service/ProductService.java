@@ -15,58 +15,59 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final ProductRepository productRepository;
-//GET
-    public List<ProductResponse> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .toList();
-    }
+  private final ProductRepository productRepository;
 
-    public Optional<ProductResponse> getProductById(Long id) {
-        return productRepository.findById(id).map(this::mapToResponse);
-    }
-//POST
-    public ProductResponse createProduct(CreateProductRequest request) {
-        Product product = new Product();
-        product.setName(request.name());
-        product.setPrice(request.price());
-        product.setDescription(request.description());
-        product.setStock(request.stock());
-        product.setType(request.type());
+  // GET
+  public List<ProductResponse> getAllProducts() {
+    return productRepository.findAll().stream().map(this::mapToResponse).toList();
+  }
 
-        return mapToResponse(productRepository.save(product));
-    }
-//PATCH
-    public ProductResponse updateProduct(Long id, UpdateProductRequest request) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produkt o id " + id + " nie znaleziony"));
+  public Optional<ProductResponse> getProductById(Long id) {
+    return productRepository.findById(id).map(this::mapToResponse);
+  }
 
-        if(request.name() != null && request.name().isBlank()) product.setName(request.name());
-        if(request.price() != null) product.setPrice(request.price());
-        if(request.description() != null && request.description().isBlank()) product.setDescription(request.description());
-        if(request.stock() >= 0) product.setStock(request.stock());
-        if(request.type() != null) product.setType(request.type());
+  // POST
+  public ProductResponse createProduct(CreateProductRequest request) {
+    Product product = new Product();
+    product.setName(request.name());
+    product.setPrice(request.price());
+    product.setDescription(request.description());
+    product.setStock(request.stock());
+    product.setType(request.type());
 
-        return mapToResponse(productRepository.save(product));
-    }
-//DELETE
-    public void deleteProduct(Long id) {
-        if(!productRepository.existsById(id)){
-            throw new RuntimeException("Produkt o id " + id + " nie znaleziony");
-        }
-        productRepository.deleteById(id);
-    }
+    return mapToResponse(productRepository.save(product));
+  }
 
-    private ProductResponse mapToResponse(Product product) {
-        return new ProductResponse(
-                product.getId(),
-                product.getName(),
-                product.getPrice(),
-                product.getDescription(),
-                product.getStock(),
-                product.getType()
-        );
+  // PATCH
+  public ProductResponse updateProduct(Long id, UpdateProductRequest request) {
+    Product product = productRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Produkt o id " + id + " nie znaleziony"));
+
+    if (request.name() != null && request.name().isBlank())
+      product.setName(request.name());
+    if (request.price() != null)
+      product.setPrice(request.price());
+    if (request.description() != null && request.description().isBlank())
+      product.setDescription(request.description());
+    if (request.stock() >= 0)
+      product.setStock(request.stock());
+    if (request.type() != null)
+      product.setType(request.type());
+
+    return mapToResponse(productRepository.save(product));
+  }
+
+  // DELETE
+  public void deleteProduct(Long id) {
+    if (!productRepository.existsById(id)) {
+      throw new RuntimeException("Produkt o id " + id + " nie znaleziony");
     }
+    productRepository.deleteById(id);
+  }
+
+  private ProductResponse mapToResponse(Product product) {
+    return new ProductResponse(product.getId(), product.getName(), product.getPrice(),
+        product.getDescription(), product.getStock(), product.getType());
+  }
 
 }

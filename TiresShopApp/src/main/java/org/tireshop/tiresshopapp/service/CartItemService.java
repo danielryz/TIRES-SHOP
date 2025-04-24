@@ -20,74 +20,72 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CartItemService {
 
-    private final CartItemRepository cartItemRepository;
-    private final ProductRepository productRepository;
-    private final UserService userService;
-    public User getCurrentUser() {
-        return userService.getCurrentUser();
+  private final CartItemRepository cartItemRepository;
+  private final ProductRepository productRepository;
+  private final UserService userService;
+
+  public User getCurrentUser() {
+    return userService.getCurrentUser();
+  }
+
+  // GET
+  public List<CartItemResponse> getCartForCurrentUser() {
+    User user = userService.getCurrentUser();
+    return cartItemRepository.findByUser(user).stream().map(this::mapToResponse).toList();
+  }
+
+  public CartSummaryResponse getCartSummary() {
+    List<CartItemResponse> cartItems = getCartForCurrentUser();
+    BigDecimal total =
+        cartItems.stream().map(i -> i.pricePerItem().multiply(BigDecimal.valueOf(i.quantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    return new CartSummaryResponse(cartItems, total);
+  }
+
+  // POST
+  public CartItemResponse addCartItem(AddToCartRequest request) {
+    User user = userService.getCurrentUser();
+    Product product = productRepository.findById(request.productId())
+        .orElseThrow(() -> new RuntimeException("Produkt nie istnieje"));
+
+    CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product)
+        .orElse(new CartItem(null, user, product, 0));
+
+    if (cartItem.getQuantity() + request.quantity() > product.getStock()) {
+      throw new RuntimeException("Brak wystarczającej ilości produktu w magazynie");
     }
 
-//GET
-    public List<CartItemResponse> getCartForCurrentUser() {
-        User user = userService.getCurrentUser();
-        return cartItemRepository.findByUser(user).stream().map(this::mapToResponse).toList();
+    cartItem.setQuantity(cartItem.getQuantity() + request.quantity());
+    return mapToResponse(cartItemRepository.save(cartItem));
+  }
+
+  // PATCH
+  public CartItemResponse updateCartItem(Long id, UpdateCartItemRequest request) {
+    CartItem cartItem = cartItemRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Pozycja w koszyku nie istnieje"));
+    if (request.quantity() > cartItem.getProduct().getStock()) {
+      throw new RuntimeException("Brak wystarczającej ilości produktu w magazynie");
     }
 
-    public CartSummaryResponse getCartSummary() {
-        List<CartItemResponse> cartItems = getCartForCurrentUser();
-        BigDecimal total = cartItems.stream()
-                .map(i -> i.pricePerItem().multiply(BigDecimal.valueOf(i.quantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    cartItem.setQuantity(request.quantity());
+    return mapToResponse(cartItemRepository.save(cartItem));
+  }
 
-        return new CartSummaryResponse(cartItems, total);
-    }
-//POST
-    public CartItemResponse addCartItem(AddToCartRequest request) {
-        User user = userService.getCurrentUser();
-        Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new RuntimeException("Produkt nie istnieje"));
+  // DELETE
+  public void deleteCartItem(Long id) {
+    cartItemRepository.deleteById(id);
+  }
 
-        CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product)
-                .orElse(new CartItem(null, user, product, 0));
+  @Transactional
+  public void clearCartForUser(User user) {
+    cartItemRepository.deleteByUser(user);
+  }
 
-        if (cartItem.getQuantity() + request.quantity() > product.getStock()) {
-            throw new RuntimeException("Brak wystarczającej ilości produktu w magazynie");
-        }
-
-        cartItem.setQuantity(cartItem.getQuantity() + request.quantity());
-        return mapToResponse(cartItemRepository.save(cartItem));
-    }
-//PATCH
-    public CartItemResponse updateCartItem(Long id, UpdateCartItemRequest request) {
-        CartItem cartItem = cartItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pozycja w koszyku nie istnieje"));
-        if (request.quantity() > cartItem.getProduct().getStock()) {
-            throw new RuntimeException("Brak wystarczającej ilości produktu w magazynie");
-        }
-
-        cartItem.setQuantity(request.quantity());
-        return mapToResponse(cartItemRepository.save(cartItem));
-    }
-//DELETE
-    public void deleteCartItem(Long id) {
-        cartItemRepository.deleteById(id);
-    }
-
-    @Transactional
-    public void clearCartForUser(User user) {
-        cartItemRepository.deleteByUser(user);
-    }
-
-    private CartItemResponse mapToResponse(CartItem cartItem) {
-        BigDecimal pricePerItem = cartItem.getProduct().getPrice();
-        BigDecimal totalPrice = pricePerItem.multiply(new BigDecimal(cartItem.getQuantity()));
-        return new CartItemResponse(
-                cartItem.getId(),
-                cartItem.getProduct().getId(),
-                cartItem.getProduct().getName(),
-                cartItem.getQuantity(),
-                pricePerItem,
-                totalPrice
-        );
-    }
+  private CartItemResponse mapToResponse(CartItem cartItem) {
+    BigDecimal pricePerItem = cartItem.getProduct().getPrice();
+    BigDecimal totalPrice = pricePerItem.multiply(new BigDecimal(cartItem.getQuantity()));
+    return new CartItemResponse(cartItem.getId(), cartItem.getProduct().getId(),
+        cartItem.getProduct().getName(), cartItem.getQuantity(), pricePerItem, totalPrice);
+  }
 }

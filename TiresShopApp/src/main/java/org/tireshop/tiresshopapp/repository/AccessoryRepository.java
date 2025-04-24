@@ -6,7 +6,8 @@ import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
 import org.tireshop.tiresshopapp.entity.Accessory;
 
 import java.util.List;
+
 @Repository
 public interface AccessoryRepository extends JpaRepository<Accessory, Long> {
-    List<AccessoryResponse> findAccessoryByAccessoryType(String accessoryType);
+  List<AccessoryResponse> findAccessoryByAccessoryType(String accessoryType);
 }

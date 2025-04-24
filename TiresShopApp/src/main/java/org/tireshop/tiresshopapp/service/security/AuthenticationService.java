@@ -22,22 +22,22 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+  private final UserRepository userRepository;
+  private final RoleRepository roleRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
+  private final AuthenticationManager authenticationManager;
 
-    public AuthResponse register(RegisterRequest request){
-        Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Rola USER nie istnieje"));
-        if (userRepository.existsByEmail(request.email())) {
-            throw new RuntimeException("Email już istnieje");
-        }
+  public AuthResponse register(RegisterRequest request) {
+    Role userRole = roleRepository.findByName("ROLE_USER")
+        .orElseThrow(() -> new RuntimeException("Rola USER nie istnieje"));
+    if (userRepository.existsByEmail(request.email())) {
+      throw new RuntimeException("Email już istnieje");
+    }
 
-        if (userRepository.existsByUsername(request.username())) {
-            throw new RuntimeException("Nazwa użytkownika już istnieje");
-        }
+    if (userRepository.existsByUsername(request.username())) {
+      throw new RuntimeException("Nazwa użytkownika już istnieje");
+    }
 
     User user = new User();
     user.setUsername(request.username());
@@ -50,29 +50,21 @@ public class AuthenticationService {
 
     String token = jwtService.generateToken(mapToUserDetails(user));
     return new AuthResponse(token);
-    }
+  }
 
-    public AuthResponse login(LoginRequest request){
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()
-                )
-        );
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new BadCredentialsException("Nieprawidłowy email lub hasło"));
+  public AuthResponse login(LoginRequest request) {
+    authenticationManager
+        .authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+    User user = userRepository.findByEmail(request.email())
+        .orElseThrow(() -> new BadCredentialsException("Nieprawidłowy email lub hasło"));
 
-        String token = jwtService.generateToken(mapToUserDetails(user));
-        return new AuthResponse(token);
-    }
+    String token = jwtService.generateToken(mapToUserDetails(user));
+    return new AuthResponse(token);
+  }
 
-    private UserDetails mapToUserDetails(User user){
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getName()))
-                        .toList()
-        );
-    }
+  private UserDetails mapToUserDetails(User user) {
+    return new org.springframework.security.core.userdetails.User(user.getEmail(),
+        user.getPassword(),
+        user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).toList());
+  }
 }

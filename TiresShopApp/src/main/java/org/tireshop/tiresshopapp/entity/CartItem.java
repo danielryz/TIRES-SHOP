@@ -10,18 +10,18 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id")
-    private User user;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "user_id")
+  private User user;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "product_id")
-    private Product product;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "product_id")
+  private Product product;
 
-    @Column(nullable = false)
-    private int quantity;
+  @Column(nullable = false)
+  private int quantity;
 }

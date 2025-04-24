@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class Accessory extends Product {
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "type")
-    private AccessoryType accessoryType;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, name = "type")
+  private AccessoryType accessoryType;
 }
