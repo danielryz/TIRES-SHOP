@@ -11,6 +11,7 @@ import org.tireshop.tiresshopapp.entity.User;
 import org.tireshop.tiresshopapp.repository.AddressRepository;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -60,16 +61,11 @@ public class AddressService {
     User user = getCurrentUser();
     Address address = addressRepository.findByIdAndUser(id, user)
         .orElseThrow(() -> new RuntimeException("Adres nie znaleziony"));
-    if (request.street() != null && !request.street().isBlank())
-      address.setStreet(request.street());
-    if (request.houseNumber() != null && !request.houseNumber().isBlank())
-      address.setHouseNumber(request.houseNumber());
-    if (request.apartmentNumber() != null && !request.apartmentNumber().isBlank())
-      address.setApartmentNumber(request.apartmentNumber());
-    if (request.postalCode() != null && !request.postalCode().isBlank())
-      address.setPostalCode(request.postalCode());
-    if (request.city() != null && !request.city().isBlank())
-      address.setCity(request.city());
+    updateFieldIfPresent(request.street(), address::setStreet);
+    updateFieldIfPresent(request.houseNumber(), address::setHouseNumber);
+    updateFieldIfPresent(request.apartmentNumber(), address::setApartmentNumber);
+    updateFieldIfPresent(request.postalCode(), address::setPostalCode);
+    updateFieldIfPresent(request.city(), address::setCity);
 
     return mapToResponse(addressRepository.save(address));
   }
@@ -87,6 +83,13 @@ public class AddressService {
         address.getApartmentNumber(), address.getPostalCode(), address.getCity(),
         address.getType());
   }
+
+  private void updateFieldIfPresent(String newValue, Consumer<String> setter) {
+    if (newValue != null && !newValue.isBlank()) {
+      setter.accept(newValue);
+    }
+  }
+
 
 
 }

@@ -58,7 +58,7 @@ public class TireController {
     return tires;
   }
 
-  @Operation(summary = "Opona po id", description = "Endpoint publiczny")
+  @Operation(summary = "Opona po rozmiarze", description = "Endpoint publiczny")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono opone"),
       @ApiResponse(responseCode = "404", description = "Nie znaleziono opony")})
   @GetMapping("/api/tire/size")
