@@ -25,14 +25,13 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(
-            auth -> auth
-                .requestMatchers("/api/auth/**", "/api/products", "/api/tire", "/api/rim",
-                    "/api/accessory", "/api/products/**", "/api/tire/**", "/api/rim/**",
-                    "/api/accessory/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
-                    "/v3/api-docs", "/swagger-resources/**", "/swagger-resources",
-                    "/configuration/**", "/webjars/**", "/actuator/**")
-                .permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**", "/api/products", "/api/tire", "/api/rim",
+                "/api/accessory", "/api/products/**", "/api/tire/**", "/api/rim/**",
+                "/api/accessory/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                "/v3/api-docs", "/swagger-resources/**", "/swagger-resources", "/configuration/**",
+                "/webjars/**", "/actuator/**", "api/shippingAddress/myorder", "/api/orders/public")
+            .permitAll().anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
