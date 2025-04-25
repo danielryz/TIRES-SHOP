@@ -38,4 +38,8 @@ public class Order {
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "shipping_address_id")
   private ShippingAddress shippingAddress;
+
+  @Column(name = "session_id")
+  private String sessionId;
+
 }
