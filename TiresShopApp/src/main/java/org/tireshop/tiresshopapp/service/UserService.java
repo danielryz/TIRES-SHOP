@@ -73,6 +73,15 @@ public class UserService {
     return userRepository.save(user);
   }
 
+  public User addRoleToUser(Long userId, Long roleId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje"));
+    Role role = roleRepository.findById(roleId)
+        .orElseThrow(() -> new RuntimeException("Rola o ID: " + roleId + " nie istnieje"));
+    user.getRoles().add(role);
+    return userRepository.save(user);
+  }
+
   public User updateUserRoles(Long userId, Set<String> roleNames) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje"));

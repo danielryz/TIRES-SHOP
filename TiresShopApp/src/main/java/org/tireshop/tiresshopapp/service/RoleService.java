@@ -1,5 +1,6 @@
 package org.tireshop.tiresshopapp.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.entity.Role;
@@ -45,9 +46,10 @@ public class RoleService {
   }
 
   // DELETE
-  public void deleteRole(String name) {
-    Role role = roleRepository.findByName(name)
-        .orElseThrow(() -> new RuntimeException("Rola " + name + " nie istnieje"));
+  @Transactional
+  public void deleteRole(Long id) {
+    Role role = roleRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Rola o " + id + " nie istnieje"));
 
     if (!role.getUsers().isEmpty()) {
       throw new RuntimeException("Nie można usunąć Roli przypisanej do użytkownika");

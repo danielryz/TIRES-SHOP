@@ -1,5 +1,6 @@
 package org.tireshop.tiresshopapp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,6 +26,7 @@ public class Role {
   @Schema(example = "ROLE_ADMIN", description = "Role jakie są przypisane do użytkwonika")
   private String name;
 
+  @JsonIgnore
   @ManyToMany(mappedBy = "roles")
   private Set<User> users = new HashSet<>();
 

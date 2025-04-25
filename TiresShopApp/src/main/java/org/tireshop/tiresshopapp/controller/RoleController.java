@@ -53,6 +53,7 @@ public class RoleController {
       @ApiResponse(responseCode = "404", description = "Rola nie istnieje",
           content = @Content(examples = @ExampleObject()))})
   @GetMapping("/{id}")
+  @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
     return ResponseEntity.ok(roleService.getRoleById(id));
   }
@@ -93,11 +94,11 @@ public class RoleController {
               examples = @ExampleObject(value = "{\"error\": \"Acces Denied\"}"))),
       @ApiResponse(responseCode = "403", description = "Brak Autoryzacji",
           content = @Content(examples = @ExampleObject(value = " ")))})
-  @DeleteMapping
+  @DeleteMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<?> deleteRole(@RequestBody UpdateRoleRequest request) {
-    roleService.deleteRole(request.name());
-    return ResponseEntity.ok("Rola " + request.name() + " usunięta");
+  public ResponseEntity<String> deleteRole(@PathVariable Long id) {
+    roleService.deleteRole(id);
+    return ResponseEntity.ok("Rola o id" + id + " usunięta");
   }
 
 
