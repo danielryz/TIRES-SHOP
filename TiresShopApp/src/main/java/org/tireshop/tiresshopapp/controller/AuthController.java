@@ -22,15 +22,16 @@ import org.tireshop.tiresshopapp.service.security.AuthenticationService;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "Logowanie i rejsetracja")
+@Tag(name = "Authentication", description = "Logowanie i rejsetracja.")
 public class AuthController {
   private final AuthenticationService authService;
 
-  @Operation(summary = "Rejestracja nowego użytkownika")
+  @Operation(summary = "Rejestracja nowego użytkownika.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Rejestracja zakończona sukcesem",
+      @ApiResponse(responseCode = "200", description = "Rejestracja zakończona sukcesem.",
           content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Błąd walidacji lub użytkownik już istnieje",
+      @ApiResponse(responseCode = "400",
+          description = "Błąd walidacji lub użytkownik już istnieje.",
           content = @Content(mediaType = "aplication/json", examples = @ExampleObject("""
               {
                 "error": "Email już istnieje"
@@ -41,11 +42,11 @@ public class AuthController {
     return ResponseEntity.ok(authService.register(request));
   }
 
-  @Operation(summary = "Logowanie i generowanie tokena JWT")
+  @Operation(summary = "Logowanie i generowanie tokena JWT.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Zalogowano pomyślnie",
+      @ApiResponse(responseCode = "200", description = "Zalogowano pomyślnie.",
           content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-      @ApiResponse(responseCode = "401", description = "Nieprawidłowy email lub hasło",
+      @ApiResponse(responseCode = "401", description = "Nieprawidłowy email lub hasło.",
           content = @Content(mediaType = "aplication/json", examples = @ExampleObject(value = """
               {
                 "error": "Nieprawidłowy email lub hasło"

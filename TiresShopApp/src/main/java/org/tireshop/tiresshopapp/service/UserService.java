@@ -1,5 +1,6 @@
 package org.tireshop.tiresshopapp.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,7 +33,7 @@ public class UserService {
 
   public User getUserById(Long id) {
     return userRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + id + " nie istnieje"));
+        .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + id + " nie istnieje."));
   }
 
   public User getCurrentUser() {
@@ -44,7 +45,7 @@ public class UserService {
       email = principal.toString();
     }
     return userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("Nie znaleziono zalogowanego użytkownika"));
+        .orElseThrow(() -> new RuntimeException("Nie znaleziono zalogowanego użytkownika."));
   }
 
   // PATCH
@@ -52,7 +53,7 @@ public class UserService {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String email = authentication.getName();
     User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new RuntimeException("Nie znaleziono użytkownika"));
+        .orElseThrow(() -> new RuntimeException("Nie znaleziono użytkownika."));
 
     if (request.username() != null && !request.username().isBlank()) {
       user.setUsername(request.username());
@@ -75,41 +76,28 @@ public class UserService {
 
   public User addRoleToUser(Long userId, Long roleId) {
     User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje"));
+        .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje."));
     Role role = roleRepository.findById(roleId)
-        .orElseThrow(() -> new RuntimeException("Rola o ID: " + roleId + " nie istnieje"));
+        .orElseThrow(() -> new RuntimeException("Rola o ID: " + roleId + " nie istnieje."));
     user.getRoles().add(role);
     return userRepository.save(user);
   }
 
-  public User updateUserRoles(Long userId, Set<String> roleNames) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje"));
-
-    Set<Role> roles = roleNames.stream()
-        .map(roleName -> roleRepository.findByName(roleName)
-            .orElseThrow(() -> new RuntimeException("Rola nie istnieje: " + roleName)))
-        .collect(Collectors.toSet());
-
-    user.setRoles(roles);
-    return userRepository.save(user);
-  }
-
   // DELETE
-  public void removeUserRole(Long userId, String roleName) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje"));
-
-    Role role = roleRepository.findByName(roleName)
-        .orElseThrow(() -> new RuntimeException("Rola nie istnieje: " + roleName));
-
-    user.getRoles().remove(role);
-    userRepository.save(user);
+  @Transactional
+  public void removeUserRole(Long userId, Long roleId) {
+    if (!userRepository.existsById(userId)) {
+      throw new RuntimeException("Użytkownik o ID: " + userId + " nie istnieje.");
+    }
+    if (!roleRepository.existsById(roleId)) {
+      throw new RuntimeException("Rola o id " + roleId + " nie istnieje.");
+    }
+    userRepository.deleteUserRole(userId, roleId);
   }
 
   public void deleteUserById(Long id) {
     if (!userRepository.existsById(id)) {
-      throw new RuntimeException("Użytkownik o ID: " + id + " nie istnieje");
+      throw new RuntimeException("Użytkownik o ID: " + id + " nie istnieje.");
     }
     userRepository.deleteById(id);
   }

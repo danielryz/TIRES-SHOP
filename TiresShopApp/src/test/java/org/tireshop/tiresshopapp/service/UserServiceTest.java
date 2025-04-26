@@ -132,20 +132,6 @@ class UserServiceTest {
   }
 
   @Test
-  void shouldUpdateUserRoles() {
-    User user = new User();
-    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-    Role role = new Role();
-    role.setName("USER");
-    when(roleRepository.findByName("USER")).thenReturn(Optional.of(role));
-    when(userRepository.save(user)).thenReturn(user);
-
-    var result = userService.updateUserRoles(1L, Set.of("USER"));
-
-    assertTrue(result.getRoles().stream().anyMatch(r -> r.getName().equals("USER")));
-  }
-
-  @Test
   void shouldRemoveUserRole() {
     User user = new User();
     Role role = new Role();
@@ -156,7 +142,7 @@ class UserServiceTest {
     when(roleRepository.findByName("USER")).thenReturn(Optional.of(role));
     when(userRepository.save(user)).thenReturn(user);
 
-    userService.removeUserRole(1L, "USER");
+    userService.removeUserRole(1L, 2L);
 
     assertFalse(user.getRoles().contains(role));
   }
