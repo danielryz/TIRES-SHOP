@@ -30,7 +30,8 @@ public class UserController {
 
   private final UserService userService;
 
-  @Operation(summary = "Pobiera wszystkich użytkowników (ADMIN).", description = "Zwraca listę użytkowników.")
+  @Operation(summary = "Pobiera wszystkich użytkowników (ADMIN).",
+      description = "Zwraca listę użytkowników.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Lista użytkowników zwrócona pomyślnie.",
           content = @Content(mediaType = "application/json",
@@ -46,7 +47,8 @@ public class UserController {
     return ResponseEntity.ok(userService.getAllUsers());
   }
 
-  @Operation(summary = "Pobiera użytkownika po ID (ADMIN).", description = "Zwraca użytkownika o id.")
+  @Operation(summary = "Pobiera użytkownika po ID (ADMIN).",
+      description = "Zwraca użytkownika o id.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Użytkownik znaleziony.",
           content = @Content(mediaType = "application/json",
