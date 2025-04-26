@@ -19,36 +19,42 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/role")
 @RequiredArgsConstructor
-@Tag(name = "Role", description = "Pobieranie Roli.")
+@Tag(name = "Role", description = "Role support")
 public class RoleController {
   private final RoleService roleService;
 
-  @Operation(summary = "Pobiera wszystkie role.", description = "Tylko dla administratorów.")
+  @Operation(summary = "Get all roles.", description = "ADMIN.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Lista ról zwrócona pomyślnie",
+      @ApiResponse(responseCode = "200", description = "Role list returned successfully.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = Role.class))),
-      @ApiResponse(responseCode = "400", description = "Brak uprawnień",
+      @ApiResponse(responseCode = "400", description = "Access Denied.",
           content = @Content(mediaType = "application/json",
-              examples = @ExampleObject(value = "{\"error\": \"Acces Denied\"}"))),
-      @ApiResponse(responseCode = "403", description = "Brak Autoryzacji",
-          content = @Content(examples = @ExampleObject(value = " ")))})
+              examples = @ExampleObject(value = "{\"error\": \"Access Denied\"}"))),
+      @ApiResponse(responseCode = "403", description = "No authorization.",
+          content = @Content(examples = @ExampleObject(value = " "))),
+      @ApiResponse(responseCode = "404", description = "Role Not Found.",
+          content = @Content(examples = @ExampleObject(
+              value = "{\"error\": \"404 NOT_FOUND \\ \"Role with id 1 not found.\"\"}")))})
   @GetMapping
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<Role>> getAllRoles() {
     return ResponseEntity.ok(roleService.getAllRoles());
   }
 
-  @Operation(summary = "Pobiera Role po ID.", description = "Tylko dla administratorów.")
+  @Operation(summary = "Get role by ID.", description = "ADMIN.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Rola znaleziona.",
+      @ApiResponse(responseCode = "200", description = "Role returned successfully.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = Role.class))),
-      @ApiResponse(responseCode = "400", description = "Brak uprawnień albo rola nie istnieje.",
+      @ApiResponse(responseCode = "400", description = "Access Denied",
           content = @Content(mediaType = "application/json",
-              examples = @ExampleObject(value = "{\"error\": \"Acces Denied\"}"))),
-      @ApiResponse(responseCode = "403", description = "Brak Autoryzacji",
-          content = @Content(examples = @ExampleObject(value = " ")))})
+              examples = @ExampleObject(value = "{\"error\": \"Access Denied\"}"))),
+      @ApiResponse(responseCode = "403", description = "No authorization.",
+          content = @Content(examples = @ExampleObject(value = " "))),
+      @ApiResponse(responseCode = "404", description = "Role Not Found.",
+          content = @Content(examples = @ExampleObject(
+              value = "{\"error\": \"404 NOT_FOUND \\ \"Role with id 1 not found.\"\"}")))})
   @GetMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Role> getRoleById(@PathVariable Long id) {

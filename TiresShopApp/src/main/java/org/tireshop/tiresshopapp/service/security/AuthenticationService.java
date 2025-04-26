@@ -13,6 +13,7 @@ import org.tireshop.tiresshopapp.dto.request.auth.LoginRequest;
 import org.tireshop.tiresshopapp.dto.request.auth.RegisterRequest;
 import org.tireshop.tiresshopapp.entity.Role;
 import org.tireshop.tiresshopapp.entity.User;
+import org.tireshop.tiresshopapp.exception.RoleNotFoundException;
 import org.tireshop.tiresshopapp.repository.RoleRepository;
 import org.tireshop.tiresshopapp.repository.UserRepository;
 
@@ -29,14 +30,15 @@ public class AuthenticationService {
   private final AuthenticationManager authenticationManager;
 
   public AuthResponse register(RegisterRequest request) {
-    Role userRole = roleRepository.findByName("ROLE_USER")
-        .orElseThrow(() -> new RuntimeException("Rola USER nie istnieje"));
+    String role = "ROLE_USER";
+    Role userRole =
+        roleRepository.findByName(role).orElseThrow(() -> new RoleNotFoundException(role));
     if (userRepository.existsByEmail(request.email())) {
-      throw new RuntimeException("Email już istnieje");
+      throw new RuntimeException("User with email " + request.email() + " already exists.");
     }
 
     if (userRepository.existsByUsername(request.username())) {
-      throw new RuntimeException("Nazwa użytkownika już istnieje");
+      throw new RuntimeException("User with username " + request.username() + " already exists.");
     }
 
     User user = new User();
@@ -56,7 +58,7 @@ public class AuthenticationService {
     authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
     User user = userRepository.findByEmail(request.email())
-        .orElseThrow(() -> new BadCredentialsException("Nieprawidłowy email lub hasło"));
+        .orElseThrow(() -> new BadCredentialsException("Invalid email or password."));
 
     String token = jwtService.generateToken(mapToUserDetails(user));
     return new AuthResponse(token);

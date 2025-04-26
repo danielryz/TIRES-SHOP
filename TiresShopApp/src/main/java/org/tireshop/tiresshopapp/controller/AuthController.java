@@ -22,19 +22,18 @@ import org.tireshop.tiresshopapp.service.security.AuthenticationService;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "Logowanie i rejsetracja.")
+@Tag(name = "Authentication", description = "Login and registration support.")
 public class AuthController {
   private final AuthenticationService authService;
 
-  @Operation(summary = "Rejestracja nowego użytkownika.")
+  @Operation(summary = "New user registration", description = "PUBLIC.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Rejestracja zakończona sukcesem.",
+      @ApiResponse(responseCode = "200", description = "Registration completed successfully.",
           content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-      @ApiResponse(responseCode = "400",
-          description = "Błąd walidacji lub użytkownik już istnieje.",
+      @ApiResponse(responseCode = "400", description = "Validation error or user already exists.",
           content = @Content(mediaType = "aplication/json", examples = @ExampleObject("""
               {
-                "error": "Email już istnieje"
+                "error": "User with email EMAIL already exists."
               }""")))})
 
   @PostMapping("/register")
@@ -42,14 +41,14 @@ public class AuthController {
     return ResponseEntity.ok(authService.register(request));
   }
 
-  @Operation(summary = "Logowanie i generowanie tokena JWT.")
+  @Operation(summary = "LLogin and generate JWT token.", description = "PUBLIC")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Zalogowano pomyślnie.",
+      @ApiResponse(responseCode = "200", description = "You have logged in successfully.",
           content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-      @ApiResponse(responseCode = "401", description = "Nieprawidłowy email lub hasło.",
+      @ApiResponse(responseCode = "401", description = "Invalid email or password.",
           content = @Content(mediaType = "aplication/json", examples = @ExampleObject(value = """
               {
-                "error": "Nieprawidłowy email lub hasło"
+                "error": "Invalid email or password."
               }""")))})
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {

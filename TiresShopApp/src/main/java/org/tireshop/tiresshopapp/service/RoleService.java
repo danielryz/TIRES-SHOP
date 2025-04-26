@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.entity.Role;
+import org.tireshop.tiresshopapp.exception.RoleNotFoundException;
 import org.tireshop.tiresshopapp.repository.RoleRepository;
 
 import java.util.List;
@@ -19,8 +20,7 @@ public class RoleService {
   }
 
   public Role getRoleById(Long id) {
-    return roleRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Rola o id " + id + " nie istnieje"));
+    return roleRepository.findById(id).orElseThrow(() -> new RoleNotFoundException(id));
   }
 
 }
