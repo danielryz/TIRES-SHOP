@@ -1,15 +1,16 @@
 package org.tireshop.tiresshopapp.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateRimRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateRimRequest;
 import org.tireshop.tiresshopapp.dto.response.RimResponse;
 import org.tireshop.tiresshopapp.entity.Rim;
+import org.tireshop.tiresshopapp.exception.RimNotFoundException;
 import org.tireshop.tiresshopapp.repository.RimRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,19 +23,29 @@ public class RimService {
     return rimRepository.findAll().stream().map(this::mapToResponse).toList();
   }
 
-  public Optional<RimResponse> getRimById(Long id) {
-    return rimRepository.findById(id).map(this::mapToResponse);
+  public RimResponse getRimById(Long id) {
+    Rim rim = rimRepository.findById(id).orElseThrow(() -> new RimNotFoundException(id));
+    return mapToResponse(rim);
   }
 
   public List<RimResponse> getRimByMaterial(String material) {
-    return rimRepository.findRimByMaterial(material);
+    List<RimResponse> rims = rimRepository.findRimByMaterial(material);
+    if (rims.isEmpty()) {
+      throw new RimNotFoundException(material);
+    }
+    return rims;
   }
 
   public List<RimResponse> getRimBySize(String size) {
-    return rimRepository.findRimBySize(size);
+    List<RimResponse> rims = rimRepository.findRimBySize(size);
+    if (rims.isEmpty()) {
+      throw new RimNotFoundException(size);
+    }
+    return rims;
   }
 
   // POST
+  @Transactional
   public RimResponse createNewRim(CreateRimRequest request) {
     Rim rim = new Rim();
     rim.setName(request.name());
@@ -50,9 +61,9 @@ public class RimService {
   }
 
   // PATCH
+  @Transactional
   public RimResponse updateRim(Long id, UpdateRimRequest request) {
-    Rim rim = rimRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Felga o id " + id + " nie znaleziona"));
+    Rim rim = rimRepository.findById(id).orElseThrow(() -> new RimNotFoundException(id));
 
     if (request.name() != null && !request.name().isBlank())
       rim.setName(request.name());
@@ -75,7 +86,7 @@ public class RimService {
   // DELETE
   public void deleteRim(Long id) {
     if (!rimRepository.existsById(id)) {
-      throw new RuntimeException("Felga id " + id + " nie znaleziona");
+      throw new RimNotFoundException(id);
     }
     rimRepository.deleteById(id);
 

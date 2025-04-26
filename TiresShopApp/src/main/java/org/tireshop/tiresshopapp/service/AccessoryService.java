@@ -1,10 +1,12 @@
 package org.tireshop.tiresshopapp.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateAccessoryRequest;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
 import org.tireshop.tiresshopapp.entity.Accessory;
+import org.tireshop.tiresshopapp.exception.AccessoryNotFoundException;
 import org.tireshop.tiresshopapp.repository.AccessoryRepository;
 
 import java.util.List;
@@ -21,15 +23,23 @@ public class AccessoryService {
     return accessoryRepository.findAll().stream().map(this::mapToResponse).toList();
   }
 
-  public Optional<AccessoryResponse> getAccessoryById(Long id) {
-    return accessoryRepository.findById(id).map(this::mapToResponse);
+  public AccessoryResponse getAccessoryById(Long id) {
+    Accessory accessory =
+        accessoryRepository.findById(id).orElseThrow(() -> new AccessoryNotFoundException(id));
+    return mapToResponse(accessory);
   }
 
   public List<AccessoryResponse> getAccessoryByAccessoryType(String accessoryType) {
-    return accessoryRepository.findAccessoryByAccessoryType(accessoryType);
+    List<AccessoryResponse> accessory =
+        accessoryRepository.findAccessoryByAccessoryType(accessoryType);
+    if (accessory.isEmpty()) {
+      throw new AccessoryNotFoundException(accessoryType);
+    }
+    return accessory;
   }
 
   // POST
+  @Transactional
   public AccessoryResponse createNewAccessory(CreateAccessoryRequest request) {
     Accessory accessory = new Accessory();
     accessory.setName(request.name());
@@ -43,9 +53,10 @@ public class AccessoryService {
   }
 
   // PATCH
+  @Transactional
   public AccessoryResponse updateAccessory(Long id, CreateAccessoryRequest request) {
-    Accessory accessory = accessoryRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Akcesorium o id " + id + " nie znaleziona"));
+    Accessory accessory =
+        accessoryRepository.findById(id).orElseThrow(() -> new AccessoryNotFoundException(id));
 
     if (request.name() != null && !request.name().isBlank())
       accessory.setName(request.name());
@@ -64,12 +75,12 @@ public class AccessoryService {
   }
 
   // DELETE
+  @Transactional
   public void deleteAccessory(Long id) {
     if (!accessoryRepository.existsById(id)) {
-      throw new RuntimeException("Akcesorium o id " + id + " nie znaleziona");
+      throw new AccessoryNotFoundException(id);
     }
     accessoryRepository.deleteById(id);
-
   }
 
   private AccessoryResponse mapToResponse(Accessory accessory) {

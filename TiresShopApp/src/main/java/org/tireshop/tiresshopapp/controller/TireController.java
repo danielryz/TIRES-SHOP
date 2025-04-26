@@ -45,9 +45,9 @@ public class TireController {
 
   @Operation(summary = "List of Tire with season filter.", description = "PUBLIC.")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Tire list returned."),
-      @ApiResponse(responseCode = "404", description = "Product Not Found.",
+      @ApiResponse(responseCode = "404", description = "Tire Not Found.",
           content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"Product with filter SEASON not found.\"\"}")))})
+              value = "{\"error\": \"404 NOT_FOUND \\ \"Tire with filter SEASON not found.\"\"}")))})
   @GetMapping("/api/tire/season")
   public List<TireResponse> getTireBySeason(@RequestParam(required = false) String season) {
     if (season == null) {
@@ -58,9 +58,9 @@ public class TireController {
 
   @Operation(summary = "List of Tire with size filter.", description = "PUBLIC.")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Tire list returned."),
-      @ApiResponse(responseCode = "404", description = "Product Not Found.",
+      @ApiResponse(responseCode = "404", description = "Tire Not Found.",
           content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"Product with filter SIZE not found.\"\"}")))})
+              value = "{\"error\": \"404 NOT_FOUND \\ \"Tire with filter SIZE not found.\"\"}")))})
   @GetMapping("/api/tire/size")
   public List<TireResponse> getTireBySize(@RequestParam(required = false) String size) {
     if (size == null) {
@@ -80,7 +80,9 @@ public class TireController {
   }
 
   @Operation(summary = "Tire edition.", description = "ADMIN.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Tire updated successfully.", content = @Content(examples = @ExampleObject(value = "Tire updated successfully."))),
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Tire updated successfully.",
+          content = @Content(examples = @ExampleObject(value = "Tire updated successfully."))),
       @ApiResponse(responseCode = "403", description = "No authorization."),
       @ApiResponse(responseCode = "404", description = "Tire Not Found.",
           content = @Content(examples = @ExampleObject(
@@ -94,7 +96,9 @@ public class TireController {
   }
 
   @Operation(summary = "Delete Tire.", description = "ADMIN.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Tire deleted successfully.", content = @Content(examples = @ExampleObject(value = "Tire deleted successfully."))),
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Tire deleted successfully.",
+          content = @Content(examples = @ExampleObject(value = "Tire deleted successfully."))),
       @ApiResponse(responseCode = "403", description = "No authorization."),
       @ApiResponse(responseCode = "404", description = "Tire Not Found.",
           content = @Content(examples = @ExampleObject(

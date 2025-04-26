@@ -57,7 +57,9 @@ public class ProductController {
   }
 
   @Operation(summary = "Product edition.", description = "ADMIN.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Product updated successfully.", content = @Content(examples = @ExampleObject(value = "Product updated successfully."))),
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Product updated successfully.",
+          content = @Content(examples = @ExampleObject(value = "Product updated successfully."))),
       @ApiResponse(responseCode = "403", description = "No authorization.",
           content = @Content(examples = @ExampleObject())),
       @ApiResponse(responseCode = "404", description = "Product Not Found.",
@@ -72,7 +74,9 @@ public class ProductController {
   }
 
   @Operation(summary = "Delete product.", description = "ADMIN.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Product deleted successfully.", content = @Content(examples = @ExampleObject(value = "Product deleted successfully."))),
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Product deleted successfully.",
+          content = @Content(examples = @ExampleObject(value = "Product deleted successfully."))),
       @ApiResponse(responseCode = "403", description = "No authorization.",
           content = @Content(examples = @ExampleObject())),
       @ApiResponse(responseCode = "404", description = "Product Not Found",

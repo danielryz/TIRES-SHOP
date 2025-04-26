@@ -1,6 +1,8 @@
 package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,48 +21,47 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Accessory", description = "Obsługa Produktów Akcesoria")
+@Tag(name = "Accessory", description = "Product Accessory support.")
 public class AccessoryController {
 
   private final AccessoryService accessoryService;
 
-  @Operation(summary = "Lista wszystkich Akcesoriów", description = "Endpoint publiczny")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono listę akcesoriów"),
-      @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesoriów")})
+  @Operation(summary = "List of all Accessory.", description = "PUBLIC.")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Accessory list returned.")})
   @GetMapping("/api/accessory")
   public List<AccessoryResponse> getAllAccessory() {
     return accessoryService.getAllAccessory();
   }
 
-  @Operation(summary = "Felga po id", description = "Endpoint publiczny")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono akcesorium"),
-      @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesorium")})
+  @Operation(summary = "Returns data of accessory by ID.", description = "PUBLIC.")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Accessory data returned."),
+      @ApiResponse(responseCode = "404", description = "Accessory Not Found.",
+          content = @Content(examples = @ExampleObject(
+              value = "{\"error\": \"404 NOT_FOUND \\ \"Accessory with id 1 not found.\"\"}")))})
   @GetMapping("/api/accessory/{id}")
   public ResponseEntity<AccessoryResponse> getAccessoryById(@PathVariable Long id) {
-    AccessoryResponse accessory = accessoryService.getAccessoryById(id).orElseThrow(
-        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono akcesorium"));
+    AccessoryResponse accessory = accessoryService.getAccessoryById(id);
     return ResponseEntity.ok(accessory);
   }
 
-  @Operation(summary = "Felga po typie akcesorium", description = "Endpoint publiczny")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Zwrócono akcesorium"),
-      @ApiResponse(responseCode = "404", description = "Nie znaleziono akcesorium")})
+  @Operation(summary = "List of Accessory with type filter.", description = "PUBLIC.")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Accessory list returned."),
+      @ApiResponse(responseCode = "404", description = "Accessory Not Found.",
+          content = @Content(examples = @ExampleObject(
+              value = "{\"error\": \"404 NOT_FOUND \\ \"Accessory with filter ACCESSORY_TYPE not found.\"\"}")))})
   @GetMapping("/api/accessory/type")
   public List<AccessoryResponse> getAccessoryByAccessoryType(
       @RequestParam(required = false) String accessoryType) {
     if (accessoryType == null) {
       return accessoryService.getAllAccessory();
     }
-    List<AccessoryResponse> accessory = accessoryService.getAccessoryByAccessoryType(accessoryType);
-    if (accessory.isEmpty()) {
-      throw new ResourceNotFoundException("Brak akcesorów dla typu = " + accessoryType);
-    }
-    return accessory;
+    return accessoryService.getAccessoryByAccessoryType(accessoryType);
   }
 
-  @Operation(summary = "Dodawanie akcesorium", description = "ADMIN")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Dodano akcesorium"),
-      @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
+  @Operation(summary = "Adding Accessory Product.", description = "ADMIN.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "The accessory has been created."),
+      @ApiResponse(responseCode = "403", description = "No authorization.")})
   @PostMapping("/api/admin/accessory")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<AccessoryResponse> createNewAccessory(
@@ -69,29 +70,35 @@ public class AccessoryController {
     return ResponseEntity.status(HttpStatus.CREATED).body(accessory);
   }
 
-  @Operation(summary = "Edycja akcesorium", description = "ADMIN")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Edytowano akcesorium"),
-      @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
+  @Operation(summary = "Accessory edition.", description = "ADMIN.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Accessory updated successfully.",
+          content = @Content(examples = @ExampleObject(value = "Accessory updated successfully."))),
+      @ApiResponse(responseCode = "403", description = "No authorization."),
+      @ApiResponse(responseCode = "404", description = "Accessory Not Found.",
+          content = @Content(examples = @ExampleObject(
+              value = "{\"error\": \"404 NOT_FOUND \\ \"Accessory with id 1 not found.\"\"}")))})
   @PatchMapping("/api/admin/accessory/{id}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<?> updateAccessory(@PathVariable Long id,
+  public ResponseEntity<String> updateAccessory(@PathVariable Long id,
       @RequestBody CreateAccessoryRequest request) {
-    try {
-      AccessoryResponse accessory = accessoryService.updateAccessory(id, request);
-      return ResponseEntity.ok(accessory);
-    } catch (ResponseStatusException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    }
+    accessoryService.updateAccessory(id, request);
+    return ResponseEntity.status(HttpStatus.OK).body("Accessory updated successfully.");
   }
 
-  @Operation(summary = "Usuwanie akcesorium", description = "ADMIN")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Usunięto akcesorium"),
-      @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
+  @Operation(summary = "Delete Accessory.", description = "ADMIN.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Accessory deleted successfully.",
+          content = @Content(examples = @ExampleObject(value = "Accessory deleted successfully."))),
+      @ApiResponse(responseCode = "403", description = "No authorization."),
+      @ApiResponse(responseCode = "404", description = "Accessory Not Found.",
+          content = @Content(examples = @ExampleObject(
+              value = "{\"error\": \"404 NOT_FOUND \\ \"Accessory with id 1 not found.\"\"}")))})
   @DeleteMapping("/api/admin/accessory/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> deleteAccessory(@PathVariable Long id) {
     accessoryService.deleteAccessory(id);
-    return ResponseEntity.ok("Usunięto akcesorium");
+    return ResponseEntity.ok("Accessory deleted successfully.");
   }
 
 
