@@ -11,10 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.tireshop.tiresshopapp.dto.request.create.CreateAccessoryRequest;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
-import org.tireshop.tiresshopapp.exception.ResourceNotFoundException;
 import org.tireshop.tiresshopapp.service.AccessoryService;
 
 import java.util.List;

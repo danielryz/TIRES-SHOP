@@ -1,6 +1,7 @@
 package org.tireshop.tiresshopapp.service;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,10 +23,11 @@ public class ShippingAddressService {
   private final HttpSession session;
 
   // POST
+  @Transactional
   public void addShippingAddressToMyOrder(CreateShippingAddressRequest request) {
     Order order = getCurrentOrder();
     if (order.getShippingAddress() != null) {
-      throw new RuntimeException("Adres dostawy już istnieje.");
+      throw new RuntimeException("Address already in use in order.");
     }
     ShippingAddress shippingAddress = new ShippingAddress();
     copyFields(request, shippingAddress);
@@ -36,12 +38,13 @@ public class ShippingAddressService {
   }
 
   // PATCH
+  @Transactional
   public void updateShippingAddress(CreateShippingAddressRequest request) {
     Order order = getCurrentOrder();
     ShippingAddress shippingAddress = order.getShippingAddress();
 
     if (shippingAddress == null) {
-      throw new RuntimeException("Nie przypisano jeszcze adresu dostawy");
+      throw new RuntimeException("No shipping address assigned to this order.");
     }
     updateFieldIfPresent(request.street(), shippingAddress::setStreet);
     updateFieldIfPresent(request.houseNumber(), shippingAddress::setHouseNumber);
@@ -53,6 +56,7 @@ public class ShippingAddressService {
   }
 
   // DELETE
+  @Transactional
   public void deleteShippingAddressFromMyOrder() {
     Order order = getCurrentOrder();
     ShippingAddress shippingAddress = order.getShippingAddress();
@@ -82,12 +86,13 @@ public class ShippingAddressService {
     if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
       // login user
       return orderRepository.findTopByUserOrderByCreatedAtDesc(userService.getCurrentUser())
-          .orElseThrow(() -> new RuntimeException("Nie znaleziono aktywnego zamówienia"));
+          .orElseThrow(() -> new RuntimeException(
+              "No active order found for user " + userService.getCurrentUser()));
     } else {
       // quest
       String sessionId = session.getId();
-      return orderRepository.findTopBySessionIdOrderByCreatedAtDesc(sessionId)
-          .orElseThrow(() -> new RuntimeException("Nie znaleziono aktywnego zamówienia gościa"));
+      return orderRepository.findTopBySessionIdOrderByCreatedAtDesc(sessionId).orElseThrow(
+          () -> new RuntimeException("No active order found for session id: " + sessionId));
     }
   }
 }

@@ -8,25 +8,25 @@ import jakarta.validation.constraints.Size;
 
 public record RegisterRequest(
 
-        @NotBlank(message = "Nazwa użytkownika jest wymagana")
-        @Size(min = 3, max = 30, message = "Nazwa użytkownika musi mieć od 3 do 30 znaków")
+        @NotBlank(message = "Username is required.")
+        @Size(min = 3, max = 30, message = "Username must be between 3 and 30 characters long.")
         @Pattern(
                 regexp = "^[a-zA-Z0-9_-]+$",
-                message = "Nazwa użytkownika może zawierać tylko litery, cyfry, _, - (bez spacji)"
+                message = "Username can only contain letters, numbers, _, - (no spaces)."
         )
         @Schema(example = "tires_shop1")
         String username,
 
-        @Email(message = "Nieprawidłowy format adresu email")
-        @NotBlank(message = "Email wymagany")
+        @Email(message = "Incorrect email address format")
+        @NotBlank(message = "Email is required.")
         @Schema(example = "tires@tiresshop.pl")
         String email,
 
-        @NotBlank(message = "Hasło jest wymagane")
-        @Size(min = 8, message = "Hasło musi mieć co najmniej 8 znaków")
+        @NotBlank(message = "Password is required.")
+        @Size(min = 8, message = "The password must be at least 8 characters long.")
         @Pattern(
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
-                message = "Hasło musi zawierać wielką literę, małą literę, cyfrę i znak specjalny"
+                message = "The password must contain an uppercase letter, a lowercase letter, a number, and a special character."
         )
         @Schema(example = "Pa$$word1")
         String password

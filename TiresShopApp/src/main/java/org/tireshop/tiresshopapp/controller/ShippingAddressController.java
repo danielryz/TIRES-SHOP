@@ -8,45 +8,53 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.tireshop.tiresshopapp.dto.request.create.CreateAddressRequest;
 import org.tireshop.tiresshopapp.dto.request.create.CreateShippingAddressRequest;
 import org.tireshop.tiresshopapp.service.ShippingAddressService;
 
 @RestController
-@RequestMapping("/api/shippingAddress/myorder")
+@RequestMapping("/api/shippingAddress/my_order")
 @RequiredArgsConstructor
-@Tag(name = "Shipping Address", description = "Dodawanie i edycja adresu dostawy do zamówienia.")
+@Tag(name = "Shipping Address", description = "Shipping Address support.")
 public class ShippingAddressController {
   private final ShippingAddressService shippingAddressService;
 
-  @Operation(summary = "Dodawanie Adresu", description = "ADMIN")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Dodano Adres"),
-      @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
+  @Operation(summary = "Adding shipping address.", description = "PUBLIC")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200",
+          description = "Shipping address has been added successfully."),
+      @ApiResponse(responseCode = "400",
+          description = "Address already in use in order. or No active order found.")})
   @PostMapping
   public ResponseEntity<String> addShippingAddress(
       @RequestBody CreateShippingAddressRequest request) {
     shippingAddressService.addShippingAddressToMyOrder(request);
-    return ResponseEntity.ok("Dodano Adres dostawy do zamówienia");
+    return ResponseEntity.ok("Shipping address has been added successfully.");
   }
 
-  @Operation(summary = "Edycja Adresu", description = "ADMIN")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Adres zaktualizowany"),
-      @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
+  @Operation(summary = "Update shipping address.", description = "PUBLIC.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200",
+          description = "Shipping address has been updated successfully."),
+      @ApiResponse(responseCode = "400",
+          description = "No shipping address assigned to this order. or No active order found.")})
   @PreAuthorize("hasRole('USER')")
   @PatchMapping
   ResponseEntity<String> updateShippingAddress(@RequestBody CreateShippingAddressRequest request) {
     shippingAddressService.updateShippingAddress(request);
-    return ResponseEntity.ok("Zaktualizowano adres dostawy");
+    return ResponseEntity.ok("Shipping address has been updated successfully.");
   }
 
-  @Operation(summary = "Usuwanie Adresu", description = "ADMIN")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Adres usunięty"),
-      @ApiResponse(responseCode = "403", description = "Brak autoryzacji lub uprawnień")})
+  @Operation(summary = "Delete Shipping address.", description = "PUBLIC.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200",
+          description = "Shipping address has been deleted successfully."),
+      @ApiResponse(responseCode = "400",
+          description = "No shipping address assigned to this order. or No active order found.")})
   @PreAuthorize("hasRole('USER')")
   @DeleteMapping
   ResponseEntity<String> deleteShippingAddress() {
     shippingAddressService.deleteShippingAddressFromMyOrder();
-    return ResponseEntity.ok("Usunięto adres dostawy");
+    return ResponseEntity.ok("Shipping address has been deleted successfully.");
   }
 
 }

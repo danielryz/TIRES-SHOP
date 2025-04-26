@@ -10,6 +10,8 @@ import org.tireshop.tiresshopapp.dto.response.CartSummaryResponse;
 import org.tireshop.tiresshopapp.entity.CartItem;
 import org.tireshop.tiresshopapp.entity.Product;
 import org.tireshop.tiresshopapp.entity.User;
+import org.tireshop.tiresshopapp.exception.NotEnoughStockException;
+import org.tireshop.tiresshopapp.exception.ProductNotFoundException;
 import org.tireshop.tiresshopapp.repository.CartItemRepository;
 import org.tireshop.tiresshopapp.repository.ProductRepository;
 
@@ -44,35 +46,38 @@ public class CartItemService {
   }
 
   // POST
-  public CartItemResponse addCartItem(AddToCartRequest request) {
+  @Transactional
+  public void addCartItem(AddToCartRequest request) {
     User user = userService.getCurrentUser();
     Product product = productRepository.findById(request.productId())
-        .orElseThrow(() -> new RuntimeException("Produkt nie istnieje"));
+        .orElseThrow(() -> new ProductNotFoundException(request.productId()));
 
     CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product)
         .orElse(new CartItem(null, user, product, 0));
 
     if (cartItem.getQuantity() + request.quantity() > product.getStock()) {
-      throw new RuntimeException("Brak wystarczającej ilości produktu w magazynie");
+      throw new NotEnoughStockException();
     }
 
     cartItem.setQuantity(cartItem.getQuantity() + request.quantity());
-    return mapToResponse(cartItemRepository.save(cartItem));
+    cartItemRepository.save(cartItem);
   }
 
   // PATCH
-  public CartItemResponse updateCartItem(Long id, UpdateCartItemRequest request) {
+  @Transactional
+  public void updateCartItem(Long id, UpdateCartItemRequest request) {
     CartItem cartItem = cartItemRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Pozycja w koszyku nie istnieje"));
+        .orElseThrow(() -> new RuntimeException("The item in the cart does not exist."));
     if (request.quantity() > cartItem.getProduct().getStock()) {
-      throw new RuntimeException("Brak wystarczającej ilości produktu w magazynie");
+      throw new NotEnoughStockException();
     }
 
     cartItem.setQuantity(request.quantity());
-    return mapToResponse(cartItemRepository.save(cartItem));
+    cartItemRepository.save(cartItem);
   }
 
   // DELETE
+  @Transactional
   public void deleteCartItem(Long id) {
     cartItemRepository.deleteById(id);
   }

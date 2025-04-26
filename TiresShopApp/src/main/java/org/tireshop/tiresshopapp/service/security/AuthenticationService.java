@@ -1,5 +1,6 @@
 package org.tireshop.tiresshopapp.service.security;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -29,6 +30,7 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
+  @Transactional
   public AuthResponse register(RegisterRequest request) {
     String role = "ROLE_USER";
     Role userRole =

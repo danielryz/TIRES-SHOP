@@ -62,7 +62,7 @@ public class RimService {
 
   // PATCH
   @Transactional
-  public RimResponse updateRim(Long id, UpdateRimRequest request) {
+  public void updateRim(Long id, UpdateRimRequest request) {
     Rim rim = rimRepository.findById(id).orElseThrow(() -> new RimNotFoundException(id));
 
     if (request.name() != null && !request.name().isBlank())
@@ -80,10 +80,11 @@ public class RimService {
     if (request.size() != null)
       rim.setSize(request.size());
 
-    return mapToResponse(rimRepository.save(rim));
+    rimRepository.save(rim);
   }
 
   // DELETE
+  @Transactional
   public void deleteRim(Long id) {
     if (!rimRepository.existsById(id)) {
       throw new RimNotFoundException(id);

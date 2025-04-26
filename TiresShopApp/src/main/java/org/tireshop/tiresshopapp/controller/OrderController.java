@@ -1,6 +1,8 @@
 package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,53 +21,52 @@ import java.util.List;
 @RestController
 @RequestMapping("api/orders")
 @RequiredArgsConstructor
-@Tag(name = "Order", description = "Zarządzanie zamówieniami")
+@Tag(name = "Order", description = "Order support")
 public class OrderController {
 
   private final OrderService orderService;
 
-  @Operation(summary = "Składanie zamówienia", description = "Endpoint publiczny")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Złożono zamówienia"),
-      @ApiResponse(responseCode = "404", description = "Not found")})
+  @Operation(summary = "Placing an order.", description = "PUBLIC.")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Order placed successfully."),
+      @ApiResponse(responseCode = "404",
+          description = "Cart is empty. You cannot place an order.")})
   @PostMapping("/public")
   public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest request) {
     return ResponseEntity.ok(orderService.createOrder(request));
   }
 
-  @Operation(summary = "Pobieranie zamówień przez użytkownika", description = "Endpoint dla USER")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Lista zamówień"),
-      @ApiResponse(responseCode = "404", description = "Not found")})
+  @Operation(summary = "Get all user orders.", description = "USER")
+  @ApiResponse(responseCode = "200", description = "List of user orders returned successfully.")
   @GetMapping("/user")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<List<OrderResponse>> getUserOrders() {
     return ResponseEntity.ok(orderService.getUserOrders());
   }
 
-  @Operation(summary = "Pobieranie zamówienia o id przez użytkownika",
-      description = "Endpoint dla USER")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Zamówienie"),
-      @ApiResponse(responseCode = "404", description = "Not found")})
+  @Operation(summary = "Get order by ID for user.", description = "USER.")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Order returned successfully."),
+      @ApiResponse(responseCode = "404", description = "Order Not Found.",
+          content = @Content(examples = @ExampleObject(value = ("Order with id 1 not found."))))})
   @GetMapping("/user/{id}")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<OrderResponse> getUserOrderById(@PathVariable Long id) {
     return ResponseEntity.ok(orderService.getUserOrderById(id));
   }
 
-  @Operation(summary = "Anulowanie zamówienia przez użytkownika ",
-      description = "Endpoint dla USER")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Zamówienie zostało anulowane"),
-      @ApiResponse(responseCode = "404", description = "Not found")})
+  @Operation(summary = "Cancellation of order.", description = "USER.")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "The order has been canceled."),
+      @ApiResponse(responseCode = "400", description = "Access Denied")})
   @PatchMapping("/{id}/cancel")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
     orderService.cancelOrder(id);
-    return ResponseEntity.ok("Zamówienie zostało anulowane");
+    return ResponseEntity.ok("The order has been canceled.");
   }
 
-  @Operation(summary = "Pobieranie zamówień przez Admina po Statusie",
-      description = "Endpoint dla ADMINA")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Lista zamówień"),
-      @ApiResponse(responseCode = "404", description = "Not found")})
+  @Operation(summary = "Gets orders by Admin by Status.", description = "ADMIN.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "List of orders returned successfully."),
+      @ApiResponse(responseCode = "400", description = "Not found")})
   @GetMapping("/admin")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<OrderResponse>> getAllOrdersByStatus(
@@ -73,9 +74,8 @@ public class OrderController {
     return ResponseEntity.ok(orderService.getAllOrdersByStatus(status));
   }
 
-  @Operation(summary = "Pobranie zamówienia przez Admina po id",
-      description = "Endpoint dla ADMINA")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Zamówienie"),
+  @Operation(summary = "Get order by Admin by ID.", description = "ADMIN.")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Order data returned."),
       @ApiResponse(responseCode = "404", description = "Not found")})
   @GetMapping("admin/{id}")
   @PreAuthorize("hasRole('ADMIN')")
@@ -83,15 +83,15 @@ public class OrderController {
     return ResponseEntity.ok(orderService.getOrderByIdAdmin(id));
   }
 
-  @Operation(summary = "Edycja statusu zamówienia", description = "Endpoint dla ADMINA")
+  @Operation(summary = "Update order status.", description = "Endpoint dla ADMINA")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Status zamówienia został zaktualizowany"),
+      @ApiResponse(responseCode = "200", description = "Status has been updated successfully."),
       @ApiResponse(responseCode = "404", description = "Not found")})
   @PatchMapping("/admin/{id}/status")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> updateOrderStatus(@PathVariable Long id,
       @RequestBody UpdateOrderStatusRequest request) {
     orderService.updateOrderStatus(id, request);
-    return ResponseEntity.ok("Status zamówienia został zaktualizowany");
+    return ResponseEntity.ok("Status has been updated successfully.");
   }
 }

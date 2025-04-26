@@ -6,10 +6,10 @@ import jakarta.validation.constraints.Size;
 
 public record UpdateUserRequest(
 
-        @Size(min = 3, max = 30, message = "Nazwa użytkownika musi mieć od 3 do 30 znaków")
+        @Size(min = 3, max = 30, message = "Username must be between 3 and 30 characters long.")
         @Pattern(
                 regexp = "^[a-zA-Z0-9_-]+$",
-                message = "Nazwa użytkownika może zawierać tylko litery, cyfry, _, - (bez spacji)"
+                message = "Username can only contain letters, numbers, _, - (no spaces)."
         )
         @Schema(example = "tires_shop1")
         String username,
@@ -17,7 +17,7 @@ public record UpdateUserRequest(
         @Size(min = 8, message = "Hasło musi mieć co najmniej 8 znaków")
         @Pattern(
                 regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
-                message = "Hasło musi zawierać wielką literę, małą literę, cyfrę i znak specjalny"
+                message = "The password must contain an uppercase letter, a lowercase letter, a number, and a special character."
         )
         @Schema(example = "Pa$$word1")
         String password,
@@ -28,7 +28,7 @@ public record UpdateUserRequest(
         @Schema(example = "Kowalski")
         String lastName,
 
-        @Size(min = 9, max = 14, message = "Niepoprawny Numer")
+        @Size(min = 9, max = 14, message = "Invalid Number.")
         @Schema(example = "+48 123456789")
         String phoneNumber
 ) {

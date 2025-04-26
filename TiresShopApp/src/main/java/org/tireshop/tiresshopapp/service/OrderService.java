@@ -1,7 +1,9 @@
 package org.tireshop.tiresshopapp.service;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -11,14 +13,15 @@ import org.tireshop.tiresshopapp.dto.request.update.UpdateOrderStatusRequest;
 import org.tireshop.tiresshopapp.dto.response.OrderItemResponse;
 import org.tireshop.tiresshopapp.dto.response.OrderResponse;
 import org.tireshop.tiresshopapp.entity.*;
+import org.tireshop.tiresshopapp.exception.CartIsEmptyException;
+import org.tireshop.tiresshopapp.exception.OrderNotFoundException;
+import org.tireshop.tiresshopapp.exception.ProductNotFoundException;
 import org.tireshop.tiresshopapp.repository.CartItemRepository;
-import org.tireshop.tiresshopapp.repository.OrderItemRepository;
 import org.tireshop.tiresshopapp.repository.OrderRepository;
 import org.tireshop.tiresshopapp.repository.ProductRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,13 +30,13 @@ import java.util.stream.Collectors;
 public class OrderService {
 
   private final OrderRepository orderRepository;
-  private final OrderItemRepository orderItemRepository;
   private final ProductRepository productRepository;
   private final CartItemRepository cartItemRepository;
   private final UserService userService;
   private final HttpSession session;
 
   // POST
+  @Transactional
   public OrderResponse createOrder(CreateOrderRequest request) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -48,7 +51,7 @@ public class OrderService {
 
       List<CartItem> cartItems = cartItemRepository.findByUser(user);
       if (cartItems.isEmpty()) {
-        throw new RuntimeException("Koszyk jest pusty. Nie można złożyć zamówienia");
+        throw new CartIsEmptyException();
       }
 
       List<OrderItem> orderItems = cartItems.stream()
@@ -64,7 +67,7 @@ public class OrderService {
       order.setSessionId(session.getId());
 
       if (request.items().isEmpty()) {
-        throw new RuntimeException("Koszyk jest pusty. Nie można złożyć zamówienia");
+        throw new CartIsEmptyException();
       }
 
       List<OrderItem> orderItems = request.items().stream()
@@ -94,11 +97,10 @@ public class OrderService {
 
   public OrderResponse getUserOrderById(Long id) {
     User user = userService.getCurrentUser();
-    Order order = orderRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Zamówienie nie istnieje"));
+    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
 
     if (!order.getUser().getId().equals(user.getId())) {
-      throw new RuntimeException("Brak dostępu do tego zamówienia");
+      throw new AccessDeniedException("Access denied");
     }
     return mapOrderToResponse(order);
   }
@@ -110,15 +112,13 @@ public class OrderService {
   }
 
   public OrderResponse getOrderByIdAdmin(Long id) {
-    Order order = orderRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Zamówienie nie istnieje"));
+    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
     return mapOrderToResponse(order);
   }
 
   // PATCH STATUS for ADMIN MANAGER
   public void updateOrderStatus(Long id, UpdateOrderStatusRequest request) {
-    Order order = orderRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Zamówienie nie istnieje"));
+    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
     order.setStatus(request.status());
     orderRepository.save(order);
   }
@@ -126,15 +126,14 @@ public class OrderService {
   // PATCH Status CANCEL for user
   public void cancelOrder(Long id) {
     User user = userService.getCurrentUser();
-    Order order = orderRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Zamówienie nie istnieje"));
+    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
 
     if (order.getUser() == null || !order.getUser().getId().equals(user.getId())) {
-      throw new RuntimeException("Brak dostępu do anulolwania zamówienia");
+      throw new AccessDeniedException("Access denied to cancel order.");
     }
 
     if (order.getStatus() != OrderStatus.CREATED) {
-      throw new RuntimeException("Nie można anulować zamówienia, które jest w toku");
+      throw new RuntimeException("You cannot cancel an order that is in progress.");
     }
     order.setStatus(OrderStatus.CANCELLED);
     orderRepository.save(order);
@@ -150,8 +149,8 @@ public class OrderService {
   }
 
   private OrderItem mapGuestItemToOrderItem(OrderItemRequest orderItemRequest, Order order) {
-    Product product = productRepository.findById(orderItemRequest.productId()).orElseThrow(
-        () -> new RuntimeException("Produkt nie istnieje:" + orderItemRequest.productId()));
+    Product product = productRepository.findById(orderItemRequest.productId())
+        .orElseThrow(() -> new ProductNotFoundException(orderItemRequest.productId()));
 
     OrderItem orderItem = new OrderItem();
     orderItem.setOrder(order);

@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Map;
@@ -22,7 +19,7 @@ public class GlobalExceptionHandler {
   @ResponseBody
   @Operation(hidden = true)
   public Map<String, String> handleBadCredentials(BadCredentialsException ex) {
-    return Map.of("error", "Nieprawidłowy email lub hasło");
+    return Map.of("error", "Invalid email or password.");
   }
 
   @ExceptionHandler(AccessDeniedException.class)
@@ -30,7 +27,7 @@ public class GlobalExceptionHandler {
   @ResponseBody
   @Operation(hidden = true)
   public Map<String, String> handleAccessDenied(AccessDeniedException ex) {
-    return Map.of("error", "Brak uprawnień");
+    return Map.of("error", ex.getMessage());
   }
 
   @ExceptionHandler(RuntimeException.class)
@@ -41,6 +38,13 @@ public class GlobalExceptionHandler {
     return Map.of("error", ex.getMessage());
   }
 
+  @ExceptionHandler(CartIsEmptyException.class)
+  @ResponseBody
+  @Operation(hidden = true)
+  public Map<String, String> handleNotFoundCart() {
+    return Map.of("error", "Cart is empty. You cannot place an order.");
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseBody
   @Operation(hidden = true)
@@ -49,12 +53,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(Map.of("error", Objects.requireNonNull(message)));
   }
 
-  @ExceptionHandler(ResourceNotFoundException.class)
-  @ResponseBody
-  @Operation(hidden = true)
-  public ResponseEntity<String> handleNotFound(ResourceNotFoundException ex) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-  }
 }
 
 
