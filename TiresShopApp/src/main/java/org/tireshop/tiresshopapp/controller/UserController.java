@@ -14,9 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateUserRequest;
-import org.tireshop.tiresshopapp.dto.request.update.UpdateUserRolesRequest;
 import org.tireshop.tiresshopapp.dto.response.UserResponse;
-import org.tireshop.tiresshopapp.entity.Role;
 import org.tireshop.tiresshopapp.entity.User;
 import org.tireshop.tiresshopapp.repository.RoleRepository;
 import org.tireshop.tiresshopapp.service.RoleService;
@@ -25,7 +23,6 @@ import org.tireshop.tiresshopapp.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
 @RequiredArgsConstructor
 @Tag(name = "User",
     description = "Obsługa użytkownika, pobieranie danych o użytkowniku, update użytkownika, usuwanie konta.")
@@ -46,7 +43,7 @@ public class UserController {
               examples = @ExampleObject(value = "{\"error\": \"Acces Denied\"}"))),
       @ApiResponse(responseCode = "403", description = "Brak Autoryzacji.",
           content = @Content(examples = @ExampleObject()))})
-  @GetMapping
+  @GetMapping("/api/admin/users")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<UserResponse>> getAllUsers() {
     return ResponseEntity.ok(userService.getAllUsers());
@@ -65,7 +62,7 @@ public class UserController {
           content = @Content(examples = @ExampleObject())),
       @ApiResponse(responseCode = "404", description = "Użytkownik nie istnieje",
           content = @Content(examples = @ExampleObject()))})
-  @GetMapping("/{id}")
+  @GetMapping("/api/admin/users/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
     try {
@@ -83,7 +80,7 @@ public class UserController {
               schema = @Schema(implementation = UserResponse.class))),
       @ApiResponse(responseCode = "403", description = "Brak Autoryzacji.",
           content = @Content(examples = @ExampleObject()))})
-  @GetMapping("/me")
+  @GetMapping("/api/users/me")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<UserResponse> getCurrentUser() {
     User user = userService.getCurrentUser();
@@ -101,7 +98,7 @@ public class UserController {
               value = "{\"error\": \"Nazwa użytkownika musi mieć od 3 do 30 znaków\"}"))),
       @ApiResponse(responseCode = "403", description = "Brak autoryzacji.",
           content = @Content(examples = @ExampleObject()))})
-  @PatchMapping("/me")
+  @PatchMapping("/api/users/me")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> updateCurrentUser(@Valid @RequestBody UpdateUserRequest request) {
     userService.updateCurrentUser(request);
@@ -112,13 +109,14 @@ public class UserController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Rola została dodana.",
           content = @Content(examples = @ExampleObject())),
-      @ApiResponse(responseCode = "400", description = "Brak uprawnień, Użytkownik lub rola nie istnieje.",
+      @ApiResponse(responseCode = "400",
+          description = "Brak uprawnień, Użytkownik lub rola nie istnieje.",
           content = @Content(examples = @ExampleObject(value = "{\"error\": \"Acces Denied\"}"))),
       @ApiResponse(responseCode = "403", description = "Brak uprawnień.",
           content = @Content(examples = @ExampleObject()))
 
   })
-  @PostMapping("/{id}/{roleId}/role")
+  @PostMapping("/api/admin/users/{id}/{roleId}/role")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> addRoleToUser(@PathVariable Long id, @PathVariable Long roleId) {
     userService.addRoleToUser(id, roleId);
@@ -134,7 +132,7 @@ public class UserController {
           content = @Content(examples = @ExampleObject())),
       @ApiResponse(responseCode = "403", description = "Brak uprawnień.",
           content = @Content(examples = @ExampleObject()))})
-  @DeleteMapping("/{id}/{roleId}/role")
+  @DeleteMapping("/api/admin/users/{id}/{roleId}/role")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> removeUserRole(@PathVariable Long id, @PathVariable Long roleId) {
     userService.removeUserRole(id, roleId);
@@ -146,11 +144,12 @@ public class UserController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Użytkownik usunięty.",
           content = @Content(examples = @ExampleObject())),
-      @ApiResponse(responseCode = "400", description = "Brak uprawnień lub Użytkownik nie istnieje.",
+      @ApiResponse(responseCode = "400",
+          description = "Brak uprawnień lub Użytkownik nie istnieje.",
           content = @Content(examples = @ExampleObject(value = "{\"error\": \"Acces Denied\"}"))),
       @ApiResponse(responseCode = "403", description = "Brak uprawnień.",
           content = @Content(examples = @ExampleObject()))})
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/api/admin/users/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
     userService.deleteUserById(id);
@@ -164,7 +163,7 @@ public class UserController {
           content = @Content(examples = @ExampleObject())),
       @ApiResponse(responseCode = "403", description = "Brak autoryzacji.",
           content = @Content(examples = @ExampleObject())),})
-  @DeleteMapping("/me")
+  @DeleteMapping("/api/users/me")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<?> deleteCurrentUser() {
     userService.deleteCurrentUser();

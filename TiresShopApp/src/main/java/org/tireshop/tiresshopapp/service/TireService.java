@@ -1,15 +1,16 @@
 package org.tireshop.tiresshopapp.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateTireRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateTireRequest;
 import org.tireshop.tiresshopapp.dto.response.TireResponse;
 import org.tireshop.tiresshopapp.entity.Tire;
+import org.tireshop.tiresshopapp.exception.TireNotFoundException;
 import org.tireshop.tiresshopapp.repository.TireRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,19 +23,30 @@ public class TireService {
     return tireRepository.findAll().stream().map(this::mapToResponse).toList();
   }
 
-  public Optional<TireResponse> getTireById(Long id) {
-    return tireRepository.findById(id).map(this::mapToResponse);
+  public TireResponse getTireById(Long id) {
+    Tire tire = tireRepository.findById(id).orElseThrow(() -> new TireNotFoundException(id));
+    return mapToResponse(tire);
+
   }
 
   public List<TireResponse> getTireBySeason(String seasonName) {
-    return tireRepository.findTireBySeason(seasonName);
+    List<TireResponse> tires = tireRepository.findTireBySeason(seasonName);
+    if (tires.isEmpty()) {
+      throw new TireNotFoundException(seasonName);
+    }
+    return tires;
   }
 
   public List<TireResponse> getTireBySize(String sizeName) {
-    return tireRepository.findTireBySize(sizeName);
+    List<TireResponse> tires = tireRepository.findTireBySize(sizeName);
+    if (tires.isEmpty()) {
+      throw new TireNotFoundException(sizeName);
+    }
+    return tires;
   }
 
   // POST
+  @Transactional
   public TireResponse createNewTire(CreateTireRequest request) {
     Tire tire = new Tire();
     tire.setName(request.name());
@@ -49,9 +61,9 @@ public class TireService {
   }
 
   // PATCH
+  @Transactional
   public TireResponse updateTire(Long id, UpdateTireRequest request) {
-    Tire tire = tireRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Opona o id " + id + " nie znaleziona"));
+    Tire tire = tireRepository.findById(id).orElseThrow(() -> new TireNotFoundException(id));
 
     if (request.name() != null && !request.name().isBlank())
       tire.setName(request.name());
@@ -72,9 +84,10 @@ public class TireService {
   }
 
   // DELETE
+  @Transactional
   public void deleteTire(Long id) {
     if (!tireRepository.existsById(id)) {
-      throw new RuntimeException("Opona o id " + id + " nie znaleziona");
+      throw new TireNotFoundException(id);
     }
     tireRepository.deleteById(id);
 

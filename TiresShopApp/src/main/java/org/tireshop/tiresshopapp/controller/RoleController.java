@@ -17,7 +17,7 @@ import org.tireshop.tiresshopapp.service.RoleService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/role")
+@RequestMapping("/api/admin/role")
 @RequiredArgsConstructor
 @Tag(name = "Role", description = "Pobieranie Roli.")
 public class RoleController {
