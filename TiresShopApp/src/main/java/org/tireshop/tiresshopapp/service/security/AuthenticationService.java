@@ -67,8 +67,8 @@ public class AuthenticationService {
   }
 
   private UserDetails mapToUserDetails(User user) {
-    return new org.springframework.security.core.userdetails.User(user.getEmail(),
-        user.getPassword(),
-        user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).toList());
+    return org.springframework.security.core.userdetails.User.withUsername(user.getEmail())
+        .password(user.getPassword())
+        .authorities(user.getRoles().stream().map(Role::getName).toArray(String[]::new)).build();
   }
 }
