@@ -1,0 +1,161 @@
+.navbar-content {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    gap: 20px;
+}
+
+
+.navbar {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    background-color: #2E2E2E;
+    padding: 14px 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    gap: 20px;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    position: fixed;
+    z-index: 1;
+}
+
+.navbar-logo img {
+    height: 100px;
+    position: absolute;
+    top: -45px;
+}
+
+.navbar-logo img:hover {
+    transform: scale(1.05);
+}
+
+.navbar-search {
+    flex: 1;
+    display: flex;
+    margin-left: 120px;
+    max-width: 600px;
+    position: relative;
+}
+
+.navbar-search input {
+    flex: 1;
+    padding: 10px 14px 10px 38px;
+    border-radius: 8px 0 0 8px;
+    border: none;
+    background-color: #444;
+    color: white;
+    font-size: 16px;
+}
+
+.search-icon-left {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.search-submit-btn {
+    padding: 10px 16px;
+    border: none;
+    background-color: #E63946;
+    color: white;
+    font-weight: bold;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-submit-btn:hover {
+    background-color: #d32f2f;
+}
+
+.navbar-search input::placeholder {
+    color: #aaa;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    margin-left: 100px;
+    gap: 50px;
+}
+
+
+.navbar-link {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+.navbar-link:hover {
+    color: #E63946;
+}
+
+.navbar-button {
+    background-color: transparent;
+    border: 1px solid #E63946;
+    color: #E63946;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar-button:hover {
+    background-color: #E63946;
+    color: white;
+}
+
+.navbar-icon-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.navbar-icon-link:hover {
+    color: #E63946;
+}
+
+.navbar-icon-link .icon {
+    font-size: 18px;
+}
+
+
+
+body {
+    padding-top: 90px;
+}
+
+.cart-count {
+    background-color: #E63946;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 8px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-left: 6px;
+}
+

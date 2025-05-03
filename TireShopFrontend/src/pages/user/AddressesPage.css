@@ -1,0 +1,90 @@
+.address-book {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    color: white;
+}
+
+.address-book h2 {
+    color: #E63946;
+    font-size: 24px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #E63946;
+    padding-bottom: 8px;
+}
+
+.address-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.address-card {
+    background-color: #2E2E2E;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.address-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+}
+
+.address-card p {
+    margin: 6px 0;
+    font-size: 15px;
+}
+
+.address-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+}
+
+.address-actions button {
+    padding: 8px 14px;
+    font-size: 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: bold;
+}
+
+.address-actions button:first-child {
+    background-color: #444;
+    color: white;
+}
+
+.address-actions button:first-child:hover {
+    background-color: #555;
+}
+
+.address-actions button:last-child {
+    background-color: #E63946;
+    color: white;
+}
+
+.address-actions button:last-child:hover {
+    background-color: #c5303c;
+}
+
+.add-address-btn {
+    margin-top: 30px;
+    padding: 12px 20px;
+    background-color: #E63946;
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.add-address-btn:hover {
+    background-color: #c5303c;
+    transform: translateY(-2px);
+}

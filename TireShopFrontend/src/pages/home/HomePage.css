@@ -1,0 +1,24 @@
+.home-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    background-color: #1E1E1E;
+    min-height: 100vh;
+    color: white;
+    align-items: center;
+}
+
+.home-main-box {
+    margin-top: 20px;
+}
+
+.home-title {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.home-subtitle {
+    font-size: 18px;
+    color: #ccc;
+}

@@ -1,0 +1,45 @@
+.profile-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    color: white;
+}
+
+.profile-page h1 {
+    color: #E63946;
+    margin-bottom: 30px;
+    font-size: 24px;
+    border-bottom: 2px solid #E63946;
+    padding-bottom: 10px;
+}
+
+.profile-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profile-btn {
+    background-color: #2E2E2E;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.profile-btn:hover {
+    background-color: #444;
+}
+
+.profile-btn.delete {
+    background-color: #E63946;
+    text-align: center;
+}
+
+.profile-btn.delete:hover {
+    background-color: #c5303c;
+}
