@@ -58,7 +58,9 @@ public class AddressService {
     address.setApartmentNumber(request.apartmentNumber());
     address.setPostalCode(request.postalCode());
     address.setCity(request.city());
+    address.setType(request.type());
     address.setUser(user);
+
     addressRepository.save(address);
   }
 
@@ -73,6 +75,7 @@ public class AddressService {
     updateFieldIfPresent(request.apartmentNumber(), address::setApartmentNumber);
     updateFieldIfPresent(request.postalCode(), address::setPostalCode);
     updateFieldIfPresent(request.city(), address::setCity);
+
 
     addressRepository.save(address);
   }

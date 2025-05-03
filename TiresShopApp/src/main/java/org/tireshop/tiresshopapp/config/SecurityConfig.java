@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,14 +27,13 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(
-            auth -> auth.requestMatchers("/api/auth/**", "/api/products", "/api/tire", "/api/rim",
-                "/api/accessory", "/api/products/**", "/api/tire/**", "/api/rim/**",
-                "/api/accessory/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
-                "/v3/api-docs", "/swagger-resources/**", "/swagger-resources", "/configuration/**",
-                "/webjars/**", "/actuator/**", "api/shippingAddress/my_order", "/api/orders/public",
-                "/api/image", "/api/image/**").permitAll().anyRequest().authenticated())
+    http.cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**", "/api/products",
+            "/api/tire", "/api/rim", "/api/accessory", "/api/products/**", "/api/tire/**",
+            "/api/rim/**", "/api/accessory/**", "/swagger-ui.html", "/swagger-ui/**",
+            "/v3/api-docs/**", "/swagger-resources/**", "/configuration/**", "/webjars/**",
+            "/actuator/**", "/api/shippingAddress/my_order", "/api/orders/public", "/api/image",
+            "/api/image/**").permitAll().anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -46,7 +46,7 @@ public class SecurityConfig {
     return new WebMvcConfigurer() {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**").allowedOrigins("http://localhost:5173").allowedMethods("*")
+        registry.addMapping("/api/**").allowedOrigins("http://localhost:5174").allowedMethods("*")
             .allowedHeaders("*").allowCredentials(true);
       }
     };

@@ -1,5 +1,6 @@
 package org.tireshop.tiresshopapp.exception;
 
+import com.fasterxml.jackson.databind.cfg.HandlerInstantiator;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +52,15 @@ public class GlobalExceptionHandler {
   public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
     String message = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
     return ResponseEntity.badRequest().body(Map.of("error", Objects.requireNonNull(message)));
+  }
+
+  @ExceptionHandler(InvalidPasswordException.class)
+  @ResponseBody
+  @Operation(hidden = true)
+  public ResponseEntity<Map<String, String>> handleInvalidPasswordException(
+      InvalidPasswordException ex) {
+    Map<String, String> response = Map.of("error", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
   }
 
 }

@@ -14,14 +14,6 @@ public record UpdateUserRequest(
         @Schema(example = "tires_shop1")
         String username,
 
-        @Size(min = 8, message = "Hasło musi mieć co najmniej 8 znaków")
-        @Pattern(
-                regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$",
-                message = "The password must contain an uppercase letter, a lowercase letter, a number, and a special character."
-        )
-        @Schema(example = "Pa$$word1")
-        String password,
-
         @Schema(example = "Jan")
         String firstName,
 

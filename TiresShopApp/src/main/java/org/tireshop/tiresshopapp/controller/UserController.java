@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateUserPasswordRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateUserRequest;
 import org.tireshop.tiresshopapp.dto.response.UserResponse;
 import org.tireshop.tiresshopapp.entity.User;
@@ -78,6 +79,23 @@ public class UserController {
   }
 
 
+  @Operation(summary = "Updating your password.", description = "USER.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Password has been updated successfully.",
+          content = @Content(examples = @ExampleObject())),
+      @ApiResponse(responseCode = "403", description = "Invalid data.",
+          content = @Content(
+              examples = @ExampleObject(value = "{\"error\": \"Invalid current password. \"}"))),
+      @ApiResponse(responseCode = "403", description = "No authorization.",
+          content = @Content(examples = @ExampleObject()))})
+  @PatchMapping("/api/users/me/change-password")
+  @PreAuthorize("hasRole('USER')")
+  public ResponseEntity<String> updateCurrentUserPassword(
+      @Valid @RequestBody UpdateUserPasswordRequest request) {
+    userService.updateCurrentUserPassword(request);
+    return ResponseEntity.ok("Password has been updated successfully.");
+  }
+
   @Operation(summary = "Updating your account details.", description = "USER.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "The data has been changed successfully.",
@@ -87,11 +105,24 @@ public class UserController {
               value = "{\"error\": \"Username must be between 3 and 30 characters long\"}"))),
       @ApiResponse(responseCode = "403", description = "No authorization.",
           content = @Content(examples = @ExampleObject()))})
-  @PatchMapping("/api/users/me")
+  @PatchMapping("/api/users/me/update")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> updateCurrentUser(@Valid @RequestBody UpdateUserRequest request) {
     userService.updateCurrentUser(request);
     return ResponseEntity.ok("The data has been changed successfully.");
+  }
+
+  @Operation(summary = "Deleted your account details.", description = "USER.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "The data has been deleted successfully.",
+          content = @Content(examples = @ExampleObject())),
+      @ApiResponse(responseCode = "403", description = "No authorization.",
+          content = @Content(examples = @ExampleObject()))})
+  @DeleteMapping("/api/users/me/delete-user-details")
+  @PreAuthorize("hasRole('USER')")
+  public ResponseEntity<String> deleteCurrentUserData() {
+    userService.deleteCurrentUserData();
+    return ResponseEntity.ok("The data has been deleted successfully.");
   }
 
   @Operation(summary = "\n" + "Adding a user role.", description = "ADMIN.")
@@ -156,7 +187,7 @@ public class UserController {
           content = @Content(examples = @ExampleObject())),
       @ApiResponse(responseCode = "403", description = "No authorization.",
           content = @Content(examples = @ExampleObject())),})
-  @DeleteMapping("/api/users/me")
+  @DeleteMapping("/api/users/me/delete")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> deleteCurrentUser() {
     userService.deleteCurrentUser();

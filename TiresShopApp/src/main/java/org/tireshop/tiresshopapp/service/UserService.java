@@ -7,10 +7,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateUserPasswordRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateUserRequest;
 import org.tireshop.tiresshopapp.dto.response.UserResponse;
 import org.tireshop.tiresshopapp.entity.Role;
 import org.tireshop.tiresshopapp.entity.User;
+import org.tireshop.tiresshopapp.exception.InvalidPasswordException;
 import org.tireshop.tiresshopapp.exception.RoleNotFoundException;
 import org.tireshop.tiresshopapp.exception.UserNotFoundException;
 import org.tireshop.tiresshopapp.repository.RoleRepository;
@@ -47,6 +49,20 @@ public class UserService {
     return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
   }
 
+  // DELETE
+  @Transactional
+  public void deleteCurrentUserData() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+    User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+    user.setFirstName(null);
+    user.setLastName(null);
+    user.setPhoneNumber(null);
+
+    userRepository.save(user);
+
+  }
+
   // PATCH
   @Transactional
   public void updateCurrentUser(UpdateUserRequest request) {
@@ -57,9 +73,6 @@ public class UserService {
     if (request.username() != null && !request.username().isBlank()) {
       user.setUsername(request.username());
     }
-    if (request.password() != null && !request.password().isBlank()) {
-      user.setPassword(passwordEncoder.encode(request.password()));
-    }
     if (request.firstName() != null && !request.firstName().isBlank()) {
       user.setFirstName(request.firstName());
     }
@@ -69,6 +82,24 @@ public class UserService {
     if (request.phoneNumber() != null && !request.phoneNumber().isBlank()) {
       user.setPhoneNumber(request.phoneNumber());
     }
+    userRepository.save(user);
+  }
+
+  @Transactional
+  public void updateCurrentUserPassword(UpdateUserPasswordRequest request) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+    User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+
+    if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+      throw new InvalidPasswordException();
+    }
+
+    if (request.newPassword() == null || request.newPassword().isBlank()) {
+      throw new IllegalArgumentException("New password must not be blank.");
+    }
+
+    user.setPassword(passwordEncoder.encode(request.newPassword()));
     userRepository.save(user);
   }
 

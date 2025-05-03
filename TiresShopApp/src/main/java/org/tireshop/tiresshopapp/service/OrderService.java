@@ -14,6 +14,7 @@ import org.tireshop.tiresshopapp.dto.response.OrderItemResponse;
 import org.tireshop.tiresshopapp.dto.response.OrderResponse;
 import org.tireshop.tiresshopapp.entity.*;
 import org.tireshop.tiresshopapp.exception.CartIsEmptyException;
+import org.tireshop.tiresshopapp.exception.NotEnoughStockException;
 import org.tireshop.tiresshopapp.exception.OrderNotFoundException;
 import org.tireshop.tiresshopapp.exception.ProductNotFoundException;
 import org.tireshop.tiresshopapp.repository.CartItemRepository;
@@ -54,8 +55,20 @@ public class OrderService {
         throw new CartIsEmptyException();
       }
 
-      List<OrderItem> orderItems = cartItems.stream()
-          .map(cartItem -> mapCartItemToOrderItem(cartItem, order)).collect(Collectors.toList());
+      List<OrderItem> orderItems = cartItems.stream().map(cartItem -> {
+        Product product = cartItem.getProduct();
+        int quantity = cartItem.getQuantity();
+
+        if (product.getStock() < quantity) {
+          throw new NotEnoughStockException();
+        }
+
+        product.setStock(product.getStock() - quantity);
+        productRepository.save(product);
+
+        return mapCartItemToOrderItem(cartItem, order);
+      }).collect(Collectors.toList());
+
       order.setItems(orderItems);
 
       // Clear basket
@@ -70,9 +83,20 @@ public class OrderService {
         throw new CartIsEmptyException();
       }
 
-      List<OrderItem> orderItems = request.items().stream()
-          .map(orderItemRequest -> mapGuestItemToOrderItem(orderItemRequest, order))
-          .collect(Collectors.toList());
+      List<OrderItem> orderItems = request.items().stream().map(orderItemRequest -> {
+        Product product = productRepository.findById(orderItemRequest.productId())
+            .orElseThrow(() -> new ProductNotFoundException(orderItemRequest.productId()));
+
+        if (product.getStock() < orderItemRequest.quantity()) {
+          throw new NotEnoughStockException();
+        }
+
+        product.setStock(product.getStock() - orderItemRequest.quantity());
+        productRepository.save(product);
+
+        return mapGuestItemToOrderItem(orderItemRequest, order);
+      }).collect(Collectors.toList());
+
 
       order.setItems(orderItems);
     }
@@ -84,6 +108,8 @@ public class OrderService {
 
     // save order
     orderRepository.save(order);
+
+
 
     return mapOrderToResponse(order, totalAmount);
   }
