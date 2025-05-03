@@ -1,3 +1,4 @@
+ALTER DATABASE tireshop OWNER TO myuser;
 -- USERS
 CREATE TABLE users (
                        id SERIAL PRIMARY KEY,
