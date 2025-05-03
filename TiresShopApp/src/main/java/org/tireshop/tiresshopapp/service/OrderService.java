@@ -1,12 +1,12 @@
 package org.tireshop.tiresshopapp.service;
 
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tireshop.tiresshopapp.dto.request.create.CreateOrderRequest;
 import org.tireshop.tiresshopapp.dto.request.create.OrderItemRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateOrderStatusRequest;
@@ -115,6 +115,7 @@ public class OrderService {
   }
 
   // GET
+  @Transactional(readOnly = true)
   public List<OrderResponse> getUserOrders() {
     User user = userService.getCurrentUser();
     return orderRepository.findByUser(user).stream().map(this::mapOrderToResponse)
@@ -132,6 +133,7 @@ public class OrderService {
   }
 
   // GET for Admin
+  @Transactional(readOnly = true)
   public List<OrderResponse> getAllOrdersByStatus(OrderStatus status) {
     return orderRepository.findByStatus(status).stream().map(this::mapOrderToResponse)
         .collect(Collectors.toList());
@@ -143,6 +145,7 @@ public class OrderService {
   }
 
   // PATCH STATUS for ADMIN MANAGER
+  @Transactional
   public void updateOrderStatus(Long id, UpdateOrderStatusRequest request) {
     Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
     order.setStatus(request.status());
@@ -150,6 +153,7 @@ public class OrderService {
   }
 
   // PATCH Status CANCEL for user
+  @Transactional
   public void cancelOrder(Long id) {
     User user = userService.getCurrentUser();
     Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
