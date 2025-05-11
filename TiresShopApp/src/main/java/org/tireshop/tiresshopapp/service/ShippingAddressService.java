@@ -60,10 +60,11 @@ public class ShippingAddressService {
   public void deleteShippingAddressFromMyOrder() {
     Order order = getCurrentOrder();
     ShippingAddress shippingAddress = order.getShippingAddress();
-    if (shippingAddress != null) {
-      order.setShippingAddress(null);
-      shippingAddressRepository.delete(shippingAddress);
+    if (shippingAddress == null) {
+      throw new RuntimeException("No shipping address assigned to this order.");
     }
+    order.setShippingAddress(null);
+    shippingAddressRepository.delete(shippingAddress);
   }
 
   private void copyFields(CreateShippingAddressRequest request, ShippingAddress shippingAddress) {

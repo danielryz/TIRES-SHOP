@@ -3,6 +3,7 @@ package org.tireshop.tiresshopapp.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.dto.request.create.CreateProductRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateProductRequest;
 import org.tireshop.tiresshopapp.dto.response.ProductResponse;
+import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.ProductService;
 
 import java.util.List;
@@ -26,7 +28,9 @@ public class ProductController {
   private final ProductService productService;
 
   @Operation(summary = "List of all products.", description = "PUBLIC.")
-  @ApiResponse(responseCode = "200", description = "Product list returned.")
+  @ApiResponse(responseCode = "200", description = "Product list returned.",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ProductResponse.class)))
   @GetMapping("/api/products")
   public List<ProductResponse> getAllProducts() {
     return productService.getAllProducts();
@@ -34,10 +38,13 @@ public class ProductController {
 
 
   @Operation(summary = "Returns data of product by ID.", description = "PUBLIC.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Product data returned."),
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Product data returned.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProductResponse.class))),
       @ApiResponse(responseCode = "404", description = "Product Not Found",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"Product with id 1 not found\"\"}")))})
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/api/products/{id}")
   public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
     ProductResponse product = productService.getProductById(id);
@@ -45,9 +52,11 @@ public class ProductController {
   }
 
   @Operation(summary = "Adding a product.", description = "ADMIN.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "The product has been created."),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject()))})
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "The product has been created.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProductResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/api/admin/products")
   public ResponseEntity<ProductResponse> createNewProduct(
@@ -60,11 +69,10 @@ public class ProductController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Product updated successfully.",
           content = @Content(examples = @ExampleObject(value = "Product updated successfully."))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject())),
-      @ApiResponse(responseCode = "404", description = "Product Not Found.",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"Product with id 1 not found\"\"}")))})
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "404", description = "Product Not Found",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PreAuthorize("hasRole('ADMIN')")
   @PatchMapping("/api/admin/products/{id}")
   public ResponseEntity<String> updateProduct(@PathVariable Long id,
@@ -77,11 +85,10 @@ public class ProductController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Product deleted successfully.",
           content = @Content(examples = @ExampleObject(value = "Product deleted successfully."))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject())),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
       @ApiResponse(responseCode = "404", description = "Product Not Found",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"Product with id 1 not found.\"\"}")))})
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/api/admin/products/{id}")
   public ResponseEntity<String> deleteProduct(@PathVariable Long id) {

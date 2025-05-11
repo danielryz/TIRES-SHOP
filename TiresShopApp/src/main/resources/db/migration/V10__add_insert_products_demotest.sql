@@ -60,3 +60,29 @@ INSERT INTO accessory (id, type) VALUES
                                      (32, 'JACK'),
                                      (33, 'TOOLS');
 
+-- Insert into image
+INSERT INTO image (id, url, product_id) VALUES
+                                            (10, 'https://example.com/images/10.jpg', 10),
+                                            (11, 'https://example.com/images/11.jpg', 11),
+                                            (12, 'https://example.com/images/12.jpg', 12),
+                                            (13, 'https://example.com/images/13.jpg', 13),
+                                            (14, 'https://example.com/images/14.jpg', 14),
+                                            (15, 'https://example.com/images/15.jpg', 15),
+                                            (16, 'https://example.com/images/16.jpg', 16),
+                                            (17, 'https://example.com/images/17.jpg', 17),
+                                            (18, 'https://example.com/images/18.jpg', 18),
+                                            (19, 'https://example.com/images/19.jpg', 19),
+                                            (20, 'https://example.com/images/20.jpg', 20),
+                                            (21, 'https://example.com/images/21.jpg', 21),
+                                            (22, 'https://example.com/images/22.jpg', 22),
+                                            (23, 'https://example.com/images/23.jpg', 23),
+                                            (24, 'https://example.com/images/24.jpg', 24),
+                                            (25, 'https://example.com/images/25.jpg', 25),
+                                            (26, 'https://example.com/images/26.jpg', 26),
+                                            (27, 'https://example.com/images/27.jpg', 27),
+                                            (28, 'https://example.com/images/28.jpg', 28),
+                                            (29, 'https://example.com/images/29.jpg', 29),
+                                            (30, 'https://example.com/images/30.jpg', 30),
+                                            (31, 'https://example.com/images/31.jpg', 31),
+                                            (32, 'https://example.com/images/32.jpg', 32),
+                                            (33, 'https://example.com/images/33.jpg', 33);

@@ -1,6 +1,5 @@
 package org.tireshop.tiresshopapp.exception;
 
-import com.fasterxml.jackson.databind.cfg.HandlerInstantiator;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,57 +9,172 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Map;
-import java.util.Objects;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(BadCredentialsException.class)
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
-  @ResponseBody
-  @Operation(hidden = true)
-  public Map<String, String> handleBadCredentials(BadCredentialsException ex) {
-    return Map.of("error", "Invalid email or password.");
-  }
-
-  @ExceptionHandler(AccessDeniedException.class)
-  @ResponseStatus(HttpStatus.FORBIDDEN)
-  @ResponseBody
-  @Operation(hidden = true)
-  public Map<String, String> handleAccessDenied(AccessDeniedException ex) {
-    return Map.of("error", ex.getMessage());
-  }
-
-  @ExceptionHandler(RuntimeException.class)
-  @ResponseBody
   @Operation(hidden = true)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public Map<String, String> handleRuntime(RuntimeException ex) {
-    return Map.of("error", ex.getMessage());
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex) {
+    ErrorResponse response = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler(CartIsEmptyException.class)
-  @ResponseBody
   @Operation(hidden = true)
-  public Map<String, String> handleNotFoundCart() {
-    return Map.of("error", "Cart is empty. You cannot place an order.");
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+    ErrorResponse response = new ErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED.value());
+    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
   }
 
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  @ResponseBody
-  @Operation(hidden = true)
-  public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException ex) {
-    String message = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-    return ResponseEntity.badRequest().body(Map.of("error", Objects.requireNonNull(message)));
+  public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+    ErrorResponse response =
+        new ErrorResponse(ex.getBindingResult().getAllErrors().get(0).getDefaultMessage(),
+            HttpStatus.BAD_REQUEST.value());
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler(InvalidPasswordException.class)
-  @ResponseBody
   @Operation(hidden = true)
-  public ResponseEntity<Map<String, String>> handleInvalidPasswordException(
-      InvalidPasswordException ex) {
-    Map<String, String> response = Map.of("error", ex.getMessage());
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+    ErrorResponse response =
+        new ErrorResponse("Invalid email or password.", HttpStatus.BAD_REQUEST.value());
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(InvalidPasswordException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidPassword(InvalidPasswordException ex) {
+    ErrorResponse response = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(UserNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(RoleNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleRoleNotFound(RoleNotFoundException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(TireNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleTireNotFound(TireNotFoundException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(RimNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleRimNotFound(RimNotFoundException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(AccessoryNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleAccessoryNotFound(AccessoryNotFoundException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(AddressNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleAddressNotFound(AddressNotFoundException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(ImageNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleImageNotFound(ImageNotFoundException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(OrderNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleOrderNotFound(OrderNotFoundException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(ProductNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleProductNotFound(ProductNotFoundException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(ItemNonExistInCartException.class)
+  public ResponseEntity<ErrorResponse> handleItemNonExistInCart(ItemNonExistInCartException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler(NotEnoughStockException.class)
+  public ResponseEntity<ErrorResponse> handleNotEnoughStock(NotEnoughStockException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(CartIsEmptyException.class)
+  public ResponseEntity<ErrorResponse> handleCartIsEmpty(CartIsEmptyException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler(UserAlreadyExistException.class)
+  public ResponseEntity<ErrorResponse> handleUserAlreadyExist(UserAlreadyExistException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler(OrderInProgressException.class)
+  public ResponseEntity<ErrorResponse> handleOrderInProgress(OrderInProgressException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+    ErrorResponse error =
+        new ErrorResponse("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
 }

@@ -13,6 +13,7 @@ import org.tireshop.tiresshopapp.exception.AddressNotFoundException;
 import org.tireshop.tiresshopapp.repository.AddressRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @Service
@@ -50,7 +51,7 @@ public class AddressService {
 
   // POST
   @Transactional
-  public void addAddress(CreateAddressRequest request) {
+  public AddressResponse addAddress(CreateAddressRequest request) {
     User user = getCurrentUser();
     Address address = new Address();
     address.setStreet(request.street());
@@ -61,7 +62,7 @@ public class AddressService {
     address.setType(request.type());
     address.setUser(user);
 
-    addressRepository.save(address);
+    return mapToResponse(addressRepository.save(address));
   }
 
   // PATCH
@@ -70,12 +71,15 @@ public class AddressService {
     User user = getCurrentUser();
     Address address =
         addressRepository.findByIdAndUser(id, user).orElseThrow(AddressNotFoundException::new);
-    updateFieldIfPresent(request.street(), address::setStreet);
-    updateFieldIfPresent(request.houseNumber(), address::setHouseNumber);
-    updateFieldIfPresent(request.apartmentNumber(), address::setApartmentNumber);
-    updateFieldIfPresent(request.postalCode(), address::setPostalCode);
-    updateFieldIfPresent(request.city(), address::setCity);
-
+    Optional.ofNullable(request.street()).filter(street -> !street.isBlank())
+        .ifPresent(address::setStreet);
+    Optional.ofNullable(request.houseNumber()).filter(number -> !number.isBlank())
+        .ifPresent(address::setHouseNumber);
+    Optional.ofNullable(request.apartmentNumber()).filter(number -> !number.isBlank())
+        .ifPresent(address::setApartmentNumber);
+    Optional.ofNullable(request.postalCode()).filter(code -> !code.isBlank())
+        .ifPresent(address::setPostalCode);
+    Optional.ofNullable(request.city()).filter(city -> !city.isBlank()).ifPresent(address::setCity);
 
     addressRepository.save(address);
   }
@@ -94,13 +98,5 @@ public class AddressService {
         address.getApartmentNumber(), address.getPostalCode(), address.getCity(),
         address.getType());
   }
-
-  private void updateFieldIfPresent(String newValue, Consumer<String> setter) {
-    if (newValue != null && !newValue.isBlank()) {
-      setter.accept(newValue);
-    }
-  }
-
-
 
 }

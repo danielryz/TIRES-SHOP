@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tireshop.tiresshopapp.dto.response.AuthResponse;
 import org.tireshop.tiresshopapp.dto.request.auth.LoginRequest;
 import org.tireshop.tiresshopapp.dto.request.auth.RegisterRequest;
+import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.security.AuthenticationService;
 
 @RestController
@@ -30,26 +31,25 @@ public class AuthController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Registration completed successfully.",
           content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-      @ApiResponse(responseCode = "400", description = "Validation error or user already exists.",
-          content = @Content(mediaType = "aplication/json", examples = @ExampleObject("""
-              {
-                "error": "User with email EMAIL already exists."
-              }""")))})
+      @ApiResponse(responseCode = "400", description = "Validation error.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "409", description = "User already exists.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),})
 
   @PostMapping("/register")
   public ResponseEntity<AuthResponse> register(@RequestBody @Valid RegisterRequest request) {
     return ResponseEntity.ok(authService.register(request));
   }
 
-  @Operation(summary = "LLogin and generate JWT token.", description = "PUBLIC")
+  @Operation(summary = "Login and generate JWT token.", description = "PUBLIC")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "You have logged in successfully.",
           content = @Content(schema = @Schema(implementation = AuthResponse.class))),
-      @ApiResponse(responseCode = "401", description = "Invalid email or password.",
-          content = @Content(mediaType = "aplication/json", examples = @ExampleObject(value = """
-              {
-                "error": "Invalid email or password."
-              }""")))})
+      @ApiResponse(responseCode = "400", description = "Invalid email or password.",
+          content = @Content(mediaType = "aplication/json",
+              schema = @Schema(implementation = ErrorResponse.class))),})
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
     return ResponseEntity.ok(authService.login(request));

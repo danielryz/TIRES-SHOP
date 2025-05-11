@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +14,7 @@ import org.tireshop.tiresshopapp.dto.request.auth.RegisterRequest;
 import org.tireshop.tiresshopapp.entity.Role;
 import org.tireshop.tiresshopapp.entity.User;
 import org.tireshop.tiresshopapp.exception.RoleNotFoundException;
+import org.tireshop.tiresshopapp.exception.UserAlreadyExistException;
 import org.tireshop.tiresshopapp.repository.RoleRepository;
 import org.tireshop.tiresshopapp.repository.UserRepository;
 
@@ -36,11 +36,11 @@ public class AuthenticationService {
     Role userRole =
         roleRepository.findByName(role).orElseThrow(() -> new RoleNotFoundException(role));
     if (userRepository.existsByEmail(request.email())) {
-      throw new RuntimeException("User with email " + request.email() + " already exists.");
+      throw UserAlreadyExistException.byEmail(request.email());
     }
 
     if (userRepository.existsByUsername(request.username())) {
-      throw new RuntimeException("User with username " + request.username() + " already exists.");
+      throw UserAlreadyExistException.byUsername(request.username());
     }
 
     User user = new User();

@@ -10,6 +10,8 @@ import org.tireshop.tiresshopapp.dto.response.CartSummaryResponse;
 import org.tireshop.tiresshopapp.entity.CartItem;
 import org.tireshop.tiresshopapp.entity.Product;
 import org.tireshop.tiresshopapp.entity.User;
+import org.tireshop.tiresshopapp.exception.ImageNotFoundException;
+import org.tireshop.tiresshopapp.exception.ItemNonExistInCartException;
 import org.tireshop.tiresshopapp.exception.NotEnoughStockException;
 import org.tireshop.tiresshopapp.exception.ProductNotFoundException;
 import org.tireshop.tiresshopapp.repository.CartItemRepository;
@@ -66,8 +68,8 @@ public class CartItemService {
   // PATCH
   @Transactional
   public void updateCartItem(Long id, UpdateCartItemRequest request) {
-    CartItem cartItem = cartItemRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("The item in the cart does not exist."));
+    CartItem cartItem =
+        cartItemRepository.findById(id).orElseThrow(ItemNonExistInCartException::new);
     if (request.quantity() > cartItem.getProduct().getStock()) {
       throw new NotEnoughStockException();
     }
@@ -79,6 +81,9 @@ public class CartItemService {
   // DELETE
   @Transactional
   public void deleteCartItem(Long id) {
+    if (!cartItemRepository.existsById(id)) {
+      throw new ItemNonExistInCartException();
+    }
     cartItemRepository.deleteById(id);
   }
 

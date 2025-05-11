@@ -30,7 +30,7 @@ public class Product {
   private String description;
 
   @Column(nullable = false)
-  private int stock;
+  private Integer stock;
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)

@@ -16,6 +16,7 @@ import org.tireshop.tiresshopapp.dto.request.update.UpdateUserPasswordRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateUserRequest;
 import org.tireshop.tiresshopapp.dto.response.UserResponse;
 import org.tireshop.tiresshopapp.entity.User;
+import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.UserService;
 
 import java.util.List;
@@ -35,9 +36,8 @@ public class UserController {
               schema = @Schema(implementation = UserResponse.class))),
       @ApiResponse(responseCode = "400", description = "Access Denied.",
           content = @Content(mediaType = "application/json",
-              examples = @ExampleObject(value = "{\"error\": \"Access Denied\"}"))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject()))})
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @GetMapping("/api/admin/users")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<UserResponse>> getAllUsers() {
@@ -51,12 +51,11 @@ public class UserController {
               schema = @Schema(implementation = UserResponse.class))),
       @ApiResponse(responseCode = "400", description = "Access Denied.",
           content = @Content(mediaType = "application/json",
-              examples = @ExampleObject(value = "{\"error\": \"Access Denied.\"}"))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject())),
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
       @ApiResponse(responseCode = "404", description = "User Not Found.",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"User with id 1 not found.\"\"}")))})
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/api/admin/users/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
@@ -69,8 +68,7 @@ public class UserController {
       @ApiResponse(responseCode = "200", description = "User data returned.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = UserResponse.class))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject()))})
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @GetMapping("/api/users/me")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<UserResponse> getCurrentUser() {
@@ -85,9 +83,7 @@ public class UserController {
           content = @Content(examples = @ExampleObject())),
       @ApiResponse(responseCode = "403", description = "Invalid data.",
           content = @Content(
-              examples = @ExampleObject(value = "{\"error\": \"Invalid current password. \"}"))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject()))})
+              examples = @ExampleObject(value = "{\"error\": \"Invalid current password. \"}")))})
   @PatchMapping("/api/users/me/change-password")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> updateCurrentUserPassword(
@@ -99,12 +95,11 @@ public class UserController {
   @Operation(summary = "Updating your account details.", description = "USER.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "The data has been changed successfully.",
-          content = @Content(examples = @ExampleObject())),
+          content = @Content()),
       @ApiResponse(responseCode = "400", description = "Invalid data.",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"Username must be between 3 and 30 characters long\"}"))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject()))})
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @PatchMapping("/api/users/me/update")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> updateCurrentUser(@Valid @RequestBody UpdateUserRequest request) {
@@ -115,9 +110,8 @@ public class UserController {
   @Operation(summary = "Deleted your account details.", description = "USER.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "The data has been deleted successfully.",
-          content = @Content(examples = @ExampleObject())),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject()))})
+          content = @Content()),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @DeleteMapping("/api/users/me/delete-user-details")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> deleteCurrentUserData() {
@@ -130,12 +124,12 @@ public class UserController {
       @ApiResponse(responseCode = "200", description = "The Role has been added successfully.",
           content = @Content(examples = @ExampleObject())),
       @ApiResponse(responseCode = "400", description = "Access Denied.",
-          content = @Content(examples = @ExampleObject(value = "{\"error\": \"Access Denied.\"}"))),
-      @ApiResponse(responseCode = "403", description = "Access Denied.",
-          content = @Content(examples = @ExampleObject())),
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.", content = @Content()),
       @ApiResponse(responseCode = "404", description = "User or Role Not Found.",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"User with id 1 not found.\"\"}")))})
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PostMapping("/api/admin/users/{id}/{roleId}/role")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> addRoleToUser(@PathVariable Long id, @PathVariable Long roleId) {
@@ -145,15 +139,15 @@ public class UserController {
 
   @Operation(summary = "Delete the user role.", description = "ADMIN")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Rola deleted.",
-          content = @Content(examples = @ExampleObject())),
+      @ApiResponse(responseCode = "200", description = "Rola deleted.", content = @Content()),
       @ApiResponse(responseCode = "400", description = "User or Role Not Found.",
-          content = @Content(examples = @ExampleObject())),
-      @ApiResponse(responseCode = "403", description = "Access Denied..",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.",
           content = @Content(examples = @ExampleObject())),
       @ApiResponse(responseCode = "404", description = "User or Role Not Found.",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"User with id 1 not found.\"\"}")))})
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @DeleteMapping("/api/admin/users/{id}/{roleId}/role")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> removeUserRole(@PathVariable Long id, @PathVariable Long roleId) {
@@ -164,14 +158,14 @@ public class UserController {
   @Operation(summary = "Delete user.", description = "ADMIN.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User has been deleted successfully.",
-          content = @Content(examples = @ExampleObject())),
-      @ApiResponse(responseCode = "400", description = "Access Denied.",
-          content = @Content(examples = @ExampleObject(value = "{\"error\": \"Access Denied.\"}"))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject())),
+          content = @Content()),
+      @ApiResponse(responseCode = "401", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
       @ApiResponse(responseCode = "404", description = "User Not Found.",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"User with id 1 not found.\"\"}")))})
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @DeleteMapping("/api/admin/users/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
@@ -183,10 +177,8 @@ public class UserController {
   @Operation(summary = "Delete your account.", description = "USER.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
-          description = "Your account has been deleted successfully.",
-          content = @Content(examples = @ExampleObject())),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject())),})
+          description = "Your account has been deleted successfully.", content = @Content()),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @DeleteMapping("/api/users/me/delete")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> deleteCurrentUser() {

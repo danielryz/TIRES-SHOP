@@ -2,7 +2,6 @@ package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -12,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.entity.Role;
+import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.RoleService;
 
 import java.util.List;
@@ -28,14 +28,10 @@ public class RoleController {
       @ApiResponse(responseCode = "200", description = "Role list returned successfully.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = Role.class))),
-      @ApiResponse(responseCode = "400", description = "Access Denied.",
+      @ApiResponse(responseCode = "401", description = "Access Denied.",
           content = @Content(mediaType = "application/json",
-              examples = @ExampleObject(value = "{\"error\": \"Access Denied\"}"))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject(value = " "))),
-      @ApiResponse(responseCode = "404", description = "Role Not Found.",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"Role with id 1 not found.\"\"}")))})
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @GetMapping
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<Role>> getAllRoles() {
@@ -47,14 +43,13 @@ public class RoleController {
       @ApiResponse(responseCode = "200", description = "Role returned successfully.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = Role.class))),
-      @ApiResponse(responseCode = "400", description = "Access Denied",
+      @ApiResponse(responseCode = "401", description = "Access Denied",
           content = @Content(mediaType = "application/json",
-              examples = @ExampleObject(value = "{\"error\": \"Access Denied\"}"))),
-      @ApiResponse(responseCode = "403", description = "No authorization.",
-          content = @Content(examples = @ExampleObject(value = " "))),
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
       @ApiResponse(responseCode = "404", description = "Role Not Found.",
-          content = @Content(examples = @ExampleObject(
-              value = "{\"error\": \"404 NOT_FOUND \\ \"Role with id 1 not found.\"\"}")))})
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<Role> getRoleById(@PathVariable Long id) {

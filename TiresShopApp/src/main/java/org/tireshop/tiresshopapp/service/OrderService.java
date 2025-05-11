@@ -13,10 +13,7 @@ import org.tireshop.tiresshopapp.dto.request.update.UpdateOrderStatusRequest;
 import org.tireshop.tiresshopapp.dto.response.OrderItemResponse;
 import org.tireshop.tiresshopapp.dto.response.OrderResponse;
 import org.tireshop.tiresshopapp.entity.*;
-import org.tireshop.tiresshopapp.exception.CartIsEmptyException;
-import org.tireshop.tiresshopapp.exception.NotEnoughStockException;
-import org.tireshop.tiresshopapp.exception.OrderNotFoundException;
-import org.tireshop.tiresshopapp.exception.ProductNotFoundException;
+import org.tireshop.tiresshopapp.exception.*;
 import org.tireshop.tiresshopapp.repository.CartItemRepository;
 import org.tireshop.tiresshopapp.repository.OrderRepository;
 import org.tireshop.tiresshopapp.repository.ProductRepository;
@@ -52,7 +49,7 @@ public class OrderService {
 
       List<CartItem> cartItems = cartItemRepository.findByUser(user);
       if (cartItems.isEmpty()) {
-        throw new CartIsEmptyException();
+        throw new CartIsEmptyException();// 401
       }
 
       List<OrderItem> orderItems = cartItems.stream().map(cartItem -> {
@@ -60,7 +57,7 @@ public class OrderService {
         int quantity = cartItem.getQuantity();
 
         if (product.getStock() < quantity) {
-          throw new NotEnoughStockException();
+          throw new NotEnoughStockException();// 409
         }
 
         product.setStock(product.getStock() - quantity);
@@ -85,7 +82,7 @@ public class OrderService {
 
       List<OrderItem> orderItems = request.items().stream().map(orderItemRequest -> {
         Product product = productRepository.findById(orderItemRequest.productId())
-            .orElseThrow(() -> new ProductNotFoundException(orderItemRequest.productId()));
+            .orElseThrow(() -> new ProductNotFoundException(orderItemRequest.productId()));// 404
 
         if (product.getStock() < orderItemRequest.quantity()) {
           throw new NotEnoughStockException();
@@ -124,10 +121,10 @@ public class OrderService {
 
   public OrderResponse getUserOrderById(Long id) {
     User user = userService.getCurrentUser();
-    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));// 404
 
     if (!order.getUser().getId().equals(user.getId())) {
-      throw new AccessDeniedException("Access denied");
+      throw new AccessDeniedException("Access denied");// 403
     }
     return mapOrderToResponse(order);
   }
@@ -163,7 +160,7 @@ public class OrderService {
     }
 
     if (order.getStatus() != OrderStatus.CREATED) {
-      throw new RuntimeException("You cannot cancel an order that is in progress.");
+      throw new OrderInProgressException();
     }
     order.setStatus(OrderStatus.CANCELLED);
     orderRepository.save(order);

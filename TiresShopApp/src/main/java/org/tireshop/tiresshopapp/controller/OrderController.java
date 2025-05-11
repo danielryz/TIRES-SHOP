@@ -3,10 +3,12 @@ package org.tireshop.tiresshopapp.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import org.tireshop.tiresshopapp.dto.request.create.CreateOrderRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateOrderStatusRequest;
 import org.tireshop.tiresshopapp.dto.response.OrderResponse;
 import org.tireshop.tiresshopapp.entity.OrderStatus;
+import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.OrderService;
 
 import java.util.List;
@@ -27,16 +30,31 @@ public class OrderController {
   private final OrderService orderService;
 
   @Operation(summary = "Placing an order.", description = "PUBLIC.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Order placed successfully."),
-      @ApiResponse(responseCode = "404",
-          description = "Cart is empty. You cannot place an order.")})
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "Order placed successfully.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = OrderResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "404", description = "Not Found.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "409", description = "Conflict.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PostMapping("/public")
   public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest request) {
-    return ResponseEntity.ok(orderService.createOrder(request));
+    OrderResponse order = orderService.createOrder(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(order);
   }
 
   @Operation(summary = "Get all user orders.", description = "USER")
-  @ApiResponse(responseCode = "200", description = "List of user orders returned successfully.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "List of user orders returned successfully.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = OrderResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @GetMapping("/user")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<List<OrderResponse>> getUserOrders() {
@@ -44,9 +62,13 @@ public class OrderController {
   }
 
   @Operation(summary = "Get order by ID for user.", description = "USER.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Order returned successfully."),
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Order returned successfully.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = OrderResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
       @ApiResponse(responseCode = "404", description = "Order Not Found.",
-          content = @Content(examples = @ExampleObject(value = ("Order with id 1 not found."))))})
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/user/{id}")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<OrderResponse> getUserOrderById(@PathVariable Long id) {
@@ -55,7 +77,10 @@ public class OrderController {
 
   @Operation(summary = "Cancellation of order.", description = "USER.")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "The order has been canceled."),
-      @ApiResponse(responseCode = "400", description = "Access Denied")})
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "409", description = "Conflict",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PatchMapping("/{id}/cancel")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
@@ -65,8 +90,12 @@ public class OrderController {
 
   @Operation(summary = "Gets orders by Admin by Status.", description = "ADMIN.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "List of orders returned successfully."),
-      @ApiResponse(responseCode = "400", description = "Not found")})
+      @ApiResponse(responseCode = "200", description = "List of orders returned successfully.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = OrderResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "404", description = "Not Found.",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/admin")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<OrderResponse>> getAllOrdersByStatus(
@@ -75,8 +104,13 @@ public class OrderController {
   }
 
   @Operation(summary = "Get order by Admin by ID.", description = "ADMIN.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Order data returned."),
-      @ApiResponse(responseCode = "404", description = "Not found")})
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Order data returned.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = OrderResponse.class))),
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "404", description = "Not Found.",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("admin/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<OrderResponse> getOrderByIdAdmin(@PathVariable Long id) {
@@ -86,7 +120,9 @@ public class OrderController {
   @Operation(summary = "Update order status.", description = "Endpoint dla ADMINA")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Status has been updated successfully."),
-      @ApiResponse(responseCode = "404", description = "Not found")})
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "404", description = "Not Found.",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
   @PatchMapping("/admin/{id}/status")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> updateOrderStatus(@PathVariable Long id,

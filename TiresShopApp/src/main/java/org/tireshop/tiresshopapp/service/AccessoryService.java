@@ -54,24 +54,20 @@ public class AccessoryService {
 
   // PATCH
   @Transactional
-  public AccessoryResponse updateAccessory(Long id, CreateAccessoryRequest request) {
+  public void updateAccessory(Long id, CreateAccessoryRequest request) {
     Accessory accessory =
         accessoryRepository.findById(id).orElseThrow(() -> new AccessoryNotFoundException(id));
 
-    if (request.name() != null && !request.name().isBlank())
-      accessory.setName(request.name());
-    if (request.price() != null)
-      accessory.setPrice(request.price());
-    if (request.description() != null && !request.description().isBlank())
-      accessory.setDescription(request.description());
-    if (request.stock() >= 0)
-      accessory.setStock(request.stock());
-    if (request.type() != null)
-      accessory.setType(request.type());
-    if (request.accessoryType() != null)
-      accessory.setAccessoryType(request.accessoryType());
+    Optional.ofNullable(request.name()).filter(name -> !name.isBlank())
+        .ifPresent(accessory::setName);
+    Optional.ofNullable(request.price()).ifPresent(accessory::setPrice);
+    Optional.ofNullable(request.description()).filter(description -> !description.isBlank())
+        .ifPresent(accessory::setDescription);
+    Optional.ofNullable(request.stock()).filter(stock -> stock >= 0).ifPresent(accessory::setStock);
+    Optional.ofNullable(request.type()).ifPresent(accessory::setType);
+    Optional.ofNullable(request.accessoryType()).ifPresent(accessory::setAccessoryType);
 
-    return mapToResponse(accessoryRepository.save(accessory));
+    accessoryRepository.save(accessory);
   }
 
   // DELETE

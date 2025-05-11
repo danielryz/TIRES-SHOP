@@ -1,6 +1,5 @@
 package org.tireshop.tiresshopapp.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.entity.Role;
