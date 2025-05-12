@@ -1,18 +1,16 @@
 package org.tireshop.tiresshopapp.service;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateShippingAddressRequest;
+import org.tireshop.tiresshopapp.dto.response.ShippingAddressResponse;
 import org.tireshop.tiresshopapp.entity.Order;
 import org.tireshop.tiresshopapp.entity.ShippingAddress;
+import org.tireshop.tiresshopapp.entity.User;
+import org.tireshop.tiresshopapp.exception.*;
 import org.tireshop.tiresshopapp.repository.OrderRepository;
 import org.tireshop.tiresshopapp.repository.ShippingAddressRepository;
-
-import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -20,48 +18,53 @@ public class ShippingAddressService {
   private final ShippingAddressRepository shippingAddressRepository;
   private final OrderRepository orderRepository;
   private final UserService userService;
-  private final HttpSession session;
 
   // POST
   @Transactional
-  public void addShippingAddressToMyOrder(CreateShippingAddressRequest request) {
-    Order order = getCurrentOrder();
+  public ShippingAddressResponse addShippingAddressToMyOrder(CreateShippingAddressRequest request,
+      String clientId) {
+    Order order = getCurrentOrder(clientId);
     if (order.getShippingAddress() != null) {
-      throw new RuntimeException("Address already in use in order.");
+      throw new ShippingAddressAlreadyInUseException();
     }
     ShippingAddress shippingAddress = new ShippingAddress();
     copyFields(request, shippingAddress);
     shippingAddress.setOrder(order);
     order.setShippingAddress(shippingAddress);
 
-    shippingAddressRepository.save(shippingAddress);
+    return mapToResponse(shippingAddressRepository.save(shippingAddress));
   }
 
   // PATCH
   @Transactional
-  public void updateShippingAddress(CreateShippingAddressRequest request) {
-    Order order = getCurrentOrder();
+  public void updateShippingAddress(CreateShippingAddressRequest request, String clientId) {
+    Order order = getCurrentOrder(clientId);
     ShippingAddress shippingAddress = order.getShippingAddress();
 
     if (shippingAddress == null) {
-      throw new RuntimeException("No shipping address assigned to this order.");
+      throw new NoShippingAddressAssignException();
     }
-    updateFieldIfPresent(request.street(), shippingAddress::setStreet);
-    updateFieldIfPresent(request.houseNumber(), shippingAddress::setHouseNumber);
-    updateFieldIfPresent(request.apartmentNumber(), shippingAddress::setApartmentNumber);
-    updateFieldIfPresent(request.postalCode(), shippingAddress::setPostalCode);
-    updateFieldIfPresent(request.city(), shippingAddress::setCity);
+    if (request.street() != null && !request.street().isBlank())
+      shippingAddress.setStreet(request.street());
+    if(request.houseNumber() != null && !request.houseNumber().isBlank())
+      shippingAddress.setHouseNumber(request.houseNumber());
+    if(request.apartmentNumber() != null && !request.apartmentNumber().isBlank())
+      shippingAddress.setApartmentNumber(request.apartmentNumber());
+    if(request.postalCode() != null && !request.postalCode().isBlank())
+      shippingAddress.setPostalCode(request.postalCode());
+    if (request.city() != null && !request.city().isBlank())
+      shippingAddress.setCity(request.city());
 
     shippingAddressRepository.save(shippingAddress);
   }
 
   // DELETE
   @Transactional
-  public void deleteShippingAddressFromMyOrder() {
-    Order order = getCurrentOrder();
+  public void deleteShippingAddressFromMyOrder(String clientId) {
+    Order order = getCurrentOrder(clientId);
     ShippingAddress shippingAddress = order.getShippingAddress();
     if (shippingAddress == null) {
-      throw new RuntimeException("No shipping address assigned to this order.");
+      throw new NoShippingAddressAssignException();
     }
     order.setShippingAddress(null);
     shippingAddressRepository.delete(shippingAddress);
@@ -75,25 +78,26 @@ public class ShippingAddressService {
     shippingAddress.setCity(request.city());
   }
 
-  private void updateFieldIfPresent(String newValue, Consumer<String> setter) {
-    if (newValue != null && !newValue.isBlank()) {
-      setter.accept(newValue);
+  private Order getCurrentOrder(String clientId) {
+
+    User user = userService.getCurrentUser();
+
+    if (user != null) {
+      // login user
+      return orderRepository.findTopByUserOrderByCreatedAtDesc(user)
+          .orElseThrow(() -> new NoOrderActiveForUserException(user));
+    } else if (clientId != null) {
+      // quest
+      return orderRepository.findTopBySessionIdOrderByCreatedAtDesc(clientId)
+          .orElseThrow(() -> new NoOrderActiveForUserException(clientId));
+    } else {
+      throw new UserNotFoundException();
     }
   }
 
-  private Order getCurrentOrder() {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-    if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-      // login user
-      return orderRepository.findTopByUserOrderByCreatedAtDesc(userService.getCurrentUser())
-          .orElseThrow(() -> new RuntimeException(
-              "No active order found for user " + userService.getCurrentUser()));
-    } else {
-      // quest
-      String sessionId = session.getId();
-      return orderRepository.findTopBySessionIdOrderByCreatedAtDesc(sessionId).orElseThrow(
-          () -> new RuntimeException("No active order found for session id: " + sessionId));
-    }
+  private ShippingAddressResponse mapToResponse(ShippingAddress address) {
+    return new ShippingAddressResponse(address.getId(), address.getStreet(),
+        address.getHouseNumber(), address.getApartmentNumber(), address.getPostalCode(),
+        address.getCity());
   }
 }

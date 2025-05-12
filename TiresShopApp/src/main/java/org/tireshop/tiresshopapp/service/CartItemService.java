@@ -1,5 +1,6 @@
 package org.tireshop.tiresshopapp.service;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,15 +11,13 @@ import org.tireshop.tiresshopapp.dto.response.CartSummaryResponse;
 import org.tireshop.tiresshopapp.entity.CartItem;
 import org.tireshop.tiresshopapp.entity.Product;
 import org.tireshop.tiresshopapp.entity.User;
-import org.tireshop.tiresshopapp.exception.ImageNotFoundException;
-import org.tireshop.tiresshopapp.exception.ItemNonExistInCartException;
-import org.tireshop.tiresshopapp.exception.NotEnoughStockException;
-import org.tireshop.tiresshopapp.exception.ProductNotFoundException;
+import org.tireshop.tiresshopapp.exception.*;
 import org.tireshop.tiresshopapp.repository.CartItemRepository;
 import org.tireshop.tiresshopapp.repository.ProductRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,13 +32,23 @@ public class CartItemService {
   }
 
   // GET
-  public List<CartItemResponse> getCartForCurrentUser() {
-    User user = userService.getCurrentUser();
-    return cartItemRepository.findByUser(user).stream().map(this::mapToResponse).toList();
+  public List<CartItemResponse> getCartForCurrentUser(String clientId) {
+    User user = getCurrentUser();
+
+    List<CartItem> items;
+    if (user != null) {
+      items = cartItemRepository.findByUser(user);
+      return items.stream().map(this::mapToResponse).collect(Collectors.toList());
+    } else if (clientId != null) {
+      items = cartItemRepository.findBySessionId(clientId);
+      return items.stream().map(this::mapToResponse).collect(Collectors.toList());
+    } else {
+      throw new UserNotFoundException();
+    }
   }
 
-  public CartSummaryResponse getCartSummary() {
-    List<CartItemResponse> cartItems = getCartForCurrentUser();
+  public CartSummaryResponse getCartSummary(String clientId) {
+    List<CartItemResponse> cartItems = getCartForCurrentUser(clientId);
     BigDecimal total =
         cartItems.stream().map(i -> i.pricePerItem().multiply(BigDecimal.valueOf(i.quantity())))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -49,13 +58,20 @@ public class CartItemService {
 
   // POST
   @Transactional
-  public void addCartItem(AddToCartRequest request) {
-    User user = userService.getCurrentUser();
+  public void addCartItem(AddToCartRequest request, String clientId) {
     Product product = productRepository.findById(request.productId())
         .orElseThrow(() -> new ProductNotFoundException(request.productId()));
-
-    CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product)
-        .orElse(new CartItem(null, user, product, 0));
+    CartItem cartItem;
+    User user = getCurrentUser();
+    if (user != null) {
+      cartItem = cartItemRepository.findByUserAndProduct(user, product)
+          .orElse(new CartItem(null, user, null, product, 0));
+    } else if (clientId != null) {
+      cartItem = cartItemRepository.findBySessionIdAndProduct(clientId, product)
+          .orElse(new CartItem(null, null, clientId, product, 0));
+    } else {
+      throw new UserNotFoundException();
+    }
 
     if (cartItem.getQuantity() + request.quantity() > product.getStock()) {
       throw new NotEnoughStockException();
@@ -88,8 +104,16 @@ public class CartItemService {
   }
 
   @Transactional
-  public void clearCartForUser(User user) {
-    cartItemRepository.deleteByUser(user);
+  public void clearCartForUser(String clientId) {
+
+    User user = getCurrentUser();
+    if (user != null) {
+      cartItemRepository.deleteByUser(user);
+    } else if (clientId != null) {
+      cartItemRepository.deleteBySessionId(clientId);
+    } else {
+      throw new UserNotFoundException();
+    }
   }
 
   private CartItemResponse mapToResponse(CartItem cartItem) {
@@ -98,4 +122,5 @@ public class CartItemService {
     return new CartItemResponse(cartItem.getId(), cartItem.getProduct().getId(),
         cartItem.getProduct().getName(), cartItem.getQuantity(), pricePerItem, totalPrice);
   }
+
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,17 +22,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtService jwtService;
   private final UserDetailsServiceImpl userDetailsService;
 
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
 
-    String path = request.getRequestURI();
-    if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs")
-        || path.startsWith("/swagger-resources") || path.startsWith("/webjars")
-        || path.startsWith("/swagger-ui.html")) {
-      filterChain.doFilter(request, response);
-      return;
-    }
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response,
+      @NonNull FilterChain filterChain) throws ServletException, IOException {
+
 
     final String authHeader = request.getHeader("Authorization");
     final String jwt;

@@ -13,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.dto.request.create.CreateAccessoryRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateAccessoryRequest;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
+import org.tireshop.tiresshopapp.entity.AccessoryType;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.AccessoryService;
 
@@ -59,7 +61,7 @@ public class AccessoryController {
               schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/api/accessory/type")
   public List<AccessoryResponse> getAccessoryByAccessoryType(
-      @RequestParam(required = false) String accessoryType) {
+      @RequestParam(required = false) AccessoryType accessoryType) {
     if (accessoryType == null) {
       return accessoryService.getAllAccessory();
     }
@@ -91,7 +93,7 @@ public class AccessoryController {
   @PatchMapping("/api/admin/accessory/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> updateAccessory(@PathVariable Long id,
-      @RequestBody CreateAccessoryRequest request) {
+      @RequestBody UpdateAccessoryRequest request) {
     accessoryService.updateAccessory(id, request);
     return ResponseEntity.ok("Accessory updated successfully.");
   }

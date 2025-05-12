@@ -1,14 +1,10 @@
 package org.tireshop.tiresshopapp.service;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tireshop.tiresshopapp.dto.request.create.CreateOrderRequest;
-import org.tireshop.tiresshopapp.dto.request.create.OrderItemRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateOrderStatusRequest;
 import org.tireshop.tiresshopapp.dto.response.OrderItemResponse;
 import org.tireshop.tiresshopapp.dto.response.OrderResponse;
@@ -31,96 +27,88 @@ public class OrderService {
   private final ProductRepository productRepository;
   private final CartItemRepository cartItemRepository;
   private final UserService userService;
-  private final HttpSession session;
+
+  public User getCurrentUser() {
+    return userService.getCurrentUser();
+  }
 
   // POST
   @Transactional
-  public OrderResponse createOrder(CreateOrderRequest request) {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
+  public OrderResponse createOrder(CreateOrderRequest request, String clientId) {
     Order order = new Order();
     order.setStatus(OrderStatus.CREATED);
     order.setCreatedAt(LocalDateTime.now());
+    List<CartItem> cartItems;
 
     // login user
-    if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-      User user = userService.getCurrentUser();
+    User user = getCurrentUser();
+    if (user != null) {
       order.setUser(user);
+      order.setGuestName(user.getFirstName() + " " + user.getLastName());
+      order.setEmail(user.getEmail());
+      order.setPhoneNumber(user.getPhoneNumber());
 
-      List<CartItem> cartItems = cartItemRepository.findByUser(user);
-      if (cartItems.isEmpty()) {
-        throw new CartIsEmptyException();// 401
-      }
+      cartItems = cartItemRepository.findByUser(user);
 
-      List<OrderItem> orderItems = cartItems.stream().map(cartItem -> {
-        Product product = cartItem.getProduct();
-        int quantity = cartItem.getQuantity();
-
-        if (product.getStock() < quantity) {
-          throw new NotEnoughStockException();// 409
-        }
-
-        product.setStock(product.getStock() - quantity);
-        productRepository.save(product);
-
-        return mapCartItemToOrderItem(cartItem, order);
-      }).collect(Collectors.toList());
-
-      order.setItems(orderItems);
-
-      // Clear basket
-      cartItemRepository.deleteByUser(user);
-    } else {
+    } else if (clientId != null && !clientId.isEmpty()) {
       order.setGuestName(request.guestFirstName() + " " + request.guestLastName());
       order.setEmail(request.guestEmail());
       order.setPhoneNumber(request.guestPhoneNumber());
-      order.setSessionId(session.getId());
+      order.setSessionId(clientId);
 
-      if (request.items().isEmpty()) {
-        throw new CartIsEmptyException();
+      cartItems = cartItemRepository.findBySessionId(clientId);
+
+    } else {
+      throw new UserNotFoundException();
+    }
+
+    if (cartItems.isEmpty()) {
+      throw new CartIsEmptyException();
+    }
+
+    List<OrderItem> orderItems = cartItems.stream().map(cartItem -> {
+      Product product = cartItem.getProduct();
+      int quantity = cartItem.getQuantity();
+
+      if (product.getStock() < quantity) {
+        throw new NotEnoughStockException();
       }
 
-      List<OrderItem> orderItems = request.items().stream().map(orderItemRequest -> {
-        Product product = productRepository.findById(orderItemRequest.productId())
-            .orElseThrow(() -> new ProductNotFoundException(orderItemRequest.productId()));// 404
+      product.setStock(product.getStock() - quantity);
+      productRepository.save(product);
 
-        if (product.getStock() < orderItemRequest.quantity()) {
-          throw new NotEnoughStockException();
-        }
+      return mapCartItemToOrderItem(cartItem, order);
+    }).collect(Collectors.toList());
 
-        product.setStock(product.getStock() - orderItemRequest.quantity());
-        productRepository.save(product);
+    order.setItems(orderItems);
 
-        return mapGuestItemToOrderItem(orderItemRequest, order);
-      }).collect(Collectors.toList());
-
-
-      order.setItems(orderItems);
+    if (user != null) {
+      cartItemRepository.deleteByUser(user);
+    } else {
+      cartItemRepository.deleteBySessionId(clientId);
     }
-    // totalAmountOrder
+
     BigDecimal totalAmount = order.getItems().stream()
-        .map(orderItem -> orderItem.getPriceAtPurchase()
-            .multiply(BigDecimal.valueOf(orderItem.getQuantity())))
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+            .map(orderItem -> orderItem.getPriceAtPurchase()
+                    .multiply(BigDecimal.valueOf(orderItem.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    // save order
     orderRepository.save(order);
-
-
 
     return mapOrderToResponse(order, totalAmount);
   }
 
+
   // GET
   @Transactional(readOnly = true)
   public List<OrderResponse> getUserOrders() {
-    User user = userService.getCurrentUser();
+    User user = getCurrentUser();
     return orderRepository.findByUser(user).stream().map(this::mapOrderToResponse)
         .collect(Collectors.toList());
   }
 
   public OrderResponse getUserOrderById(Long id) {
-    User user = userService.getCurrentUser();
+    User user = getCurrentUser();
     Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));// 404
 
     if (!order.getUser().getId().equals(user.getId())) {
@@ -145,6 +133,7 @@ public class OrderService {
   @Transactional
   public void updateOrderStatus(Long id, UpdateOrderStatusRequest request) {
     Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+    if(request.status() != null)
     order.setStatus(request.status());
     orderRepository.save(order);
   }
@@ -152,7 +141,7 @@ public class OrderService {
   // PATCH Status CANCEL for user
   @Transactional
   public void cancelOrder(Long id) {
-    User user = userService.getCurrentUser();
+    User user = getCurrentUser();
     Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
 
     if (order.getUser() == null || !order.getUser().getId().equals(user.getId())) {
@@ -172,18 +161,6 @@ public class OrderService {
     orderItem.setProduct(cartItem.getProduct());
     orderItem.setQuantity(cartItem.getQuantity());
     orderItem.setPriceAtPurchase(cartItem.getProduct().getPrice());
-    return orderItem;
-  }
-
-  private OrderItem mapGuestItemToOrderItem(OrderItemRequest orderItemRequest, Order order) {
-    Product product = productRepository.findById(orderItemRequest.productId())
-        .orElseThrow(() -> new ProductNotFoundException(orderItemRequest.productId()));
-
-    OrderItem orderItem = new OrderItem();
-    orderItem.setOrder(order);
-    orderItem.setProduct(product);
-    orderItem.setQuantity(orderItemRequest.quantity());
-    orderItem.setPriceAtPurchase(product.getPrice());
     return orderItem;
   }
 

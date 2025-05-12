@@ -17,6 +17,7 @@ import java.util.List;
 public class TireService {
 
   private final TireRepository tireRepository;
+  private final ProductService productService;
 
   // GET
   public List<TireResponse> getAllTire() {
@@ -62,25 +63,15 @@ public class TireService {
 
   // PATCH
   @Transactional
-  public TireResponse updateTire(Long id, UpdateTireRequest request) {
+  public void updateTire(Long id, UpdateTireRequest request) {
     Tire tire = tireRepository.findById(id).orElseThrow(() -> new TireNotFoundException(id));
 
-    if (request.name() != null && !request.name().isBlank())
-      tire.setName(request.name());
-    if (request.price() != null)
-      tire.setPrice(request.price());
-    if (request.description() != null && !request.description().isBlank())
-      tire.setDescription(request.description());
-    if (request.stock() >= 0)
-      tire.setStock(request.stock());
-    if (request.type() != null)
-      tire.setType(request.type());
-    if (request.season() != null && !request.season().isBlank())
+    productService.updateProduct(id, request.request());
+    if(request.season() != null && !request.season().isBlank())
       tire.setSeason(request.season());
-    if (request.size() != null)
+    if(request.size() != null && !request.size().isBlank())
       tire.setSize(request.size());
-
-    return mapToResponse(tireRepository.save(tire));
+    tireRepository.save(tire);
   }
 
   // DELETE

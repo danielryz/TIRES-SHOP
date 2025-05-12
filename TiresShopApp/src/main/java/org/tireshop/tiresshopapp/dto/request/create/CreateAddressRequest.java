@@ -1,14 +1,15 @@
 package org.tireshop.tiresshopapp.dto.request.create;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import org.tireshop.tiresshopapp.entity.AddressType;
 
 public record CreateAddressRequest(
-        @Schema(example = "Warszawska")  String street,
-        @Schema(example = "24")  String houseNumber,
+        @NotBlank @Schema(example = "Warszawska")  String street,
+        @NotBlank @Schema(example = "24")  String houseNumber,
         @Schema(example = "1") String apartmentNumber,
-        @Schema(example = "30-100")  String postalCode,
-        @Schema(example = "Kraków")  String city,
-        @Schema(example = "SHIPPING") AddressType type
+        @NotBlank @Schema(example = "30-100")  String postalCode,
+        @NotBlank @Schema(example = "Kraków")  String city,
+        @NotBlank @Schema(example = "SHIPPING") AddressType type
 ) {
 }

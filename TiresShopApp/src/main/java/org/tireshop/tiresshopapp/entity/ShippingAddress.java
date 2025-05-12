@@ -18,10 +18,14 @@ public class ShippingAddress {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(nullable = false)
   private String street;
+  @Column(nullable = false)
   private String houseNumber;
   private String apartmentNumber;
+  @Column(nullable = false)
   private String postalCode;
+  @Column(nullable = false)
   private String city;
 
   @OneToOne(mappedBy = "shippingAddress", cascade = CascadeType.ALL)

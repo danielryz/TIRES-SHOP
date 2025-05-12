@@ -8,7 +8,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
-import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -42,7 +41,7 @@ public class GlobalExceptionHandler {
   @Operation(hidden = true)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(BadCredentialsException.class)
-  public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+  public ResponseEntity<ErrorResponse> handleBadCredentials() {
     ErrorResponse response =
         new ErrorResponse("Invalid email or password.", HttpStatus.BAD_REQUEST.value());
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -169,9 +168,36 @@ public class GlobalExceptionHandler {
   }
 
   @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(NoOrderActiveForUserException.class)
+  public ResponseEntity<ErrorResponse> handleNoOrderActiveForUser(
+      NoOrderActiveForUserException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(NoShippingAddressAssignException.class)
+  public ResponseEntity<ErrorResponse> handleNoShippingAddressAssign(
+      NoShippingAddressAssignException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler(ShippingAddressAlreadyInUseException.class)
+  public ResponseEntity<ErrorResponse> handleShippingAddressAlreadyInUse(
+      ShippingAddressAlreadyInUseException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @Operation(hidden = true)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> handleGeneral(Exception ex) {
+  public ResponseEntity<ErrorResponse> handleGeneral() {
     ErrorResponse error =
         new ErrorResponse("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR.value());
     return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);

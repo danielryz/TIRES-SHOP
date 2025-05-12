@@ -14,7 +14,6 @@ import org.tireshop.tiresshopapp.repository.AddressRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -71,15 +70,16 @@ public class AddressService {
     User user = getCurrentUser();
     Address address =
         addressRepository.findByIdAndUser(id, user).orElseThrow(AddressNotFoundException::new);
-    Optional.ofNullable(request.street()).filter(street -> !street.isBlank())
-        .ifPresent(address::setStreet);
-    Optional.ofNullable(request.houseNumber()).filter(number -> !number.isBlank())
-        .ifPresent(address::setHouseNumber);
-    Optional.ofNullable(request.apartmentNumber()).filter(number -> !number.isBlank())
-        .ifPresent(address::setApartmentNumber);
-    Optional.ofNullable(request.postalCode()).filter(code -> !code.isBlank())
-        .ifPresent(address::setPostalCode);
-    Optional.ofNullable(request.city()).filter(city -> !city.isBlank()).ifPresent(address::setCity);
+    if(request.street() != null && !request.street().isBlank())
+      address.setStreet(request.street());
+    if(request.houseNumber() != null && !request.houseNumber().isBlank())
+      address.setHouseNumber(request.houseNumber());
+    if(request.apartmentNumber() != null && !request.apartmentNumber().isBlank())
+      address.setApartmentNumber(request.apartmentNumber());
+    if(request.postalCode() != null && !request.postalCode().isBlank())
+      address.setPostalCode(request.postalCode());
+    if(request.city() != null && !request.city().isBlank())
+      address.setCity(request.city());
 
     addressRepository.save(address);
   }

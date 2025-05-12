@@ -1,5 +1,6 @@
 package org.tireshop.tiresshopapp.config;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,12 +29,14 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**", "/api/products",
-            "/api/tire", "/api/rim", "/api/accessory", "/api/products/**", "/api/tire/**",
-            "/api/rim/**", "/api/accessory/**", "/swagger-ui.html", "/swagger-ui/**",
-            "/v3/api-docs/**", "/swagger-resources/**", "/configuration/**", "/webjars/**",
-            "/actuator/**", "/api/shippingAddress/my_order", "/api/orders/public", "/api/image",
-            "/api/image/**").permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**", "/api/products", "/api/tire", "/api/rim",
+                "/api/accessory", "/api/products/**", "/api/tire/**", "/api/rim/**",
+                "/api/accessory/**", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                "/swagger-resources/**", "/configuration/**", "/webjars/**", "/actuator/**",
+                "/api/shippingAddress/my_order", "/api/orders/public", "/api/image",
+                "/api/image/**", "/api/cart", "/api/cart**")
+            .permitAll().anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -45,7 +48,7 @@ public class SecurityConfig {
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
       @Override
-      public void addCorsMappings(CorsRegistry registry) {
+      public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/api/**").allowedOrigins("http://localhost:5174").allowedMethods("*")
             .allowedHeaders("*").allowCredentials(true);
       }
@@ -63,4 +66,5 @@ public class SecurityConfig {
     return config.getAuthenticationManager();
   }
 }
+
 

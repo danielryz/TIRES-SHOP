@@ -40,13 +40,16 @@ public class UserService {
 
   public User getCurrentUser() {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String email;
+
     if (principal instanceof UserDetails userDetails) {
-      email = userDetails.getUsername();
+      String email = userDetails.getUsername();
+      return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+    } else if ("anonymousUser".equals(principal)) {
+      return null;
     } else {
-      email = principal.toString();
+      throw new UserNotFoundException();
     }
-    return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+
   }
 
   // DELETE
@@ -54,7 +57,8 @@ public class UserService {
   public void deleteCurrentUserData() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String email = authentication.getName();
-    User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+    User user =
+        userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
     user.setFirstName(null);
     user.setLastName(null);
     user.setPhoneNumber(null);
@@ -68,7 +72,8 @@ public class UserService {
   public void updateCurrentUser(UpdateUserRequest request) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String email = authentication.getName();
-    User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+    User user =
+        userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
 
     if (request.username() != null && !request.username().isBlank()) {
       user.setUsername(request.username());
@@ -89,7 +94,8 @@ public class UserService {
   public void updateCurrentUserPassword(UpdateUserPasswordRequest request) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String email = authentication.getName();
-    User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+    User user =
+        userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
 
     if (!passwordEncoder.matches(request.password(), user.getPassword())) {
       throw new InvalidPasswordException();
@@ -136,7 +142,8 @@ public class UserService {
   @Transactional
   public void deleteCurrentUser() {
     String email = SecurityContextHolder.getContext().getAuthentication().getName();
-    User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+    User user =
+        userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
 
     userRepository.delete(user);
   }

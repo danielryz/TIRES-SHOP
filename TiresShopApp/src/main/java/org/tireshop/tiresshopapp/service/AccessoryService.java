@@ -4,19 +4,21 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateAccessoryRequest;
+import org.tireshop.tiresshopapp.dto.request.update.UpdateAccessoryRequest;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
 import org.tireshop.tiresshopapp.entity.Accessory;
+import org.tireshop.tiresshopapp.entity.AccessoryType;
 import org.tireshop.tiresshopapp.exception.AccessoryNotFoundException;
 import org.tireshop.tiresshopapp.repository.AccessoryRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AccessoryService {
 
   private final AccessoryRepository accessoryRepository;
+  private final ProductService productService;
 
   // GET
   public List<AccessoryResponse> getAllAccessory() {
@@ -29,7 +31,7 @@ public class AccessoryService {
     return mapToResponse(accessory);
   }
 
-  public List<AccessoryResponse> getAccessoryByAccessoryType(String accessoryType) {
+  public List<AccessoryResponse> getAccessoryByAccessoryType(AccessoryType accessoryType) {
     List<AccessoryResponse> accessory =
         accessoryRepository.findAccessoryByAccessoryType(accessoryType);
     if (accessory.isEmpty()) {
@@ -54,18 +56,14 @@ public class AccessoryService {
 
   // PATCH
   @Transactional
-  public void updateAccessory(Long id, CreateAccessoryRequest request) {
+  public void updateAccessory(Long id, UpdateAccessoryRequest request) {
     Accessory accessory =
         accessoryRepository.findById(id).orElseThrow(() -> new AccessoryNotFoundException(id));
 
-    Optional.ofNullable(request.name()).filter(name -> !name.isBlank())
-        .ifPresent(accessory::setName);
-    Optional.ofNullable(request.price()).ifPresent(accessory::setPrice);
-    Optional.ofNullable(request.description()).filter(description -> !description.isBlank())
-        .ifPresent(accessory::setDescription);
-    Optional.ofNullable(request.stock()).filter(stock -> stock >= 0).ifPresent(accessory::setStock);
-    Optional.ofNullable(request.type()).ifPresent(accessory::setType);
-    Optional.ofNullable(request.accessoryType()).ifPresent(accessory::setAccessoryType);
+    productService.updateProduct(id, request.request());
+    if(request.accessoryType() != null) {
+      accessory.setAccessoryType(request.accessoryType());
+    }
 
     accessoryRepository.save(accessory);
   }

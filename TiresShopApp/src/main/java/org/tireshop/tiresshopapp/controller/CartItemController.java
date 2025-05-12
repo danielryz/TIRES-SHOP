@@ -2,6 +2,7 @@ package org.tireshop.tiresshopapp.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,9 +35,12 @@ public class CartItemController {
               schema = @Schema(implementation = CartItemResponse.class))),
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @GetMapping
-  @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<List<CartItemResponse>> getCartForCurrentUser() {
-    return ResponseEntity.ok(cartItemService.getCartForCurrentUser());
+  public ResponseEntity<List<CartItemResponse>> getCartForCurrentUser(@RequestHeader(
+      value = "X-Client-Id", required = false)
+  @Parameter(
+      description = "Unique client identifier (required if not authenticated)") String clientId) {
+    List<CartItemResponse> cartItems = cartItemService.getCartForCurrentUser(clientId);
+    return ResponseEntity.ok(cartItems);
   }
 
   @Operation(summary = "Returns the cart summary.", description = "USER.")
@@ -46,9 +50,11 @@ public class CartItemController {
               schema = @Schema(implementation = CartSummaryResponse.class))),
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @GetMapping("/summary")
-  @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<CartSummaryResponse> getCartSummary() {
-    return ResponseEntity.ok(cartItemService.getCartSummary());
+  public ResponseEntity<CartSummaryResponse> getCartSummary(@RequestHeader(value = "X-Client-Id",
+      required = false)
+  @Parameter(
+      description = "Unique client identifier (required if not authenticated)") String clientId) {
+    return ResponseEntity.ok(cartItemService.getCartSummary(clientId));
   }
 
   @Operation(summary = "Add items to Cart.", description = "USER.")
@@ -60,10 +66,12 @@ public class CartItemController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PostMapping
-  @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<String> addCartItem(@RequestBody AddToCartRequest request) {
-    cartItemService.addCartItem(request);
-    return ResponseEntity.ok("Items has been added successfully.");// 404, 409
+  public ResponseEntity<String> addCartItem(@RequestBody AddToCartRequest request, @RequestHeader(
+      value = "X-Client-Id", required = false)
+  @Parameter(
+      description = "Unique client identifier (required if not authenticated)") String clientId) {
+    cartItemService.addCartItem(request, clientId);
+    return ResponseEntity.ok("Items has been added successfully.");
   }
 
   @Operation(summary = "Update cart items.", description = "USER.")
@@ -75,11 +83,10 @@ public class CartItemController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PatchMapping("/{id}")
-  @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> updateCartItem(@PathVariable Long id,
       @RequestBody UpdateCartItemRequest request) {
     cartItemService.updateCartItem(id, request);
-    return ResponseEntity.ok("Cart has been updated successfully.");// 404
+    return ResponseEntity.ok("Cart has been updated successfully.");
   }
 
   @Operation(summary = "Delete Product from cart. ", description = "USER.")
@@ -94,7 +101,7 @@ public class CartItemController {
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> deleteCartItem(@PathVariable Long id) {
     cartItemService.deleteCartItem(id);
-    return ResponseEntity.ok("Item has been deleted successfully.");// 404
+    return ResponseEntity.ok("Item has been deleted successfully.");
   }
 
   @Operation(summary = "Delete Cart.", description = "USER.")
@@ -103,9 +110,11 @@ public class CartItemController {
           content = @Content()),
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),})
   @DeleteMapping()
-  @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<String> clearCartForCurrentUser() {
-    cartItemService.clearCartForUser(cartItemService.getCurrentUser());
+  public ResponseEntity<String> clearCartForUser(@RequestHeader(value = "X-Client-Id",
+      required = false)
+  @Parameter(
+      description = "Unique client identifier (required if not authenticated)") String clientId) {
+    cartItemService.clearCartForUser(clientId);
     return ResponseEntity.ok("Cart has been cleared successfully.");
   }
 

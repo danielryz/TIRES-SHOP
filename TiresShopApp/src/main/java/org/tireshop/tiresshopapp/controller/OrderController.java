@@ -1,8 +1,8 @@
 package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -44,8 +44,10 @@ public class OrderController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PostMapping("/public")
-  public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest request) {
-    OrderResponse order = orderService.createOrder(request);
+  public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest request,
+      @RequestHeader(value = "X-Client-Id", required = false) @Parameter(
+          description = "Unique client identifier (required if not authenticated)") String clientId) {
+    OrderResponse order = orderService.createOrder(request, clientId);
     return ResponseEntity.status(HttpStatus.CREATED).body(order);
   }
 
@@ -117,7 +119,7 @@ public class OrderController {
     return ResponseEntity.ok(orderService.getOrderByIdAdmin(id));
   }
 
-  @Operation(summary = "Update order status.", description = "Endpoint dla ADMINA")
+  @Operation(summary = "Update order status.", description = "ADMIN")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Status has been updated successfully."),
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),

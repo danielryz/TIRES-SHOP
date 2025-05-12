@@ -19,11 +19,11 @@ public class Role {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Schema(example = "1", description = "Unikalne id Roli")
+  @Schema(example = "1", description = "Unique Role Id")
   private Long id;
 
   @Column(nullable = false, unique = true)
-  @Schema(example = "ROLE_ADMIN", description = "Role jakie są przypisane do użytkwonika")
+  @Schema(example = "ROLE_ADMIN", description = "User Role")
   private String name;
 
   @JsonIgnore

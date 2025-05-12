@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,7 +82,8 @@ public class AddressController {
               schema = @Schema(implementation = AddressResponse.class))),
       @ApiResponse(responseCode = "403", description = "No authorization", content = @Content())})
   @PostMapping
-  public ResponseEntity<AddressResponse> addAddress(@RequestBody CreateAddressRequest request) {
+  public ResponseEntity<AddressResponse> addAddress(
+      @Valid @RequestBody CreateAddressRequest request) {
     AddressResponse response = addressService.addAddress(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
@@ -95,7 +97,7 @@ public class AddressController {
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PatchMapping("/{id}")
   public ResponseEntity<String> updateAddress(@PathVariable Long id,
-      @RequestBody UpdateAddressRequest request) {
+      @Valid @RequestBody UpdateAddressRequest request) {
     addressService.updateAddress(id, request);
     return ResponseEntity.ok("Address has been updated successfully.");
   }

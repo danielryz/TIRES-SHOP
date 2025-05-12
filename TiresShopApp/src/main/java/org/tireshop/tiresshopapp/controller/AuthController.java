@@ -2,7 +2,6 @@ package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -48,7 +47,7 @@ public class AuthController {
       @ApiResponse(responseCode = "200", description = "You have logged in successfully.",
           content = @Content(schema = @Schema(implementation = AuthResponse.class))),
       @ApiResponse(responseCode = "400", description = "Invalid email or password.",
-          content = @Content(mediaType = "aplication/json",
+          content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class))),})
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {

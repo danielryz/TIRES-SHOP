@@ -44,13 +44,13 @@ public class ProductService {
 
   // PATCH
   @Transactional
-  public ProductResponse updateProduct(Long id, UpdateProductRequest request) {
+  public void updateProduct(Long id, UpdateProductRequest request) {
     Product product =
         productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
 
-    if (request.name() != null && !request.name().isBlank())
+    if(request.name() != null && !request.name().isBlank())
       product.setName(request.name());
-    if (request.price() != null)
+    if(request.price() != null)
       product.setPrice(request.price());
     if (request.description() != null && !request.description().isBlank())
       product.setDescription(request.description());
@@ -59,7 +59,7 @@ public class ProductService {
     if (request.type() != null)
       product.setType(request.type());
 
-    return mapToResponse(productRepository.save(product));
+    productRepository.save(product);
   }
 
   // DELETE

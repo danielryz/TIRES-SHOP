@@ -14,9 +14,12 @@ public class CartItem {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(optional = false)
+  @ManyToOne
   @JoinColumn(name = "user_id")
   private User user;
+
+  @Column(name = "session_id")
+  private String sessionId;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "product_id")

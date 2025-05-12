@@ -18,7 +18,7 @@ public class Order {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = true)
+  @JoinColumn(name = "user_id")
   private User user;
 
   @Enumerated(EnumType.STRING)

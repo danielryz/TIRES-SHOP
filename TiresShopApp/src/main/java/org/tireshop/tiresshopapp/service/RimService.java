@@ -17,6 +17,7 @@ import java.util.List;
 public class RimService {
 
   private final RimRepository rimRepository;
+  private final ProductService productService;
 
   // GET
   public List<RimResponse> getAllRim() {
@@ -65,19 +66,10 @@ public class RimService {
   public void updateRim(Long id, UpdateRimRequest request) {
     Rim rim = rimRepository.findById(id).orElseThrow(() -> new RimNotFoundException(id));
 
-    if (request.name() != null && !request.name().isBlank())
-      rim.setName(request.name());
-    if (request.price() != null)
-      rim.setPrice(request.price());
-    if (request.description() != null && !request.description().isBlank())
-      rim.setDescription(request.description());
-    if (request.stock() >= 0)
-      rim.setStock(request.stock());
-    if (request.type() != null)
-      rim.setType(request.type());
+    productService.updateProduct(id, request.request());
     if (request.material() != null && !request.material().isBlank())
       rim.setMaterial(request.material());
-    if (request.size() != null)
+    if (request.size() != null && !request.size().isBlank())
       rim.setSize(request.size());
 
     rimRepository.save(rim);
