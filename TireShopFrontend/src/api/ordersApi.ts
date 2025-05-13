@@ -12,10 +12,14 @@ export const createOrder = async (
   return response.data;
 };
 
-export const addShippingAddress = async (
+export const addShippingAddressToMyOrder = async (
+  orderId: number,
   data: CreateShippingAddressRequest,
 ): Promise<string> => {
-  const response = await axiosInstance.post("/shippingAddress/my_order", data);
+  const response = await axiosInstance.post(
+    `/shippingAddress/my_order/${orderId}`,
+    data,
+  );
   return response.data;
 };
 

@@ -20,7 +20,7 @@ public record UpdateUserRequest(
         @Schema(example = "Kowalski")
         String lastName,
 
-        @Size(min = 9, max = 14, message = "Invalid Number.")
+        @Size(min = 9, max = 14, message = "Invalid phone number.")
         @Schema(example = "+48 123456789")
         String phoneNumber
 ) {

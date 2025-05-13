@@ -6,6 +6,7 @@ import "./RimPage.css";
 import { addToCart } from "../../api/cartApi";
 import AlertStack from "../../components/alert/AlertStack";
 import { useCart } from "../../context/CartContext";
+import { AxiosError } from "axios";
 
 function RimPage() {
   const [rim, setRim] = useState<Rim[]>([]);
@@ -40,11 +41,12 @@ function RimPage() {
       await addToCart(productId, 1);
       refreshCart();
       showAlert("Dodano produkt do koszyka", "success");
-    } catch (err: any) {
-      showAlert(
-        err?.response?.data?.error || "Nie udało się dodać produktu do koszyka",
-        "error",
-      );
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message: string }>;
+      const message =
+        error.response?.data?.message ||
+        "Nie udało się dodać produktu do koszyka";
+      showAlert(message, "error");
     }
   };
 

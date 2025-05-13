@@ -89,9 +89,9 @@ public class OrderService {
     }
 
     BigDecimal totalAmount = order.getItems().stream()
-            .map(orderItem -> orderItem.getPriceAtPurchase()
-                    .multiply(BigDecimal.valueOf(orderItem.getQuantity())))
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        .map(orderItem -> orderItem.getPriceAtPurchase()
+            .multiply(BigDecimal.valueOf(orderItem.getQuantity())))
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     orderRepository.save(order);
 
@@ -133,8 +133,8 @@ public class OrderService {
   @Transactional
   public void updateOrderStatus(Long id, UpdateOrderStatusRequest request) {
     Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
-    if(request.status() != null)
-    order.setStatus(request.status());
+    if (request.status() != null)
+      order.setStatus(request.status());
     orderRepository.save(order);
   }
 

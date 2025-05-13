@@ -35,13 +35,11 @@ public class ShippingAddressController {
           description = "Address already in use in order. or No active order found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
-  @PostMapping
-  public ResponseEntity<ShippingAddressResponse> addShippingAddress(
-      @Valid @RequestBody CreateShippingAddressRequest request,
-      @RequestHeader(value = "X-Client-Id", required = false) @Parameter(
-          description = "Unique client identifier (required if not authenticated)") String clientId) {
+  @PostMapping("/{orderId}")
+  public ResponseEntity<ShippingAddressResponse> addShippingAddress(@PathVariable Long orderId,
+      @Valid @RequestBody CreateShippingAddressRequest request) {
     ShippingAddressResponse response =
-        shippingAddressService.addShippingAddressToMyOrder(request, clientId);
+        shippingAddressService.addShippingAddressToMyOrder(orderId, request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 

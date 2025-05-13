@@ -70,15 +70,15 @@ public class AddressService {
     User user = getCurrentUser();
     Address address =
         addressRepository.findByIdAndUser(id, user).orElseThrow(AddressNotFoundException::new);
-    if(request.street() != null && !request.street().isBlank())
+    if (request.street() != null && !request.street().isBlank())
       address.setStreet(request.street());
-    if(request.houseNumber() != null && !request.houseNumber().isBlank())
+    if (request.houseNumber() != null && !request.houseNumber().isBlank())
       address.setHouseNumber(request.houseNumber());
-    if(request.apartmentNumber() != null && !request.apartmentNumber().isBlank())
+    if (request.apartmentNumber() != null && !request.apartmentNumber().isBlank())
       address.setApartmentNumber(request.apartmentNumber());
-    if(request.postalCode() != null && !request.postalCode().isBlank())
+    if (request.postalCode() != null && !request.postalCode().isBlank())
       address.setPostalCode(request.postalCode());
-    if(request.city() != null && !request.city().isBlank())
+    if (request.city() != null && !request.city().isBlank())
       address.setCity(request.city());
 
     addressRepository.save(address);

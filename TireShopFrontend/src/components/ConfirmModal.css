@@ -44,12 +44,12 @@
     font-weight: bold;
 }
 
-.confirm-yes {
-    background-color: #E63946;
+.confirm-actions button.confirm-yes {
+    background-color: #444;
     color: white;
 }
 
-.confirm-no {
-    background-color: #444;
+.confirm-actions button.confirm-no {
+    background-color: #E63946;
     color: white;
 }

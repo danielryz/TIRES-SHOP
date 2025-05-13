@@ -1,0 +1,65 @@
+.admin-panel-container {
+    min-height: 100vh;
+    background-color: #f9fafb;
+    padding: 40px;
+    font-family: "Segoe UI", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.admin-panel-title {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #1f2937;
+    text-align: center;
+}
+
+.admin-panel-subtitle {
+    font-size: 16px;
+    color: #6b7280;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    width: 100%;
+}
+
+.panel-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    padding: 25px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.panel-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.panel-icon {
+    font-size: 36px;
+    margin-bottom: 15px;
+    color: #4f46e5;
+}
+
+.panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 5px;
+}
+
+.panel-desc {
+    font-size: 14px;
+    color: #6b7280;
+}

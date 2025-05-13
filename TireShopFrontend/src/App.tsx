@@ -3,14 +3,15 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import HomePage from "./pages/home/HomePage";
 import LoginPage from "./pages/login/LoginPage";
 import RegisterPage from "./pages/login/RegisterPage";
 import TiresPage from "./pages/category/TiresPage";
-import AdminLoginPage from "./pages/admin/AdminLoginPage";
+import AdminLoginPage from "./pages/panel/admin/AdminLoginPage";
 import AdminRoute from "./routes/AdminRoute";
-import AdminPanelPage from "./pages/admin/AdminPanelPage";
+import AdminPanelPage from "./pages/panel/admin/AdminPanelPage";
 import Navbar from "./components/navbars/Navbar";
 import SecondaryNavbar from "./components/navbars/SecondaryNavbar";
 import AccessoryPage from "./pages/category/AccessoryPage";
@@ -26,17 +27,23 @@ import SettingsPage from "./pages/user/SettingsPage";
 import AddressesPage from "./pages/user/AddressesPage";
 import CheckoutPage from "./pages/order/CheckoutPage";
 import UserOrdersPage from "./pages/user/UserOrdersPage";
+import AdminProductPanel from "./pages/panel/page/AdminProductPanel";
+import AdminUserPanel from "./pages/panel/page/AdminUserPanel";
+import AdminOrderPanel from "./pages/panel/page/AdminOrderPanel";
 
-function App() {
+function AppWrapper() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
   return (
-    <Router>
-      <Navbar />
-      <SecondaryNavbar />
+    <div className={isAdminRoute ? "admin-layout" : "default-layout"}>
+      {!isAdminRoute && <Navbar />}
+      {!isAdminRoute && <SecondaryNavbar />}
+
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/admin-login" element={<AdminLoginPage />} />
 
         <Route path="/tires" element={<TiresPage />} />
         <Route path="/accessories" element={<AccessoryPage />} />
@@ -58,10 +65,22 @@ function App() {
 
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminPanelPage />} />
+          <Route path="/admin-login" element={<AdminLoginPage />} />
+          <Route path="/admin/users" element={<AdminUserPanel />} />
+          <Route path="/admin/products" element={<AdminProductPanel />} />
+          <Route path="/admin/orders" element={<AdminOrderPanel />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppWrapper />
     </Router>
   );
 }

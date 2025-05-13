@@ -1,16 +1,5 @@
-.navbar-content {
-    width: 100%;
-    max-width: 1280px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    padding: 0 40px;
-    gap: 20px;
-}
-
-
 .navbar {
-    height: 60px;
+    height: 80px;
     display: flex;
     align-items: center;
     background-color: #2E2E2E;
@@ -21,6 +10,15 @@
     left: 0;
     width: 100%;
     z-index: 1000;
+    gap: 20px;
+}
+.navbar-content {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
     gap: 20px;
 }
 
@@ -143,12 +141,13 @@
     font-size: 18px;
 }
 
-
-
-body {
+.default-layout {
     padding-top: 90px;
 }
 
+.admin-layout {
+    padding-top: 0;
+}
 .cart-count {
     background-color: #E63946;
     color: white;

@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../api/authApi";
-import "./LoginPage.css";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../../../api/authApi";
+import { isAdmin } from "../../../utils/authUtils";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
-import logo from "../../assets/logo.png";
-import { Link } from "react-router-dom";
+import logo from "../../../assets/logo.png";
+import "./AdminLoginPage.css";
+import AlertStack from "../../../components/alert/AlertStack";
 import { AxiosError } from "axios";
-import AlertStack from "../../components/alert/AlertStack";
 
-function LoginPage() {
+function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -17,6 +17,7 @@ function LoginPage() {
   const [alerts, setAlerts] = useState<
     { id: number; message: string; type: "success" | "error" }[]
   >([]);
+
   const showAlert = (message: string, type: "success" | "error") => {
     const id = Date.now() + Math.random();
     setAlerts((prev) => [...prev, { id, message, type }]);
@@ -31,29 +32,35 @@ function LoginPage() {
     try {
       const response = await loginUser({ email, password });
       localStorage.setItem("token", response.token);
-      navigate("/");
+
+      if (isAdmin()) {
+        navigate("/admin");
+      } else {
+        showAlert("Nie jesteś administratorem.", "error");
+        localStorage.removeItem("token");
+      }
     } catch (err: unknown) {
       const error = err as AxiosError<{ message: string }>;
-      const message = error.response?.data?.message || "Login failed.";
+      const message = error.response?.data?.message || "Błąd logowania admina.";
       showAlert(message, "error");
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <Link to={"/"} className="login-logo">
-          <img src={logo} alt="Tire Shop Logo" />
+    <div className="admin-container">
+      <div className="admin-card">
+        <Link to={"/"} className="admin-logo">
+          <img src={logo} alt="Tire Shop Admin Logo" />
         </Link>
-        <h1 className="login-title">LOGOWANIE</h1>
-        <form onSubmit={handleSubmit} className="login-form">
+        <h1 className="admin-title">TIRE SHOP PANEL</h1>
+        <form onSubmit={handleSubmit} className="admin-form">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Admin Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="login-input"
+            className="admin-input"
           />
           <input
             type="password"
@@ -61,22 +68,16 @@ function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="login-input"
+            className="admin-input"
           />
-          <button type="submit" className="login-button">
+          <button type="submit" className="admin-button">
             Zaloguj się
           </button>
         </form>
-        <div className="login-top-link">
-          Nie masz konta?{" "}
-          <Link to="/register" className="register-link">
-            Zarejestruj się
-          </Link>
-        </div>
       </div>
       <AlertStack alerts={alerts} onRemove={removeAlert} />
     </div>
   );
 }
 
-export default LoginPage;
+export default AdminLoginPage;

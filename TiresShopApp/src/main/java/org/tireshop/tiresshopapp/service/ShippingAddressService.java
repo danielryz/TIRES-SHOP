@@ -21,18 +21,33 @@ public class ShippingAddressService {
 
   // POST
   @Transactional
-  public ShippingAddressResponse addShippingAddressToMyOrder(CreateShippingAddressRequest request,
-      String clientId) {
-    Order order = getCurrentOrder(clientId);
+  public ShippingAddressResponse addShippingAddressToMyOrder(Long orderId,
+      CreateShippingAddressRequest request) {
+    Order order =
+        orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
+
     if (order.getShippingAddress() != null) {
       throw new ShippingAddressAlreadyInUseException();
     }
+
     ShippingAddress shippingAddress = new ShippingAddress();
     copyFields(request, shippingAddress);
+
     shippingAddress.setOrder(order);
     order.setShippingAddress(shippingAddress);
 
-    return mapToResponse(shippingAddressRepository.save(shippingAddress));
+    ShippingAddress savedAddress = shippingAddressRepository.save(shippingAddress);
+    orderRepository.save(order);
+
+    return mapToResponse(savedAddress);
+  }
+
+  private void copyFields(CreateShippingAddressRequest request, ShippingAddress shippingAddress) {
+    shippingAddress.setStreet(request.street());
+    shippingAddress.setHouseNumber(request.houseNumber());
+    shippingAddress.setApartmentNumber(request.apartmentNumber());
+    shippingAddress.setPostalCode(request.postalCode());
+    shippingAddress.setCity(request.city());
   }
 
   // PATCH
@@ -46,11 +61,11 @@ public class ShippingAddressService {
     }
     if (request.street() != null && !request.street().isBlank())
       shippingAddress.setStreet(request.street());
-    if(request.houseNumber() != null && !request.houseNumber().isBlank())
+    if (request.houseNumber() != null && !request.houseNumber().isBlank())
       shippingAddress.setHouseNumber(request.houseNumber());
-    if(request.apartmentNumber() != null && !request.apartmentNumber().isBlank())
+    if (request.apartmentNumber() != null && !request.apartmentNumber().isBlank())
       shippingAddress.setApartmentNumber(request.apartmentNumber());
-    if(request.postalCode() != null && !request.postalCode().isBlank())
+    if (request.postalCode() != null && !request.postalCode().isBlank())
       shippingAddress.setPostalCode(request.postalCode());
     if (request.city() != null && !request.city().isBlank())
       shippingAddress.setCity(request.city());
@@ -70,13 +85,7 @@ public class ShippingAddressService {
     shippingAddressRepository.delete(shippingAddress);
   }
 
-  private void copyFields(CreateShippingAddressRequest request, ShippingAddress shippingAddress) {
-    shippingAddress.setStreet(request.street());
-    shippingAddress.setHouseNumber(request.houseNumber());
-    shippingAddress.setApartmentNumber(request.apartmentNumber());
-    shippingAddress.setPostalCode(request.postalCode());
-    shippingAddress.setCity(request.city());
-  }
+
 
   private Order getCurrentOrder(String clientId) {
 

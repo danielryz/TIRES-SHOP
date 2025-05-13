@@ -61,7 +61,7 @@ public class AccessoryService {
         accessoryRepository.findById(id).orElseThrow(() -> new AccessoryNotFoundException(id));
 
     productService.updateProduct(id, request.request());
-    if(request.accessoryType() != null) {
+    if (request.accessoryType() != null) {
       accessory.setAccessoryType(request.accessoryType());
     }
 

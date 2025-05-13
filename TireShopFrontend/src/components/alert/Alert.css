@@ -27,7 +27,7 @@
     color: white;
 }
 
-.alert-close {
+.alert-buttons button.alert-close {
     background: transparent;
     border: none;
     color: white;

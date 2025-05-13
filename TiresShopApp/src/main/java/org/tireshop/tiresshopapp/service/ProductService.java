@@ -48,9 +48,9 @@ public class ProductService {
     Product product =
         productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
 
-    if(request.name() != null && !request.name().isBlank())
+    if (request.name() != null && !request.name().isBlank())
       product.setName(request.name());
-    if(request.price() != null)
+    if (request.price() != null)
       product.setPrice(request.price());
     if (request.description() != null && !request.description().isBlank())
       product.setDescription(request.description());

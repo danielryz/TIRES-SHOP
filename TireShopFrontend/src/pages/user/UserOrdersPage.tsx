@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { cancelOrder, getUserOrders } from "../../api/ordersApi";
 import { OrderResponse } from "../../types/Order";
 import AlertStack from "../../components/alert/AlertStack";
 import "./UserOrdersPage.css";
 import ConfirmModal from "../../components/ConfirmModal";
+import { AxiosError } from "axios";
 
 function UserOrdersPage() {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
@@ -15,9 +16,8 @@ function UserOrdersPage() {
   const [alerts, setAlerts] = useState<
     { id: number; message: string; type: "success" | "error" }[]
   >([]);
-  const nextId = useRef(0);
   const showAlert = (message: string, type: "success" | "error") => {
-    const id = nextId.current++;
+    const id = Date.now() + Math.random();
     setAlerts((prev) => [...prev, { id, message, type }]);
   };
 
@@ -33,8 +33,11 @@ function UserOrdersPage() {
     try {
       const data = await getUserOrders();
       setOrders(data);
-    } catch {
-      showAlert("Błąd podczas ładowania zamówień.", "error");
+    } catch (err: unknown) {
+      const error = err as AxiosError<{ message: string }>;
+      const message =
+        error.response?.data?.message || "Błąd podczas ładowania zamówień.";
+      showAlert(message, "error");
     } finally {
       setLoading(false);
     }

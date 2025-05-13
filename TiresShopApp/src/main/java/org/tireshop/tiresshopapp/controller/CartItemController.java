@@ -98,7 +98,6 @@ public class CartItemController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @DeleteMapping("/{id}")
-  @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> deleteCartItem(@PathVariable Long id) {
     cartItemService.deleteCartItem(id);
     return ResponseEntity.ok("Item has been deleted successfully.");

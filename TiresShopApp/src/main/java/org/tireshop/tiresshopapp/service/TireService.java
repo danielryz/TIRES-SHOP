@@ -67,9 +67,9 @@ public class TireService {
     Tire tire = tireRepository.findById(id).orElseThrow(() -> new TireNotFoundException(id));
 
     productService.updateProduct(id, request.request());
-    if(request.season() != null && !request.season().isBlank())
+    if (request.season() != null && !request.season().isBlank())
       tire.setSeason(request.season());
-    if(request.size() != null && !request.size().isBlank())
+    if (request.size() != null && !request.size().isBlank())
       tire.setSize(request.size());
     tireRepository.save(tire);
   }
