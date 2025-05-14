@@ -36,4 +36,6 @@ export interface OrderResponse {
   guestEmail: string;
   guestFirstName: string;
   guestLastName: string;
+  isPaid: boolean;
+  paidAt: string;
 }

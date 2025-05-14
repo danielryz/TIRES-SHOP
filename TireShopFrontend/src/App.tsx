@@ -30,6 +30,7 @@ import UserOrdersPage from "./pages/user/UserOrdersPage";
 import AdminProductPanel from "./pages/panel/page/AdminProductPanel";
 import AdminUserPanel from "./pages/panel/page/AdminUserPanel";
 import AdminOrderPanel from "./pages/panel/page/AdminOrderPanel";
+import PaymentPage from "./pages/order/PaymentPage";
 
 function AppWrapper() {
   const location = useLocation();
@@ -57,6 +58,7 @@ function AppWrapper() {
 
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/payment/:orderId" element={<PaymentPage />} />
 
         <Route path="/ranking-opon" element={<TireRankingPage />} />
         <Route path="/montaz" element={<InstallationPage />} />

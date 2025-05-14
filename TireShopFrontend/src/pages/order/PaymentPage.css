@@ -1,0 +1,65 @@
+.payment-page {
+    background-color: #1e1e1e;
+    color: white;
+    padding: 40px 60px;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.payment-page h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #e63946;
+}
+
+.payment-page p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+.payment-buttons {
+    margin-top: 30px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.pay-btn,
+.later-btn {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: none;
+}
+
+.pay-btn {
+    background-color: #e63946;
+    color: white;
+}
+
+.pay-btn:hover {
+    background-color: #c5303c;
+    transform: scale(1.05);
+}
+
+.later-btn {
+    background-color: #2e2e2e;
+    color: #ccc;
+    border: 1px solid #444;
+}
+
+.later-btn:hover {
+    background-color: #3a3a3a;
+    color: white;
+    transform: scale(1.03);
+}
+
+.payment-page .success-text {
+    color: #4caf50;
+    font-weight: bold;
+    margin-top: 20px;
+}

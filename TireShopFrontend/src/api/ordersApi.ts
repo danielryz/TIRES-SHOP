@@ -32,3 +32,15 @@ export const cancelOrder = async (id: number): Promise<string> => {
   const response = await axiosInstance.patch(`/orders/${id}/cancel`);
   return response.data;
 };
+
+export const payForYourOrder = async (orderId: number): Promise<string> => {
+  const response = await axiosInstance.patch(`/orders/public/${orderId}/pay`);
+  return response.data;
+};
+
+export const getUserOrderById = async (
+  orderId: number,
+): Promise<OrderResponse> => {
+  const response = await axiosInstance.get(`/orders/public/user/${orderId}`);
+  return response.data;
+};

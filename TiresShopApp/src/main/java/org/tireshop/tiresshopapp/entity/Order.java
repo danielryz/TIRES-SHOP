@@ -42,4 +42,9 @@ public class Order {
   @Column(name = "session_id")
   private String sessionId;
 
+  @Column(nullable = false)
+  private boolean isPaid = false;
+
+  private LocalDateTime paidAt;
+
 }

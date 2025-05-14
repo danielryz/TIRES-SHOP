@@ -195,6 +195,14 @@ public class GlobalExceptionHandler {
   }
 
   @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler(OrderIsPaidException.class)
+  public ResponseEntity<ErrorResponse> handleOrderIsPaid(OrderIsPaidException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @Operation(hidden = true)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGeneral() {

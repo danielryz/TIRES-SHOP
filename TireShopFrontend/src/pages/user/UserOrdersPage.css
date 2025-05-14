@@ -53,7 +53,7 @@
     font-weight: bold;
 }
 
-.cancel-order-btn {
+.cancel-order-btn, .pay-order-btn {
     padding: 6px 16px;
     background-color: transparent;
     border: 1px solid #E63946;
@@ -63,7 +63,7 @@
     transition: all 0.3s ease;
 }
 
-.cancel-order-btn:hover {
+.cancel-order-btn:hover, .pay-order-btn:hover {
     background-color: #E63946;
     color: white;
 }
@@ -87,4 +87,16 @@
 
 .status.in_progress {
     color: #3498db;
+}
+.status.confirmed {
+    color: #fc7100;
+}
+
+.paid {
+    color: green;
+    font-weight: bold;
+}
+.unpaid {
+    color: red;
+    font-weight: bold;
 }

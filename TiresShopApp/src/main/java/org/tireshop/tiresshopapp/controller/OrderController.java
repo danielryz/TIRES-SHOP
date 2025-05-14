@@ -68,13 +68,16 @@ public class OrderController {
       @ApiResponse(responseCode = "200", description = "Order returned successfully.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = OrderResponse.class))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "401", description = "No authorization.",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Order Not Found.",
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
-  @GetMapping("/user/{id}")
-  @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<OrderResponse> getUserOrderById(@PathVariable Long id) {
-    return ResponseEntity.ok(orderService.getUserOrderById(id));
+  @GetMapping("/public/user/{id}")
+  public ResponseEntity<OrderResponse> getUserOrderById(@PathVariable Long id, @RequestHeader(
+      value = "X-Client-Id", required = false)
+  @Parameter(
+      description = "Unique client identifier (required if not authenticated)") String clientId) {
+    return ResponseEntity.ok(orderService.getUserOrderById(id, clientId));
   }
 
   @Operation(summary = "Cancellation of order.", description = "USER.")
@@ -131,5 +134,23 @@ public class OrderController {
       @RequestBody UpdateOrderStatusRequest request) {
     orderService.updateOrderStatus(id, request);
     return ResponseEntity.ok("Status has been updated successfully.");
+  }
+
+  @Operation(summary = "Update order paid status.", description = "Public")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Order has been payed successfully."),
+      @ApiResponse(responseCode = "401", description = "No authorization.",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "404", description = "Not Found.",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "409", description = "Conflict.",
+          content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
+  @PatchMapping("/public/{orderId}/pay")
+  public ResponseEntity<String> payForYourOrder(@PathVariable Long orderId, @RequestHeader(
+      value = "X-Client-Id", required = false)
+  @Parameter(
+      description = "Unique client identifier (required if not authenticated)") String clientId) {
+    orderService.payForYourOrder(orderId, clientId);
+    return ResponseEntity.ok("Order has been payed successfully.");
   }
 }

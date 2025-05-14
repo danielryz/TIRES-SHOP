@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { cancelOrder, getUserOrders } from "../../api/ordersApi";
 import { OrderResponse } from "../../types/Order";
 import AlertStack from "../../components/alert/AlertStack";
-import "./UserOrdersPage.css";
 import ConfirmModal from "../../components/ConfirmModal";
 import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom"; // <== nowość
+import "./UserOrdersPage.css";
 
 function UserOrdersPage() {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
@@ -16,6 +17,9 @@ function UserOrdersPage() {
   const [alerts, setAlerts] = useState<
     { id: number; message: string; type: "success" | "error" }[]
   >([]);
+
+  const navigate = useNavigate();
+
   const showAlert = (message: string, type: "success" | "error") => {
     const id = Date.now() + Math.random();
     setAlerts((prev) => [...prev, { id, message, type }]);
@@ -24,10 +28,6 @@ function UserOrdersPage() {
   const removeAlert = (id: number) => {
     setAlerts((prev) => prev.filter((a) => a.id !== id));
   };
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
 
   const fetchOrders = async () => {
     try {
@@ -43,6 +43,10 @@ function UserOrdersPage() {
     }
   };
 
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
   const handleCancelClick = (orderId: number) => {
     setSelectedOrderId(orderId);
     setShowConfirm(true);
@@ -57,8 +61,10 @@ function UserOrdersPage() {
           o.id === selectedOrderId ? { ...o, status: "CANCELLED" } : o,
         ),
       );
+      showAlert("Zamówienie zostało anulowane.", "success");
     } catch (err) {
       console.error("Błąd anulowania zamówienia:", err);
+      showAlert("Błąd podczas anulowania zamówienia.", "error");
     } finally {
       setShowConfirm(false);
       setSelectedOrderId(null);
@@ -68,6 +74,10 @@ function UserOrdersPage() {
   const cancelModal = () => {
     setShowConfirm(false);
     setSelectedOrderId(null);
+  };
+
+  const handlePayment = (orderId: number) => {
+    navigate(`/payment/${orderId}`);
   };
 
   if (loading) return <p>Ładowanie zamówień...</p>;
@@ -90,7 +100,22 @@ function UserOrdersPage() {
                   {order.status}
                 </span>
               </div>
-              <div>Data: {new Date(order.createdAt).toLocaleString()}</div>
+              <div>
+                Data zamówienia: {new Date(order.createdAt).toLocaleString()}
+              </div>
+              <div>
+                Płatność:{" "}
+                {order.isPaid ? (
+                  <span className="paid">OPŁACONE</span>
+                ) : (
+                  <span className="unpaid">NIEOPŁACONE</span>
+                )}
+              </div>
+              {order.paidAt && (
+                <div>
+                  Data płatności: {new Date(order.paidAt).toLocaleString()}
+                </div>
+              )}
             </div>
             <div className="order-items">
               {order.items.map((item) => (
@@ -106,12 +131,22 @@ function UserOrdersPage() {
                 Łącznie: <strong>{order.totalAmount.toFixed(2)} zł</strong>
               </div>
               {order.status === "CREATED" && (
-                <button
-                  onClick={() => handleCancelClick(order.id)}
-                  className="cancel-order-btn"
-                >
-                  Anuluj
-                </button>
+                <>
+                  {!order.isPaid && (
+                    <button
+                      onClick={() => handlePayment(order.id)}
+                      className="pay-order-btn"
+                    >
+                      Opłać zamówienie
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleCancelClick(order.id)}
+                    className="cancel-order-btn"
+                  >
+                    Anuluj
+                  </button>
+                </>
               )}
             </div>
           </div>

@@ -163,7 +163,7 @@ function CheckoutPage() {
 
       showAlert("Zamówienie złożone pomyślnie!", "success");
       refreshCart();
-      setTimeout(() => navigate("/"), 2000);
+      setTimeout(() => navigate(`/payment/${createdOrder.id}`), 10000);
     } catch {
       showAlert("Nie udało się złożyć zamówienia.", "error");
     } finally {

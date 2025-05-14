@@ -17,6 +17,7 @@ import org.tireshop.tiresshopapp.repository.ProductRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,14 +108,17 @@ public class OrderService {
         .collect(Collectors.toList());
   }
 
-  public OrderResponse getUserOrderById(Long id) {
+  @Transactional(readOnly = true)
+  public OrderResponse getUserOrderById(Long id, String clientId) {
+    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
     User user = getCurrentUser();
-    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));// 404
-
-    if (!order.getUser().getId().equals(user.getId())) {
-      throw new AccessDeniedException("Access denied");// 403
+    if (user != null && user.getId().equals(order.getUser().getId())) {
+      return mapOrderToResponse(order);
+    } else if (clientId != null && clientId.equals(order.getSessionId())) {
+      return mapOrderToResponse(order);
+    } else {
+      throw new AccessDeniedException("Access denied to get user order");
     }
-    return mapOrderToResponse(order);
   }
 
   // GET for Admin
@@ -124,6 +128,7 @@ public class OrderService {
         .collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
   public OrderResponse getOrderByIdAdmin(Long id) {
     Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
     return mapOrderToResponse(order);
@@ -155,6 +160,27 @@ public class OrderService {
     orderRepository.save(order);
   }
 
+  @Transactional
+  public void payForYourOrder(Long id, String clientId) {
+    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+    User user = getCurrentUser();
+    if (order.isPaid()) {
+      throw new OrderIsPaidException();
+    }
+
+    if (user != null && user.getId().equals(order.getUser().getId())) {
+      order.setPaid(true);
+      order.setPaidAt(LocalDateTime.now());
+    } else if (clientId != null && clientId.equals(order.getSessionId())) {
+      order.setPaid(true);
+      order.setPaidAt(LocalDateTime.now());
+    } else {
+      throw new AccessDeniedException("Access denied to mark as paid");
+    }
+
+    orderRepository.save(order);
+  }
+
   private OrderItem mapCartItemToOrderItem(CartItem cartItem, Order order) {
     OrderItem orderItem = new OrderItem();
     orderItem.setOrder(order);
@@ -175,7 +201,8 @@ public class OrderService {
     return new OrderResponse(order.getId(), order.getStatus(), totalAmount,
         order.getItems().stream().map(this::mapToOrderItemResponse).toList(), order.getCreatedAt(),
         order.getEmail(), order.getGuestName() != null ? order.getGuestName().split(" ")[0] : null,
-        order.getGuestName() != null ? order.getGuestName().split(" ")[1] : null);
+        order.getGuestName() != null ? order.getGuestName().split(" ")[1] : null, order.isPaid(),
+        order.getPaidAt());
   }
 
   private OrderItemResponse mapToOrderItemResponse(OrderItem orderItem) {
