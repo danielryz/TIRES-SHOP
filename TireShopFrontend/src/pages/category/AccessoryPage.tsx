@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getAccessory } from "../../api/accessoryApi";
 import { getImagesByProductId } from "../../api/imageApi";
 import { Accessory } from "../../types/Accessory";
-import "./AccessoryPage.css";
+import "./CategoryPage.css";
 import { addToCart } from "../../api/cartApi";
 import AlertStack from "../../components/alert/AlertStack";
 import { useCart } from "../../context/CartContext";
@@ -81,10 +81,6 @@ function AccessoryPage() {
                 imageUrls: images.map((img) => img.url),
               };
             } catch {
-              console.error(
-                "Failed to load image for accessory:",
-                accessory.id,
-              );
               return { ...accessory, imageUrls: [] };
             }
           }),
@@ -101,8 +97,20 @@ function AccessoryPage() {
     fetchAccessory();
   }, []);
 
-  if (loading) return <p>Loading accessory...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading)
+    return (
+      <div className="load-product">
+        {" "}
+        <p>Loading products...</p>{" "}
+      </div>
+    );
+  if (error)
+    return (
+      <div className="failed-load-product">
+        {" "}
+        <p>{error}</p>{" "}
+      </div>
+    );
   const filteredAndSortedAccessory = accessory
     .filter((a) => {
       return a.price >= minPrice && a.price <= maxPrice;
@@ -113,7 +121,7 @@ function AccessoryPage() {
       return 0;
     });
   return (
-    <div className="accessory-page">
+    <div className="category-page">
       <aside className="filters">
         <h3>Filtry</h3>
         <label className="custom-checkbox">
@@ -136,8 +144,8 @@ function AccessoryPage() {
           <span className="checkbox-label">Opony Wielosezonowe</span>
         </label>
       </aside>
-      <main className="accessory-list">
-        <div className="accessory-controls">
+      <main className="category-list">
+        <div className="category-controls">
           <div className="price-range">
             <label>Cena (zł):</label>
             <input
@@ -178,19 +186,19 @@ function AccessoryPage() {
           </div>
         </div>
         {filteredAndSortedAccessory.map((accessory) => (
-          <div key={accessory.id} className="accessory-card">
-            <div className="accessory-image">
+          <div key={accessory.id} className="category-card">
+            <div className="category-image">
               {accessory.imageUrls && accessory.imageUrls.length > 0 ? (
                 <img
                   src={accessory.imageUrls[0]}
                   alt={accessory.name}
-                  className="accessory-img"
+                  className="category-img"
                 />
               ) : (
                 <div className="image-placeholder">Brak zdjęcia</div>
               )}
             </div>
-            <div className="accessory-info">
+            <div className="category-info">
               <h2>{accessory.name}</h2>
               <p>
                 <strong>Rodzaj:</strong> {accessory.accessoryType}
@@ -198,9 +206,9 @@ function AccessoryPage() {
               <p>
                 <strong>Stan:</strong> {accessory.stock} szt.
               </p>
-              <p className="accessory-desc">{accessory.description}</p>
+              <p className="category-desc">{accessory.description}</p>
             </div>
-            <div className="accessory-buy">
+            <div className="category-buy">
               <div className="buy-box">
                 <p className="price">{accessory.price.toFixed(2)} zł</p>
                 <p className="tax-info">Zawiera VAT • wysyłka 1–2 dni</p>

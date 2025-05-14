@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getTires } from "../../api/tiresApi";
 import { getImagesByProductId } from "../../api/imageApi";
 import { Tire } from "../../types/Tire";
-import "./TiresPage.css";
+import "./CategoryPage.css";
 import { addToCart } from "../../api/cartApi";
 import AlertStack from "../../components/alert/AlertStack";
 import { useCart } from "../../context/CartContext";
@@ -81,7 +81,6 @@ function TiresPage() {
                 imageUrls: images.map((img) => img.url),
               };
             } catch {
-              console.error("Failed to load image for tire:", tire.id);
               return { ...tire, imageUrls: [] };
             }
           }),
@@ -89,7 +88,7 @@ function TiresPage() {
 
         setTires(tiresWithImages);
       } catch {
-        setError("Failed to load tires.");
+        setError("Failed to load tires...");
       } finally {
         setLoading(false);
       }
@@ -98,8 +97,20 @@ function TiresPage() {
     fetchTires();
   }, []);
 
-  if (loading) return <p>Loading tires...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading)
+    return (
+      <div className="load-product">
+        {" "}
+        <p>Loading products...</p>{" "}
+      </div>
+    );
+  if (error)
+    return (
+      <div className="failed-load-product">
+        {" "}
+        <p>{error}</p>{" "}
+      </div>
+    );
   const filteredAndSortedTires = tires
     .filter((t) => {
       const season = t.season.toLowerCase();
@@ -118,7 +129,7 @@ function TiresPage() {
     });
 
   return (
-    <div className="tires-page">
+    <div className="category-page">
       <aside className="filters">
         <h3>Filtry</h3>
         <label className="custom-checkbox">
@@ -141,8 +152,8 @@ function TiresPage() {
           <span className="checkbox-label">Opony Wielosezonowe</span>
         </label>
       </aside>
-      <main className="tire-list">
-        <div className="tire-controls">
+      <main className="category-list">
+        <div className="category-controls">
           <div className="price-range">
             <label>Cena (zł):</label>
             <input
@@ -183,19 +194,19 @@ function TiresPage() {
           </div>
         </div>
         {filteredAndSortedTires.map((tire) => (
-          <div key={tire.id} className="tire-card">
-            <div className="tire-image">
+          <div key={tire.id} className="category-card">
+            <div className="category-image">
               {tire.imageUrls && tire.imageUrls.length > 0 ? (
                 <img
                   src={tire.imageUrls[0]}
                   alt={tire.name}
-                  className="tire-img"
+                  className="category-img"
                 />
               ) : (
                 <div className="image-placeholder">Brak zdjęcia</div>
               )}
             </div>
-            <div className="tire-info">
+            <div className="category-info">
               <h2>{tire.name}</h2>
               <p>
                 <strong>Sezon:</strong> {tire.season}
@@ -206,9 +217,9 @@ function TiresPage() {
               <p>
                 <strong>Stan:</strong> {tire.stock} szt.
               </p>
-              <p className="tire-desc">{tire.description}</p>
+              <p className="category-desc">{tire.description}</p>
             </div>
-            <div className="tire-buy">
+            <div className="category-buy">
               <div className="buy-box">
                 <p className="price">{tire.price.toFixed(2)} zł</p>
                 <p className="tax-info">Zawiera VAT • wysyłka 1–2 dni</p>

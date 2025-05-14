@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { getRim } from "../../api/rimApi";
 import { getImagesByProductId } from "../../api/imageApi";
 import { Rim } from "../../types/Rim";
-import "./RimPage.css";
+import "./CategoryPage.css";
 import { addToCart } from "../../api/cartApi";
 import AlertStack from "../../components/alert/AlertStack";
 import { useCart } from "../../context/CartContext";
@@ -81,7 +81,6 @@ function RimPage() {
                 imageUrls: images.map((img) => img.url),
               };
             } catch {
-              console.error("Failed to load image for rim:", rim.id);
               return { ...rim, imageUrls: [] };
             }
           }),
@@ -98,8 +97,20 @@ function RimPage() {
     fetchRim();
   }, []);
 
-  if (loading) return <p>Loading rim...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading)
+    return (
+      <div className="load-product">
+        {" "}
+        <p>Loading products...</p>{" "}
+      </div>
+    );
+  if (error)
+    return (
+      <div className="failed-load-product">
+        {" "}
+        <p>{error}</p>{" "}
+      </div>
+    );
   const filteredAndSortedRim = rim
     .filter((r) => {
       return r.price >= minPrice && r.price <= maxPrice;
@@ -110,7 +121,7 @@ function RimPage() {
       return 0;
     });
   return (
-    <div className="rim-page">
+    <div className="category-page">
       <aside className="filters">
         <h3>Filtry</h3>
         <label className="custom-checkbox">
@@ -133,8 +144,8 @@ function RimPage() {
           <span className="checkbox-label">Opony Wielosezonowe</span>
         </label>
       </aside>
-      <main className="rim-list">
-        <div className="rim-controls">
+      <main className="category-list">
+        <div className="category-controls">
           <div className="price-range">
             <label>Cena (zł):</label>
             <input
@@ -175,19 +186,19 @@ function RimPage() {
           </div>
         </div>
         {filteredAndSortedRim.map((rim) => (
-          <div key={rim.id} className="rim-card">
-            <div className="rim-image">
+          <div key={rim.id} className="category-card">
+            <div className="category-image">
               {rim.imageUrls && rim.imageUrls.length > 0 ? (
                 <img
                   src={rim.imageUrls[0]}
                   alt={rim.name}
-                  className="rim-img"
+                  className="category-img"
                 />
               ) : (
                 <div className="image-placeholder">Brak zdjęcia</div>
               )}
             </div>
-            <div className="rim-info">
+            <div className="category-info">
               <h2>{rim.name}</h2>
               <p>
                 <strong>Rozmiar:</strong> {rim.size}
@@ -201,9 +212,9 @@ function RimPage() {
               <p>
                 <strong>Stan:</strong> {rim.stock} szt.
               </p>
-              <p className="rim-desc">{rim.description}</p>
+              <p className="category-desc">{rim.description}</p>
             </div>
-            <div className="rim-buy">
+            <div className="category-buy">
               <div className="buy-box">
                 <p className="price">{rim.price.toFixed(2)} zł</p>
                 <p className="tax-info">Zawiera VAT • wysyłka 1–2 dni</p>

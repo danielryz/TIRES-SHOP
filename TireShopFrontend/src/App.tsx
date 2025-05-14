@@ -62,10 +62,9 @@ function AppWrapper() {
         <Route path="/montaz" element={<InstallationPage />} />
         <Route path="/dobor-opon" element={<TireSelectionPage />} />
         <Route path="/dobor-felg" element={<RimSelectionPage />} />
-
+        <Route path="/admin-login" element={<AdminLoginPage />} />
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminPanelPage />} />
-          <Route path="/admin-login" element={<AdminLoginPage />} />
           <Route path="/admin/users" element={<AdminUserPanel />} />
           <Route path="/admin/products" element={<AdminProductPanel />} />
           <Route path="/admin/orders" element={<AdminOrderPanel />} />

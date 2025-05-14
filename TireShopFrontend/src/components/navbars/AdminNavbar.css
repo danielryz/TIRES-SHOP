@@ -32,9 +32,15 @@
     align-items: center;
 }
 
+.navbarAdmin-logo {
+    position: fixed;
+    z-index: 1;
+}
 .navbarAdmin-logo img {
-    height: 80px;
+    height: 100px;
+    position: absolute;
     transition: transform 0.2s ease;
+    top: -45px;
 }
 
 .navbarAdmin-logo img:hover {
@@ -143,4 +149,20 @@
     cursor: pointer;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.admin-logout-button {
+    background-color: transparent;
+    border: 1px solid #4e75b9;
+    color: #4e75b9;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.admin-logout-button:hover {
+    background-color: #4e75b9;
+    color: white;
 }

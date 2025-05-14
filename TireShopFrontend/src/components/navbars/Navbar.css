@@ -35,6 +35,7 @@
 .navbar-logo img {
     height: 100px;
     position: absolute;
+    transition: transform 0.2s ease;
     top: -45px;
 }
 

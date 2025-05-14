@@ -9,7 +9,7 @@ import logo from "../../assets/logo.png";
 // @ts-expect-error
 import avatar from "../../assets/admin.png";
 import "./AdminNavbar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface User {
   firstName: string;
@@ -19,7 +19,7 @@ interface User {
 
 function AdminNavbar() {
   const [admin, setAdmin] = useState<User | null>(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
@@ -32,11 +32,16 @@ function AdminNavbar() {
     fetchAdmin();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/admin-logoin");
+  };
+
   return (
     <nav className="admin-navbar">
       <div className="admin-navbar-content">
         <div className="admin-nav-left">
-          <Link to="/" className="navbarAdmin-logo">
+          <Link to="/admin" className="navbarAdmin-logo">
             <img src={logo} alt="TireShop Logo" />
           </Link>
         </div>
@@ -80,7 +85,9 @@ function AdminNavbar() {
               </div>
             </div>
           )}
-          <LogoutButton />
+          <button onClick={handleLogout} className="admin-logout-button">
+            Logout
+          </button>
         </div>
       </div>
     </nav>
