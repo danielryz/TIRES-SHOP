@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import org.tireshop.tiresshopapp.dto.request.create.AddImagesRequest;
 import org.tireshop.tiresshopapp.dto.request.create.CreateImageRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateImageRequest;
 import org.tireshop.tiresshopapp.dto.response.ImageResponse;
@@ -70,6 +71,19 @@ public class ImageController {
   public ResponseEntity<String> createImage(@RequestBody CreateImageRequest request) {
     imageService.createImage(request);
     return ResponseEntity.ok("Image added successfully.");
+  }
+
+  @Operation(summary = "Adding a photos to a product.", description = "ADMIN.")
+  @ApiResponses({@ApiResponse(responseCode = "200", description = "Images added successfully."),
+          @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+          @ApiResponse(responseCode = "404", description = "Product Not Found.",
+                  content = @Content(mediaType = "application/json",
+                          schema = @Schema(implementation = ErrorResponse.class)))})
+  @PostMapping("/api/admin/images/product/{productId}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<String> addImagesToProduct(@PathVariable Long productId, @RequestBody List<AddImagesRequest> requests) {
+    imageService.addImagesToProduct(productId, requests);
+    return ResponseEntity.ok("Images added successfully.");
   }
 
   @Operation(summary = "Update product image.", description = "ADMIN.")

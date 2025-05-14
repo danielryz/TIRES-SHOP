@@ -3,6 +3,7 @@ package org.tireshop.tiresshopapp.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.tireshop.tiresshopapp.dto.request.create.AddImagesRequest;
 import org.tireshop.tiresshopapp.dto.request.create.CreateImageRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateImageRequest;
 import org.tireshop.tiresshopapp.dto.response.ImageResponse;
@@ -48,7 +49,17 @@ public class ImageService {
     image.setProduct(product);
 
     imageRepository.save(image);
+  }
 
+  public void addImagesToProduct(Long productId, List<AddImagesRequest> requests) {
+    Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new ProductNotFoundException(productId));
+    for (AddImagesRequest request : requests) {
+      Image image = new Image();
+      image.setUrl(request.url());
+      image.setProduct(product);
+      imageRepository.save(image);
+    }
   }
 
   @Transactional

@@ -33,3 +33,40 @@ export const deleteUser = async (): Promise<string> => {
   const response = await axiosInstance.delete("/users/me/delete");
   return response.data || "Konto zostało usunięte.";
 };
+
+//ADMIN API FOR USER
+
+export const getAllUsers = async (): Promise<User[]> => {
+  const response = await axiosInstance.get("/admin/users");
+  return response.data;
+};
+
+export const getUserById = async (id: number): Promise<User> => {
+  const response = await axiosInstance.get(`/admin/users/${id}`);
+  return response.data;
+};
+
+export const addRoleToUser = async (
+  userId: number,
+  roleId: number,
+): Promise<string> => {
+  const response = await axiosInstance.post(
+    `/admin/users/${userId}/role/${roleId}`,
+  );
+  return response.data;
+};
+
+export const removeUserRole = async (
+  userId: number,
+  roleId: number,
+): Promise<string> => {
+  const response = await axiosInstance.delete(
+    `/admin/users/${userId}/role/${roleId}`,
+  );
+  return response.data;
+};
+
+export const deleteUserById = async (id: number): Promise<string> => {
+  const response = await axiosInstance.delete(`/admin/users/${id}`);
+  return response.data;
+};

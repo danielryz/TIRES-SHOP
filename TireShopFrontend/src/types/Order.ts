@@ -1,3 +1,10 @@
+export type OrderStatus =
+  | "CREATED"
+  | "CONFIRMED"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "CANCELLED";
+
 export interface OrderItemRequest {
   productId: number;
   quantity: number;
@@ -38,4 +45,7 @@ export interface OrderResponse {
   guestLastName: string;
   isPaid: boolean;
   paidAt: string;
+}
+export interface UpdateOrderStatusRequest {
+  status: OrderStatus;
 }

@@ -3,6 +3,8 @@ import {
   CreateOrderRequest,
   CreateShippingAddressRequest,
   OrderResponse,
+  OrderStatus,
+  UpdateOrderStatusRequest,
 } from "../types/Order";
 
 export const createOrder = async (
@@ -42,5 +44,28 @@ export const getUserOrderById = async (
   orderId: number,
 ): Promise<OrderResponse> => {
   const response = await axiosInstance.get(`/orders/public/user/${orderId}`);
+  return response.data;
+};
+
+//ADMIN API FOR ORDER
+
+export const getAllOrdersByStatus = async (
+  orderStatus?: OrderStatus,
+): Promise<OrderResponse[]> => {
+  const params = orderStatus ? { orderStatus } : {};
+  const response = await axiosInstance.get(`/orders/admin`, { params });
+  return response.data;
+};
+
+export const getOrderByIdAdmin = async (id: number): Promise<OrderResponse> => {
+  const response = await axiosInstance.get(`/orders/admin/${id}`);
+  return response.data;
+};
+
+export const updateOrderStatus = async (
+  id: number,
+  request: UpdateOrderStatusRequest,
+): Promise<string> => {
+  const response = await axiosInstance.patch(`/admin/${id}/status`, request);
   return response.data;
 };

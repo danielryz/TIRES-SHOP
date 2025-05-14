@@ -130,7 +130,7 @@ public class UserController {
       @ApiResponse(responseCode = "404", description = "User or Role Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
-  @PostMapping("/api/admin/users/{id}/{roleId}/role")
+  @PostMapping("/api/admin/users/{id}/role/{roleId}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> addRoleToUser(@PathVariable Long id, @PathVariable Long roleId) {
     userService.addRoleToUser(id, roleId);
@@ -148,7 +148,7 @@ public class UserController {
       @ApiResponse(responseCode = "404", description = "User or Role Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
-  @DeleteMapping("/api/admin/users/{id}/{roleId}/role")
+  @DeleteMapping("/api/admin/users/{id}/role/{roleId}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> removeUserRole(@PathVariable Long id, @PathVariable Long roleId) {
     userService.removeUserRole(id, roleId);
