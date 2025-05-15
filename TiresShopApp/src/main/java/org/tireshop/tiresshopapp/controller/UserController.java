@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +30,9 @@ public class UserController {
 
   private final UserService userService;
 
-  @Operation(summary = "Gets a list of all users.", description = "ADMIN.")
+  @Operation(summary = "Gets a list of users with filters and sort.", description = "ADMIN.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "User list returned successfully.",
+      @ApiResponse(responseCode = "200", description = "Users list returned successfully.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = UserResponse.class))),
       @ApiResponse(responseCode = "400", description = "Access Denied.",
@@ -40,8 +41,18 @@ public class UserController {
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @GetMapping("/api/admin/users")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<List<UserResponse>> getAllUsers() {
-    return ResponseEntity.ok(userService.getAllUsers());
+  public ResponseEntity<Page<UserResponse>> getUsers(
+          @RequestParam(required = false) String email,
+          @RequestParam(required = false) String username,
+          @RequestParam(required = false) String firstName,
+          @RequestParam(required = false) String lastName,
+          @RequestParam(required = false) String phoneNumber,
+          @RequestParam(required = false) String role,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int sizePerPage,
+          @RequestParam(defaultValue = "id,asc") String[] sort
+  ) {
+    return ResponseEntity.ok(userService.getUsers(email, username, firstName, lastName, role, phoneNumber, page, sizePerPage, sort));
   }
 
   @Operation(summary = "Gets User by ID.", description = "ADMIN.")

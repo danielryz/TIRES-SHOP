@@ -2,6 +2,11 @@ package org.tireshop.tiresshopapp.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +22,8 @@ import org.tireshop.tiresshopapp.exception.RoleNotFoundException;
 import org.tireshop.tiresshopapp.exception.UserNotFoundException;
 import org.tireshop.tiresshopapp.repository.RoleRepository;
 import org.tireshop.tiresshopapp.repository.UserRepository;
+import org.tireshop.tiresshopapp.specifications.UserSpecification;
+import org.tireshop.tiresshopapp.util.SortUtils;
 
 import java.util.List;
 
@@ -29,14 +36,27 @@ public class UserService {
   private final RoleRepository roleRepository;
 
   // GET
-  public List<UserResponse> getAllUsers() {
-    return userRepository.findAll().stream().map(this::toMapResponse).toList();
-  }
-
   public UserResponse getUserById(Long id) {
     User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     return toMapResponse(user);
   }
+
+  public Page<UserResponse> getUsers(String email, String username, String firstName, String lastName, String role, String phoneNumber, int page, int sizePerPage, String[] sort) {
+    Specification<User> specification = Specification
+            .where(UserSpecification.hasEmailContaining(email))
+            .and(UserSpecification.hasUsernameContaining(username))
+            .and(UserSpecification.hasFirstNameContaining(firstName))
+            .and(UserSpecification.hasLastNameContaining(lastName))
+            .and(UserSpecification.hasRole(role))
+            .and(UserSpecification.hasPhoneNumberContaining(phoneNumber));
+
+    Sort sorting = SortUtils.parseSort(sort);
+    Pageable pageable = PageRequest.of(page, sizePerPage, sorting);
+    Page<User> users = userRepository.findAll(specification, pageable);
+
+    return users.map(this::toMapResponse);
+  }
+
 
   public User getCurrentUser() {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
