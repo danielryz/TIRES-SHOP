@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import org.tireshop.tiresshopapp.entity.AccessoryType;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.AccessoryService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -51,7 +53,7 @@ public class AccessoryController {
     return ResponseEntity.ok(accessory);
   }
 
-  @Operation(summary = "List of Accessory with type filter.", description = "PUBLIC.")
+  @Operation(summary = "List of Accessory with filter and sort.", description = "PUBLIC.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Accessory list returned.",
           content = @Content(mediaType = "application/json",
@@ -59,27 +61,31 @@ public class AccessoryController {
       @ApiResponse(responseCode = "404", description = "Accessory Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
-  @GetMapping("/api/accessory/type")
-  public List<AccessoryResponse> getAccessoryByAccessoryType(
-      @RequestParam(required = false) AccessoryType accessoryType) {
-    if (accessoryType == null) {
-      return accessoryService.getAllAccessory();
-    }
-    return accessoryService.getAccessoryByAccessoryType(accessoryType);
+  @GetMapping("/api/accessory")
+  public ResponseEntity<Page<AccessoryResponse>> getAccessories(
+          @RequestParam(required = false) String name,
+          @RequestParam(required = false) AccessoryType type,
+          @RequestParam(required = false) BigDecimal minPrice,
+          @RequestParam(required = false) BigDecimal maxPrice,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int sizePerPage,
+          @RequestParam(defaultValue = "id,asc") String[] sort
+  ){
+    return ResponseEntity.ok(accessoryService.getAccessory(type, name, minPrice, maxPrice, page, sizePerPage, sort));
   }
 
-  @Operation(summary = "Adding Accessory Product.", description = "ADMIN.")
+  @Operation(summary = "Adding Accessory Products.", description = "ADMIN.")
   @ApiResponses({
-      @ApiResponse(responseCode = "201", description = "The accessory has been created.",
+      @ApiResponse(responseCode = "201", description = "The accessories has been created.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = AccessoryResponse.class))),
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @PostMapping("/api/admin/accessory")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<AccessoryResponse> createNewAccessory(
-      @RequestBody CreateAccessoryRequest request) {
-    AccessoryResponse response = accessoryService.createNewAccessory(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  public ResponseEntity<List<AccessoryResponse>> createNewAccessory(
+      @RequestBody List<CreateAccessoryRequest> requests) {
+    List<AccessoryResponse> responses = accessoryService.createNewAccessory(requests);
+    return ResponseEntity.status(HttpStatus.CREATED).body(responses);
   }
 
   @Operation(summary = "Accessory edition.", description = "ADMIN.")

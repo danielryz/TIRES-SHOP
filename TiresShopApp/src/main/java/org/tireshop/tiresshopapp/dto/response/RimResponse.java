@@ -15,7 +15,7 @@ public record RimResponse(
         @Schema(example = "Nowoczesna felga do aut sportowych")
         String description,
         @Schema(example = "6")
-        int stock,
+        Integer stock,
         @Schema(example = "RIM")
         ProductType type,
         @Schema(example = "ALUMINIUM")

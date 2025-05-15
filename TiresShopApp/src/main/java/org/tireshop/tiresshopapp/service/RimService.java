@@ -2,6 +2,11 @@ package org.tireshop.tiresshopapp.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateRimRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateRimRequest;
@@ -9,7 +14,10 @@ import org.tireshop.tiresshopapp.dto.response.RimResponse;
 import org.tireshop.tiresshopapp.entity.Rim;
 import org.tireshop.tiresshopapp.exception.RimNotFoundException;
 import org.tireshop.tiresshopapp.repository.RimRepository;
+import org.tireshop.tiresshopapp.specifications.RimSpecifications;
+import org.tireshop.tiresshopapp.util.SortUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -29,36 +37,40 @@ public class RimService {
     return mapToResponse(rim);
   }
 
-  public List<RimResponse> getRimByMaterial(String material) {
-    List<RimResponse> rims = rimRepository.findRimByMaterial(material);
-    if (rims.isEmpty()) {
-      throw new RimNotFoundException(material);
-    }
-    return rims;
-  }
+  public Page<RimResponse> getRims(String material, String size, String boltPattern, String name, BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String[] sort) {
+    Specification<Rim> specification = Specification
+            .where(RimSpecifications.hasMaterial(material))
+            .and(RimSpecifications.hasSize(size))
+            .and(RimSpecifications.hasBoltPattern(boltPattern))
+            .and(RimSpecifications.hasNameContaining(name))
+            .and(RimSpecifications.hasMinPrice(minPrice))
+            .and(RimSpecifications.hasMaxPrice(maxPrice));
 
-  public List<RimResponse> getRimBySize(String size) {
-    List<RimResponse> rims = rimRepository.findRimBySize(size);
-    if (rims.isEmpty()) {
-      throw new RimNotFoundException(size);
-    }
-    return rims;
+    Sort sorting = SortUtils.parseSort(sort);
+    Pageable pageable = PageRequest.of(page, sizePerPage, sorting);
+    Page<Rim> rims = rimRepository.findAll(specification, pageable);
+    return rims.map(this::mapToResponse);
   }
 
   // POST
   @Transactional
-  public RimResponse createNewRim(CreateRimRequest request) {
-    Rim rim = new Rim();
-    rim.setName(request.name());
-    rim.setPrice(request.price());
-    rim.setDescription(request.description());
-    rim.setStock(request.stock());
-    rim.setType(request.type());
-    rim.setMaterial(request.material());
-    rim.setSize(request.size());
-    rim.setBoltPattern(request.boltPattern());
+  public List<RimResponse> createNewRim(List<CreateRimRequest> requests) {
+    List<Rim> rims = requests.stream().map(request -> {
+      Rim rim = new Rim();
+      rim.setName(request.name());
+      rim.setPrice(request.price());
+      rim.setDescription(request.description());
+      rim.setStock(request.stock());
+      rim.setType(request.type());
+      rim.setMaterial(request.material());
+      rim.setSize(request.size());
+      rim.setBoltPattern(request.boltPattern());
+      return rim;
+    }).toList();
 
-    return mapToResponse(rimRepository.save(rim));
+    List<Rim> savedRims = rimRepository.saveAll(rims);
+
+    return savedRims.stream().map(this::mapToResponse).toList();
   }
 
   // PATCH

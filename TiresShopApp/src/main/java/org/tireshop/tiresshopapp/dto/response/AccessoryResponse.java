@@ -16,7 +16,7 @@ public record AccessoryResponse(
         @Schema(example = "Zestaw 4 śrub wysokiej jakości")
         String description,
         @Schema(example = "15")
-        int stock,
+        Integer stock,
         @Schema(example = "ACCESSORY")
         ProductType type,
         @Schema(example = "ALUMINIUM")

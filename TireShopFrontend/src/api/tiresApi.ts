@@ -13,6 +13,6 @@ export const getTireById = async (id: number): Promise<Tire> => {
 
 export const getTireByFilter = async (season?: string): Promise<Tire> => {
   const params = season ? { season } : {};
-  const response = await axiosInstance.get(`/tire/season`, { params });
+  const response = await axiosInstance.get(`/tire`, { params });
   return response.data;
 };

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.dto.request.create.CreateProductRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateProductRequest;
 import org.tireshop.tiresshopapp.dto.response.ProductResponse;
+import org.tireshop.tiresshopapp.entity.ProductType;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.ProductService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -27,15 +30,22 @@ public class ProductController {
 
   private final ProductService productService;
 
-  @Operation(summary = "List of all products.", description = "PUBLIC.")
+  @Operation(summary = "List of products with filters and sort.", description = "PUBLIC.")
   @ApiResponse(responseCode = "200", description = "Product list returned.",
       content = @Content(mediaType = "application/json",
           schema = @Schema(implementation = ProductResponse.class)))
   @GetMapping("/api/products")
-  public List<ProductResponse> getAllProducts() {
-    return productService.getAllProducts();
+  public ResponseEntity<Page<ProductResponse>> getProducts(
+          @RequestParam(required = false) String name,
+          @RequestParam(required = false) BigDecimal minPrice,
+          @RequestParam(required = false) BigDecimal maxPrice,
+          @RequestParam(required = false) ProductType productType,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int sizePerPage,
+          @RequestParam(defaultValue = "id,asc") String[] sort
+  ) {
+    return ResponseEntity.ok(productService.getProducts(name, minPrice, maxPrice, productType, page, sizePerPage, sort));
   }
-
 
   @Operation(summary = "Returns data of product by ID.", description = "PUBLIC.")
   @ApiResponses({
@@ -51,18 +61,20 @@ public class ProductController {
     return ResponseEntity.ok(product);
   }
 
-  @Operation(summary = "Adding a product.", description = "ADMIN.")
+
+
+  @Operation(summary = "Adding a products.", description = "ADMIN.")
   @ApiResponses({
-      @ApiResponse(responseCode = "201", description = "The product has been created.",
+      @ApiResponse(responseCode = "201", description = "The products has been created.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ProductResponse.class))),
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/api/admin/products")
-  public ResponseEntity<ProductResponse> createNewProduct(
-      @RequestBody CreateProductRequest request) {
-    ProductResponse response = productService.createProduct(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  public ResponseEntity<List<ProductResponse>> createNewProducts(
+      @RequestBody List<CreateProductRequest> requests) {
+    List<ProductResponse> responses = productService.createProduct(requests);
+    return ResponseEntity.status(HttpStatus.CREATED).body(responses);
   }
 
   @Operation(summary = "Product edition.", description = "ADMIN.")

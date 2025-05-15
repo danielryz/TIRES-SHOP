@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.RimService;
 
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -51,7 +53,7 @@ public class RimController {
     return ResponseEntity.ok(rim);
   }
 
-  @Operation(summary = "List of Rim with material filter.", description = "PUBLIC.")
+  @Operation(summary = "List of Rim with filter and sort.", description = "PUBLIC.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Rim list returned.",
           content = @Content(mediaType = "application/json",
@@ -59,41 +61,32 @@ public class RimController {
       @ApiResponse(responseCode = "404", description = "Rim Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
-  @GetMapping("/api/rim/material")
-  public List<RimResponse> getRimByMaterial(@RequestParam(required = false) String material) {
-    if (material == null) {
-      return rimService.getAllRim();
-    }
-    return rimService.getRimByMaterial(material);
+  @GetMapping("/api/rim")
+  public ResponseEntity<Page<RimResponse>> getRims(
+          @RequestParam(required = false) String name,
+          @RequestParam(required = false) String material,
+          @RequestParam(required = false) String size,
+          @RequestParam(required = false) String boltPattern,
+          @RequestParam(required = false) BigDecimal minPrice,
+          @RequestParam(required = false) BigDecimal maxPrice,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int sizePerPage,
+          @RequestParam(defaultValue = "id,asc") String[] sort
+  ){
+    return ResponseEntity.ok(rimService.getRims(material, size, boltPattern, name, minPrice, maxPrice, page, sizePerPage, sort));
   }
 
-  @Operation(summary = "List of Rim with size filter.", description = "PUBLIC.")
+  @Operation(summary = "Adding Rim Products.", description = "ADMIN.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Rim list returned.",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = RimResponse.class))),
-      @ApiResponse(responseCode = "404", description = "Rim Not Found.",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = ErrorResponse.class)))})
-  @GetMapping("/api/rim/size")
-  public List<RimResponse> getRimBySize(@RequestParam(required = false) String size) {
-    if (size == null) {
-      return rimService.getAllRim();
-    }
-    return rimService.getRimBySize(size);
-  }
-
-  @Operation(summary = "Adding Rim Product.", description = "ADMIN.")
-  @ApiResponses({
-      @ApiResponse(responseCode = "201", description = "The rim has been created.",
+      @ApiResponse(responseCode = "201", description = "The rims has been created.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = RimResponse.class))),
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @PostMapping("/api/admin/rim")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<RimResponse> createNewRim(@RequestBody CreateRimRequest request) {
-    RimResponse rim = rimService.createNewRim(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(rim);
+  public ResponseEntity<List<RimResponse>> createNewRim(@RequestBody List<CreateRimRequest> requests) {
+    List<RimResponse> responses = rimService.createNewRim(requests);
+    return ResponseEntity.status(HttpStatus.CREATED).body(responses);
   }
 
   @Operation(summary = "Rim edition.", description = "ADMIN.")

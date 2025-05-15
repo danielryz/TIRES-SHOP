@@ -2,14 +2,23 @@ package org.tireshop.tiresshopapp.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateProductRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateProductRequest;
 import org.tireshop.tiresshopapp.dto.response.ProductResponse;
 import org.tireshop.tiresshopapp.entity.Product;
+import org.tireshop.tiresshopapp.entity.ProductType;
 import org.tireshop.tiresshopapp.exception.ProductNotFoundException;
 import org.tireshop.tiresshopapp.repository.ProductRepository;
+import org.tireshop.tiresshopapp.specifications.ProductSpecifications;
+import org.tireshop.tiresshopapp.util.SortUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -18,28 +27,42 @@ public class ProductService {
 
   private final ProductRepository productRepository;
 
-  // GET
-  public List<ProductResponse> getAllProducts() {
-    return productRepository.findAll().stream().map(this::mapToResponse).toList();
-  }
-
   public ProductResponse getProductById(Long id) {
     Product product =
         productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
     return mapToResponse(product);
   }
 
+  public Page<ProductResponse> getProducts(String name, BigDecimal minPrice, BigDecimal maxPrice, ProductType productType, int page, int sizePerPage, String[] sort) {
+    Specification<Product> specification = Specification
+            .where(ProductSpecifications.hasNameContaining(name))
+            .and(ProductSpecifications.hasMinPrice(minPrice))
+            .and(ProductSpecifications.hasMaxPrice(maxPrice))
+            .and(ProductSpecifications.hasProductType(productType));
+
+    Sort sorting = SortUtils.parseSort(sort);
+
+    Pageable pageable = PageRequest.of(page, sizePerPage, sorting);
+    Page<Product> products = productRepository.findAll(specification, pageable);
+
+    return products.map(this::mapToResponse);
+  }
+
   // POST
   @Transactional
-  public ProductResponse createProduct(CreateProductRequest request) {
-    Product product = new Product();
-    product.setName(request.name());
-    product.setPrice(request.price());
-    product.setDescription(request.description());
-    product.setStock(request.stock());
-    product.setType(request.type());
+  public List<ProductResponse> createProduct(List<CreateProductRequest> requests) {
+    List<Product> products = requests.stream().map(request -> {
+      Product product = new Product();
+      product.setName(request.name());
+      product.setPrice(request.price());
+      product.setDescription(request.description());
+      product.setStock(request.stock());
+      product.setType(request.type());
+      return product;
+    }).toList();
+    List<Product> savedProducts = productRepository.saveAll(products);
 
-    return mapToResponse(productRepository.save(product));
+    return savedProducts.stream().map(this::mapToResponse).toList();
   }
 
   // PATCH
