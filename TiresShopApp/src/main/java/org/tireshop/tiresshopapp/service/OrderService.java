@@ -1,6 +1,11 @@
 package org.tireshop.tiresshopapp.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +18,12 @@ import org.tireshop.tiresshopapp.exception.*;
 import org.tireshop.tiresshopapp.repository.CartItemRepository;
 import org.tireshop.tiresshopapp.repository.OrderRepository;
 import org.tireshop.tiresshopapp.repository.ProductRepository;
+import org.tireshop.tiresshopapp.specifications.OrderSpecifications;
+import org.tireshop.tiresshopapp.util.SortUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -122,11 +128,24 @@ public class OrderService {
   }
 
   // GET for Admin
+
   @Transactional(readOnly = true)
-  public List<OrderResponse> getAllOrdersByStatus(OrderStatus status) {
-    return orderRepository.findByStatus(status).stream().map(this::mapOrderToResponse)
-        .collect(Collectors.toList());
+  public Page<OrderResponse> getOrders(Long userId, OrderStatus status, LocalDateTime createdAtFrom, LocalDateTime createdAtTo, Boolean isPaid, LocalDateTime paidAtFrom, LocalDateTime paidAtTo, int page, int sizePerPage, String[] sort) {
+    Specification<Order> specification = Specification
+            .where(OrderSpecifications.hasUserId(userId))
+            .and(OrderSpecifications.hasStatus(status))
+            .and(OrderSpecifications.createdAtGreaterThan(createdAtFrom))
+            .and(OrderSpecifications.createdAtLessThan(createdAtTo))
+            .and(OrderSpecifications.paidAtGreaterThan(paidAtFrom))
+            .and(OrderSpecifications.paidAtLessThan(paidAtTo))
+            .and(OrderSpecifications.hasIsPaid(isPaid));
+
+    Sort sorting = SortUtils.parseSort(sort);
+    Pageable pageable = PageRequest.of(page, sizePerPage, sorting);
+    Page<Order> orders = orderRepository.findAll(specification, pageable);
+    return orders.map(this::mapOrderToResponse);
   }
+
 
   @Transactional(readOnly = true)
   public OrderResponse getOrderByIdAdmin(Long id) {

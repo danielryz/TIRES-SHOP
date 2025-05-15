@@ -20,8 +20,6 @@ import org.tireshop.tiresshopapp.entity.User;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.UserService;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "User",

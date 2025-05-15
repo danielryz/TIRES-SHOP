@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import org.tireshop.tiresshopapp.entity.OrderStatus;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.OrderService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -93,7 +95,7 @@ public class OrderController {
     return ResponseEntity.ok("The order has been canceled.");
   }
 
-  @Operation(summary = "Gets orders by Admin by Status.", description = "ADMIN.")
+  @Operation(summary = "Gets orders with filters and Sort.", description = "ADMIN.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "List of orders returned successfully.",
           content = @Content(mediaType = "application/json",
@@ -103,10 +105,22 @@ public class OrderController {
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/admin")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<List<OrderResponse>> getAllOrdersByStatus(
-      @RequestParam(required = false) OrderStatus status) {
-    return ResponseEntity.ok(orderService.getAllOrdersByStatus(status));
+  public ResponseEntity<Page<OrderResponse>> getOrders(
+          @RequestParam(required = false) Long userId,
+          @RequestParam(required = false) OrderStatus status,
+          @RequestParam(required = false) LocalDateTime createdAtFrom,
+          @RequestParam(required = false) LocalDateTime createdAtTo,
+          @RequestParam(required = false) Boolean isPaid,
+          @RequestParam(required = false) LocalDateTime paidAtFrom,
+          @RequestParam(required = false) LocalDateTime paidAtTo,
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "20") int sizePerPage,
+          @RequestParam(defaultValue = "id,asc") String[] sort
+  )
+  {
+return ResponseEntity.ok(orderService.getOrders(userId, status, createdAtFrom, createdAtTo, isPaid, paidAtFrom, paidAtTo, page, sizePerPage, sort));
   }
+
 
   @Operation(summary = "Get order by Admin by ID.", description = "ADMIN.")
   @ApiResponses({
