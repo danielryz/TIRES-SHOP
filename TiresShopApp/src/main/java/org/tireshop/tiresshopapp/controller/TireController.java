@@ -28,7 +28,8 @@ import java.util.List;
 public class TireController {
 
   private final TireService tireService;
-// do usunięcia po przpięciu się na ten lepszy
+
+  // do usunięcia po przpięciu się na ten lepszy
   @Operation(summary = "List of all Tire.", description = "PUBLIC.")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Tire list returned.",
       content = @Content(mediaType = "application/json",
@@ -60,18 +61,16 @@ public class TireController {
       @ApiResponse(responseCode = "404", description = "Tire Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
-  @GetMapping("/api/tire")
-  public ResponseEntity<Page<TireResponse>> getTires(
-          @RequestParam(required = false) String name,
-          @RequestParam(required = false) String season,
-          @RequestParam(required = false) String size,
-          @RequestParam(required = false) BigDecimal minPrice,
-          @RequestParam(required = false) BigDecimal maxPrice,
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "10") int sizePerPage,
-          @RequestParam(defaultValue = "id,asc") String[] sort
-  ){
-    return ResponseEntity.ok(tireService.getTires(name, season, size, minPrice, maxPrice, page, sizePerPage, sort));
+  @GetMapping("/api/tires")
+  public ResponseEntity<Page<TireResponse>> getTires(@RequestParam(required = false) String name,
+      @RequestParam(required = false) String season, @RequestParam(required = false) String size,
+      @RequestParam(required = false) BigDecimal minPrice,
+      @RequestParam(required = false) BigDecimal maxPrice,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int sizePerPage,
+      @RequestParam(defaultValue = "id,asc") String[] sort) {
+    return ResponseEntity
+        .ok(tireService.getTires(name, season, size, minPrice, maxPrice, page, sizePerPage, sort));
   }
 
   @Operation(summary = "Adding Tire Products.", description = "ADMIN.")
@@ -82,7 +81,8 @@ public class TireController {
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @PostMapping("/api/admin/tire")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<List<TireResponse>> createNewTire(@RequestBody List<CreateTireRequest> requests) {
+  public ResponseEntity<List<TireResponse>> createNewTire(
+      @RequestBody List<CreateTireRequest> requests) {
     List<TireResponse> responses = tireService.createNewTire(requests);
     return ResponseEntity.status(HttpStatus.CREATED).body(responses);
   }

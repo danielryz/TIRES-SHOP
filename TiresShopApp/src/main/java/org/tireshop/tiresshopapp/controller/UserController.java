@@ -39,18 +39,16 @@ public class UserController {
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @GetMapping("/api/admin/users")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<Page<UserResponse>> getUsers(
-          @RequestParam(required = false) String email,
-          @RequestParam(required = false) String username,
-          @RequestParam(required = false) String firstName,
-          @RequestParam(required = false) String lastName,
-          @RequestParam(required = false) String phoneNumber,
-          @RequestParam(required = false) String role,
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "10") int sizePerPage,
-          @RequestParam(defaultValue = "id,asc") String[] sort
-  ) {
-    return ResponseEntity.ok(userService.getUsers(email, username, firstName, lastName, role, phoneNumber, page, sizePerPage, sort));
+  public ResponseEntity<Page<UserResponse>> getUsers(@RequestParam(required = false) String email,
+      @RequestParam(required = false) String username,
+      @RequestParam(required = false) String firstName,
+      @RequestParam(required = false) String lastName,
+      @RequestParam(required = false) String phoneNumber,
+      @RequestParam(required = false) String role, @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int sizePerPage,
+      @RequestParam(defaultValue = "id,asc") String[] sort) {
+    return ResponseEntity.ok(userService.getUsers(email, username, firstName, lastName, role,
+        phoneNumber, page, sizePerPage, sort));
   }
 
   @Operation(summary = "Gets User by ID.", description = "ADMIN.")

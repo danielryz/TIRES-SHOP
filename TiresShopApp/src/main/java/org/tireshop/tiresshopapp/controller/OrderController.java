@@ -105,20 +105,18 @@ public class OrderController {
           content = @Content(schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/admin")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<Page<OrderResponse>> getOrders(
-          @RequestParam(required = false) Long userId,
-          @RequestParam(required = false) OrderStatus status,
-          @RequestParam(required = false) LocalDateTime createdAtFrom,
-          @RequestParam(required = false) LocalDateTime createdAtTo,
-          @RequestParam(required = false) Boolean isPaid,
-          @RequestParam(required = false) LocalDateTime paidAtFrom,
-          @RequestParam(required = false) LocalDateTime paidAtTo,
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "20") int sizePerPage,
-          @RequestParam(defaultValue = "id,asc") String[] sort
-  )
-  {
-return ResponseEntity.ok(orderService.getOrders(userId, status, createdAtFrom, createdAtTo, isPaid, paidAtFrom, paidAtTo, page, sizePerPage, sort));
+  public ResponseEntity<Page<OrderResponse>> getOrders(@RequestParam(required = false) Long userId,
+      @RequestParam(required = false) OrderStatus status,
+      @RequestParam(required = false) LocalDateTime createdAtFrom,
+      @RequestParam(required = false) LocalDateTime createdAtTo,
+      @RequestParam(required = false) Boolean isPaid,
+      @RequestParam(required = false) LocalDateTime paidAtFrom,
+      @RequestParam(required = false) LocalDateTime paidAtTo,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int sizePerPage,
+      @RequestParam(defaultValue = "id,asc") String[] sort) {
+    return ResponseEntity.ok(orderService.getOrders(userId, status, createdAtFrom, createdAtTo,
+        isPaid, paidAtFrom, paidAtTo, page, sizePerPage, sort));
   }
 
 

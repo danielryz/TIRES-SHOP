@@ -61,19 +61,17 @@ public class RimController {
       @ApiResponse(responseCode = "404", description = "Rim Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
-  @GetMapping("/api/rim")
-  public ResponseEntity<Page<RimResponse>> getRims(
-          @RequestParam(required = false) String name,
-          @RequestParam(required = false) String material,
-          @RequestParam(required = false) String size,
-          @RequestParam(required = false) String boltPattern,
-          @RequestParam(required = false) BigDecimal minPrice,
-          @RequestParam(required = false) BigDecimal maxPrice,
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "10") int sizePerPage,
-          @RequestParam(defaultValue = "id,asc") String[] sort
-  ){
-    return ResponseEntity.ok(rimService.getRims(material, size, boltPattern, name, minPrice, maxPrice, page, sizePerPage, sort));
+  @GetMapping("/api/rims")
+  public ResponseEntity<Page<RimResponse>> getRims(@RequestParam(required = false) String name,
+      @RequestParam(required = false) String material, @RequestParam(required = false) String size,
+      @RequestParam(required = false) String boltPattern,
+      @RequestParam(required = false) BigDecimal minPrice,
+      @RequestParam(required = false) BigDecimal maxPrice,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int sizePerPage,
+      @RequestParam(defaultValue = "id,asc") String[] sort) {
+    return ResponseEntity.ok(rimService.getRims(material, size, boltPattern, name, minPrice,
+        maxPrice, page, sizePerPage, sort));
   }
 
   @Operation(summary = "Adding Rim Products.", description = "ADMIN.")
@@ -84,7 +82,8 @@ public class RimController {
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @PostMapping("/api/admin/rim")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<List<RimResponse>> createNewRim(@RequestBody List<CreateRimRequest> requests) {
+  public ResponseEntity<List<RimResponse>> createNewRim(
+      @RequestBody List<CreateRimRequest> requests) {
     List<RimResponse> responses = rimService.createNewRim(requests);
     return ResponseEntity.status(HttpStatus.CREATED).body(responses);
   }

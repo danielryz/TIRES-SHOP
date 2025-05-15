@@ -61,17 +61,17 @@ public class AccessoryController {
       @ApiResponse(responseCode = "404", description = "Accessory Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
-  @GetMapping("/api/accessory")
+  @GetMapping("/api/accessories")
   public ResponseEntity<Page<AccessoryResponse>> getAccessories(
-          @RequestParam(required = false) String name,
-          @RequestParam(required = false) AccessoryType type,
-          @RequestParam(required = false) BigDecimal minPrice,
-          @RequestParam(required = false) BigDecimal maxPrice,
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "10") int sizePerPage,
-          @RequestParam(defaultValue = "id,asc") String[] sort
-  ){
-    return ResponseEntity.ok(accessoryService.getAccessory(type, name, minPrice, maxPrice, page, sizePerPage, sort));
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) AccessoryType type,
+      @RequestParam(required = false) BigDecimal minPrice,
+      @RequestParam(required = false) BigDecimal maxPrice,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int sizePerPage,
+      @RequestParam(defaultValue = "id,asc") String[] sort) {
+    return ResponseEntity
+        .ok(accessoryService.getAccessory(type, name, minPrice, maxPrice, page, sizePerPage, sort));
   }
 
   @Operation(summary = "Adding Accessory Products.", description = "ADMIN.")

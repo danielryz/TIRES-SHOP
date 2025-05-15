@@ -41,14 +41,14 @@ public class UserService {
     return toMapResponse(user);
   }
 
-  public Page<UserResponse> getUsers(String email, String username, String firstName, String lastName, String role, String phoneNumber, int page, int sizePerPage, String[] sort) {
+  public Page<UserResponse> getUsers(String email, String username, String firstName,
+      String lastName, String role, String phoneNumber, int page, int sizePerPage, String[] sort) {
     Specification<User> specification = Specification
-            .where(UserSpecification.hasEmailContaining(email))
-            .and(UserSpecification.hasUsernameContaining(username))
-            .and(UserSpecification.hasFirstNameContaining(firstName))
-            .and(UserSpecification.hasLastNameContaining(lastName))
-            .and(UserSpecification.hasRole(role))
-            .and(UserSpecification.hasPhoneNumberContaining(phoneNumber));
+        .where(UserSpecification.hasEmailContaining(email))
+        .and(UserSpecification.hasUsernameContaining(username))
+        .and(UserSpecification.hasFirstNameContaining(firstName))
+        .and(UserSpecification.hasLastNameContaining(lastName)).and(UserSpecification.hasRole(role))
+        .and(UserSpecification.hasPhoneNumberContaining(phoneNumber));
 
     Sort sorting = SortUtils.parseSort(sort);
     Pageable pageable = PageRequest.of(page, sizePerPage, sorting);

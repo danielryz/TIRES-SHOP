@@ -37,13 +37,12 @@ public class TireService {
     return mapToResponse(tire);
   }
 
-  public Page<TireResponse> getTires(String name, String season, String size, BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String[] sort) {
-    Specification<Tire> specification = Specification
-            .where(TireSpecifications.hasSeason(season))
-            .and(TireSpecifications.hasSize(size))
-            .and(TireSpecifications.hasNameContaining(name))
-            .and(TireSpecifications.hasMinPrice(minPrice))
-            .and(TireSpecifications.hasMaxPrice(maxPrice));
+  public Page<TireResponse> getTires(String name, String season, String size, BigDecimal minPrice,
+      BigDecimal maxPrice, int page, int sizePerPage, String[] sort) {
+    Specification<Tire> specification = Specification.where(TireSpecifications.hasSeason(season))
+        .and(TireSpecifications.hasSize(size)).and(TireSpecifications.hasNameContaining(name))
+        .and(TireSpecifications.hasMinPrice(minPrice))
+        .and(TireSpecifications.hasMaxPrice(maxPrice));
 
     Sort sorting = SortUtils.parseSort(sort);
 

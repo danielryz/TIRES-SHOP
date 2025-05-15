@@ -130,15 +130,16 @@ public class OrderService {
   // GET for Admin
 
   @Transactional(readOnly = true)
-  public Page<OrderResponse> getOrders(Long userId, OrderStatus status, LocalDateTime createdAtFrom, LocalDateTime createdAtTo, Boolean isPaid, LocalDateTime paidAtFrom, LocalDateTime paidAtTo, int page, int sizePerPage, String[] sort) {
-    Specification<Order> specification = Specification
-            .where(OrderSpecifications.hasUserId(userId))
-            .and(OrderSpecifications.hasStatus(status))
-            .and(OrderSpecifications.createdAtGreaterThan(createdAtFrom))
-            .and(OrderSpecifications.createdAtLessThan(createdAtTo))
-            .and(OrderSpecifications.paidAtGreaterThan(paidAtFrom))
-            .and(OrderSpecifications.paidAtLessThan(paidAtTo))
-            .and(OrderSpecifications.hasIsPaid(isPaid));
+  public Page<OrderResponse> getOrders(Long userId, OrderStatus status, LocalDateTime createdAtFrom,
+      LocalDateTime createdAtTo, Boolean isPaid, LocalDateTime paidAtFrom, LocalDateTime paidAtTo,
+      int page, int sizePerPage, String[] sort) {
+    Specification<Order> specification = Specification.where(OrderSpecifications.hasUserId(userId))
+        .and(OrderSpecifications.hasStatus(status))
+        .and(OrderSpecifications.createdAtGreaterThan(createdAtFrom))
+        .and(OrderSpecifications.createdAtLessThan(createdAtTo))
+        .and(OrderSpecifications.paidAtGreaterThan(paidAtFrom))
+        .and(OrderSpecifications.paidAtLessThan(paidAtTo))
+        .and(OrderSpecifications.hasIsPaid(isPaid));
 
     Sort sorting = SortUtils.parseSort(sort);
     Pageable pageable = PageRequest.of(page, sizePerPage, sorting);

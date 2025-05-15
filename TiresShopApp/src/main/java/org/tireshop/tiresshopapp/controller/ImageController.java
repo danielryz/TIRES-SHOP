@@ -75,13 +75,14 @@ public class ImageController {
 
   @Operation(summary = "Adding a photos to a product.", description = "ADMIN.")
   @ApiResponses({@ApiResponse(responseCode = "200", description = "Images added successfully."),
-          @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
-          @ApiResponse(responseCode = "404", description = "Product Not Found.",
-                  content = @Content(mediaType = "application/json",
-                          schema = @Schema(implementation = ErrorResponse.class)))})
+      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "404", description = "Product Not Found.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PostMapping("/api/admin/images/product/{productId}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<String> addImagesToProduct(@PathVariable Long productId, @RequestBody List<AddImagesRequest> requests) {
+  public ResponseEntity<String> addImagesToProduct(@PathVariable Long productId,
+      @RequestBody List<AddImagesRequest> requests) {
     imageService.addImagesToProduct(productId, requests);
     return ResponseEntity.ok("Images added successfully.");
   }

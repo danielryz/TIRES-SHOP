@@ -53,7 +53,7 @@ public class ImageService {
 
   public void addImagesToProduct(Long productId, List<AddImagesRequest> requests) {
     Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new ProductNotFoundException(productId));
+        .orElseThrow(() -> new ProductNotFoundException(productId));
     for (AddImagesRequest request : requests) {
       Image image = new Image();
       image.setUrl(request.url());

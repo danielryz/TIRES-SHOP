@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 import org.tireshop.tiresshopapp.entity.Product;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
+public interface ProductRepository
+    extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 }

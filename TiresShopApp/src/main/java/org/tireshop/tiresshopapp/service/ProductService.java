@@ -33,9 +33,10 @@ public class ProductService {
     return mapToResponse(product);
   }
 
-  public Page<ProductResponse> getProducts(String name, BigDecimal minPrice, BigDecimal maxPrice, ProductType productType, int page, int sizePerPage, String[] sort) {
-    Specification<Product> specification = Specification
-            .where(ProductSpecifications.hasNameContaining(name))
+  public Page<ProductResponse> getProducts(String name, BigDecimal minPrice, BigDecimal maxPrice,
+      ProductType productType, int page, int sizePerPage, String[] sort) {
+    Specification<Product> specification =
+        Specification.where(ProductSpecifications.hasNameContaining(name))
             .and(ProductSpecifications.hasMinPrice(minPrice))
             .and(ProductSpecifications.hasMaxPrice(maxPrice))
             .and(ProductSpecifications.hasProductType(productType));

@@ -39,9 +39,10 @@ public class AccessoryService {
     return mapToResponse(accessory);
   }
 
-  public Page<AccessoryResponse> getAccessory(AccessoryType accessoryType, String name, BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String[] sort) {
-    Specification<Accessory> specification = Specification
-            .where(AccessorySpecification.hasAccessoryType(accessoryType))
+  public Page<AccessoryResponse> getAccessory(AccessoryType accessoryType, String name,
+      BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String[] sort) {
+    Specification<Accessory> specification =
+        Specification.where(AccessorySpecification.hasAccessoryType(accessoryType))
             .and(AccessorySpecification.hasNameContaining(name))
             .and(AccessorySpecification.hasMinPrice(minPrice))
             .and(AccessorySpecification.hasMaxPrice(maxPrice));
