@@ -1,44 +1,42 @@
-import { ProductType } from "./Product";
+export enum ProductType {
+  TIRE = "TIRE",
+  RIM = "RIM",
+  ACCESSORY = "ACCESSORY",
+  ALL = "ALL",
+}
 
-export interface Tire {
+export interface Product {
   id: number;
   name: string;
   price: number;
-  size: string;
-  season: string;
-  stock: number;
   description: string;
-  productType: ProductType;
+  stock: number;
+  type: ProductType;
   imageUrls?: string[];
 }
 
-export interface TireFilterParams {
+export interface ProductFilterParams {
   name?: string;
-  season?: string;
-  size?: string;
   minPrice?: number;
   maxPrice?: number;
+  type?: ProductType;
   page?: number;
   sizePerPage?: number;
   sort?: string[];
 }
 
-export interface CreateTireRequest {
+export interface CreateProductRequest {
   name: string;
   price: number;
   description: string;
   stock: number;
   type: ProductType;
-  season: string;
-  size: string;
 }
 
-export interface UpdateTireRequest {
+export interface UpdateProductRequest {
   name: string;
   price: number;
   description: string;
   stock: number;
   type: ProductType;
-  season: string;
-  size: string;
 }

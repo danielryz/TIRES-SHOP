@@ -1,9 +1,10 @@
-export type OrderStatus =
-  | "CREATED"
-  | "CONFIRMED"
-  | "IN_PROGRESS"
-  | "COMPLETED"
-  | "CANCELLED";
+export enum OrderStatus {
+  CREATED = "CREATED",
+  CONFIRMED = "CONFIRMED",
+  IN_PROGRESS = "IN_PROGRESS",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
+}
 
 export interface OrderItemRequest {
   productId: number;
@@ -48,4 +49,17 @@ export interface OrderResponse {
 }
 export interface UpdateOrderStatusRequest {
   status: OrderStatus;
+}
+
+export interface OrderFilterParams {
+  userId: number;
+  status?: OrderStatus;
+  createdAtFrom?: string;
+  createdAtTo?: string;
+  isPaid?: boolean;
+  paidAtFrom?: string;
+  paidAtTo?: string;
+  page?: number;
+  sizePerPage?: number;
+  sort?: string[];
 }

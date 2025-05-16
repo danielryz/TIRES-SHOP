@@ -27,10 +27,10 @@ import SettingsPage from "./pages/user/SettingsPage";
 import AddressesPage from "./pages/user/AddressesPage";
 import CheckoutPage from "./pages/order/CheckoutPage";
 import UserOrdersPage from "./pages/user/UserOrdersPage";
-import AdminProductPanel from "./pages/panel/page/AdminProductPanel";
-import AdminUserPanel from "./pages/panel/page/AdminUserPanel";
-import AdminOrderPanel from "./pages/panel/page/AdminOrderPanel";
 import PaymentPage from "./pages/order/PaymentPage";
+import AdminOrderPanelPage from "./pages/panel/page/AdminOrderPanelPage";
+import AdminProductPanelPage from "./pages/panel/page/AdminOrderPanelPage";
+import AdminUserPanelPage from "./pages/panel/page/AdminUserPanelPage";
 
 function AppWrapper() {
   const location = useLocation();
@@ -67,9 +67,9 @@ function AppWrapper() {
         <Route path="/admin-login" element={<AdminLoginPage />} />
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminPanelPage />} />
-          <Route path="/admin/users" element={<AdminUserPanel />} />
-          <Route path="/admin/products" element={<AdminProductPanel />} />
-          <Route path="/admin/orders" element={<AdminOrderPanel />} />
+          <Route path="/admin/users" element={<AdminUserPanelPage />} />
+          <Route path="/admin/products" element={<AdminProductPanelPage />} />
+          <Route path="/admin/orders" element={<AdminOrderPanelPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />

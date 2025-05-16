@@ -5,6 +5,6 @@ import org.tireshop.tiresshopapp.entity.OrderStatus;
 
 @Schema(description = "Aktualizacja statusu zamówienia")
 public record UpdateOrderStatusRequest(
-        @Schema(example = "SHIPPED") OrderStatus status
+        @Schema(example = "CONFIRMED") OrderStatus status
         ) {
 }

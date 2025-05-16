@@ -2,10 +2,11 @@ import axiosInstance from "./axiosInstance";
 import {
   CreateOrderRequest,
   CreateShippingAddressRequest,
+  OrderFilterParams,
   OrderResponse,
-  OrderStatus,
   UpdateOrderStatusRequest,
 } from "../types/Order";
+import { Page } from "../types/Page";
 
 export const createOrder = async (
   data: CreateOrderRequest,
@@ -49,11 +50,28 @@ export const getUserOrderById = async (
 
 //ADMIN API FOR ORDER
 
-export const getAllOrdersByStatus = async (
-  orderStatus?: OrderStatus,
-): Promise<OrderResponse[]> => {
-  const params = orderStatus ? { orderStatus } : {};
-  const response = await axiosInstance.get(`/orders/admin`, { params });
+export const getOrders = async (
+  params: OrderFilterParams,
+): Promise<Page<OrderResponse>> => {
+  const searchParams = new URLSearchParams();
+
+  if (params.userId != null)
+    searchParams.append("userId", params.userId.toString());
+  if (params.status) searchParams.append("status", params.status);
+  if (params.createdAtFrom)
+    searchParams.append("createdAtFrom", params.createdAtFrom);
+  if (params.createdAtTo)
+    searchParams.append("createdAtTo", params.createdAtTo);
+  if (params.isPaid != null)
+    searchParams.append("isPaid", params.isPaid.toString());
+  if (params.paidAtFrom) searchParams.append("paidAtFrom", params.paidAtFrom);
+  if (params.paidAtTo) searchParams.append("paidAtTo", params.paidAtTo);
+
+  searchParams.append("page", (params.page ?? 0).toString());
+  searchParams.append("sizePerPage", (params.sizePerPage ?? 10).toString());
+  searchParams.append("sort", params.sort ?? "id,asc");
+
+  const response = await axiosInstance.get(`/orders/admin?${searchParams}`);
   return response.data;
 };
 

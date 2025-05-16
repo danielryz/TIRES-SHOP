@@ -1,5 +1,5 @@
 import axiosInstance from "./axiosInstance";
-import { User } from "../types/User";
+import { User, UserFilterParams } from "../types/User";
 
 export const getUserProfile = async (): Promise<User> => {
   const response = await axiosInstance.get("/users/me");
@@ -36,8 +36,24 @@ export const deleteUser = async (): Promise<string> => {
 
 //ADMIN API FOR USER
 
-export const getAllUsers = async (): Promise<User[]> => {
-  const response = await axiosInstance.get("/admin/users");
+export const getUsers = async (params: UserFilterParams) => {
+  const searchParams = new URLSearchParams();
+
+  if (params.email) searchParams.append("email", params.email);
+  if (params.username) searchParams.append("username", params.username);
+  if (params.firstName) searchParams.append("firstName", params.firstName);
+  if (params.lastName) searchParams.append("lastName", params.lastName);
+  if (params.phoneNumber)
+    searchParams.append("phoneNumber", params.phoneNumber);
+  if (params.role) searchParams.append("role", params.role);
+
+  searchParams.append("page", (params.page ?? 0).toString());
+  searchParams.append("sizePerPage", (params.sizePerPage ?? 10).toString());
+  searchParams.append("sort", params.sort ?? "id,asc");
+
+  const response = await axiosInstance.get(
+    `/admin/users?${searchParams.toString()}`,
+  );
   return response.data;
 };
 
