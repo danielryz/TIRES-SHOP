@@ -31,6 +31,7 @@ import PaymentPage from "./pages/order/PaymentPage";
 import AdminOrderPanelPage from "./pages/panel/page/AdminOrderPanelPage";
 import AdminProductPanelPage from "./pages/panel/page/AdminOrderPanelPage";
 import AdminUserPanelPage from "./pages/panel/page/AdminUserPanelPage";
+import AdminUserDetailPage from "./pages/panel/page/AdminUserDetailPage";
 
 function AppWrapper() {
   const location = useLocation();
@@ -68,6 +69,7 @@ function AppWrapper() {
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminPanelPage />} />
           <Route path="/admin/users" element={<AdminUserPanelPage />} />
+          <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
           <Route path="/admin/products" element={<AdminProductPanelPage />} />
           <Route path="/admin/orders" element={<AdminOrderPanelPage />} />
         </Route>

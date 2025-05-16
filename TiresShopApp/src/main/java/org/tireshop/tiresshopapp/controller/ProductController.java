@@ -42,7 +42,7 @@ public class ProductController {
       @RequestParam(required = false) ProductType productType,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int sizePerPage,
-      @RequestParam(defaultValue = "id,asc") String[] sort) {
+      @RequestParam(defaultValue = "id,asc") String sort) {
     return ResponseEntity.ok(
         productService.getProducts(name, minPrice, maxPrice, productType, page, sizePerPage, sort));
   }

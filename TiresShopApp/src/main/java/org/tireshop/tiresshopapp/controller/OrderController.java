@@ -114,7 +114,7 @@ public class OrderController {
       @RequestParam(required = false) LocalDateTime paidAtTo,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int sizePerPage,
-      @RequestParam(defaultValue = "id,asc") String[] sort) {
+      @RequestParam(defaultValue = "id,asc") String sort) {
     return ResponseEntity.ok(orderService.getOrders(userId, status, createdAtFrom, createdAtTo,
         isPaid, paidAtFrom, paidAtTo, page, sizePerPage, sort));
   }

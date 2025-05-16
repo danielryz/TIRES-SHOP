@@ -22,7 +22,7 @@ export interface ProductFilterParams {
   type?: ProductType;
   page?: number;
   sizePerPage?: number;
-  sort?: string[];
+  sort?: string;
 }
 
 export interface CreateProductRequest {

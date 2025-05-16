@@ -26,7 +26,7 @@ export interface AccessoryFilterParams {
   maxPrice?: number;
   page?: number;
   sizePerPage?: number;
-  sort?: string[];
+  sort?: string;
 }
 
 export interface CreateAccessoryRequest {

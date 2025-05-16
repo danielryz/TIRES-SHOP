@@ -1,0 +1,142 @@
+.admin-user-panel {
+    max-width: 100%;
+    width: 100%;
+    padding: 40px;
+}
+
+.admin-user-filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 20px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 120px;
+}
+
+.admin-user-filter-input {
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background-color: #f9fafb;
+    transition: border 0.2s;
+    min-width: 180px;
+}
+
+.admin-user-filter-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    background-color: #fff;
+}
+
+.admin-user-filter-btn {
+    background-color: #6366f1;
+    color: white;
+    font-weight: 600;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.admin-user-filter-btn:hover {
+    background-color: #4f46e5;
+}
+
+@media (max-width: 768px) {
+    .admin-user-filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-user-filter-input {
+        width: 100%;
+    }
+
+    .admin-user-filter-btn {
+        width: 100%;
+    }
+}
+
+.admin-user-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.admin-user-table th,
+.admin-user-table td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-user-table th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+    color: #374151;
+}
+
+.admin-user-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.admin-user-actions button {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.admin-user-actions button:hover {
+    background-color: #b91c1c;
+}
+
+.admin-user-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 40px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.admin-user-pagination button {
+    background-color: #4f46e5;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.admin-user-pagination button:disabled {
+    background-color: #a5b4fc;
+    cursor: default;
+}
+
+.admin-user-pagination button:hover:not(:disabled) {
+    background-color: #3730a3;
+}
+
+.admin-user-loading {
+    text-align: center;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+

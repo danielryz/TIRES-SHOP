@@ -61,5 +61,5 @@ export interface OrderFilterParams {
   paidAtTo?: string;
   page?: number;
   sizePerPage?: number;
-  sort?: string[];
+  sort?: string;
 }

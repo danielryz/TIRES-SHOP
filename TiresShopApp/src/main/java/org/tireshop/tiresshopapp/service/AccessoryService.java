@@ -40,7 +40,7 @@ public class AccessoryService {
   }
 
   public Page<AccessoryResponse> getAccessory(AccessoryType accessoryType, String name,
-      BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String[] sort) {
+      BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String sort) {
     Specification<Accessory> specification =
         Specification.where(AccessorySpecification.hasAccessoryType(accessoryType))
             .and(AccessorySpecification.hasNameContaining(name))

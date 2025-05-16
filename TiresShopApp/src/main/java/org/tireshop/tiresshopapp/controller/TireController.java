@@ -68,7 +68,7 @@ public class TireController {
       @RequestParam(required = false) BigDecimal maxPrice,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int sizePerPage,
-      @RequestParam(defaultValue = "id,asc") String[] sort) {
+      @RequestParam(defaultValue = "id,asc") String sort) {
     return ResponseEntity
         .ok(tireService.getTires(name, season, size, minPrice, maxPrice, page, sizePerPage, sort));
   }

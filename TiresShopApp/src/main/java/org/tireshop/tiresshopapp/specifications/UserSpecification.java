@@ -1,5 +1,7 @@
 package org.tireshop.tiresshopapp.specifications;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 import org.tireshop.tiresshopapp.entity.User;
 
@@ -36,8 +38,14 @@ public class UserSpecification {
   }
 
   public static Specification<User> hasRole(String role) {
-    return (root, query, criteriaBuilder) -> role == null ? null
-        : criteriaBuilder.like(criteriaBuilder.lower(root.get("role")),
-            "%" + role.toLowerCase() + "%");
+    return (root, query, criteriaBuilder) -> {
+      if (role == null || role.isBlank()) {
+        return null;
+      }
+
+      Join<Object, Object> rolesJoin = root.join("roles", JoinType.INNER);
+      return criteriaBuilder.like(criteriaBuilder.lower(rolesJoin.get("name")),
+          "%" + role.toLowerCase() + "%");
+    };
   }
 }

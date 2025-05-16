@@ -1,5 +1,5 @@
 import axiosInstance from "./axiosInstance";
-import { User, UserFilterParams } from "../types/User";
+import { Role, User, UserFilterParams } from "../types/User";
 
 export const getUserProfile = async (): Promise<User> => {
   const response = await axiosInstance.get("/users/me");
@@ -83,6 +83,13 @@ export const removeUserRole = async (
 };
 
 export const deleteUserById = async (id: number): Promise<string> => {
-  const response = await axiosInstance.delete(`/admin/users/${id}`);
+  const response = await axiosInstance.delete(`/admin/users/${id}`, {
+    responseType: "text",
+  });
+  return response.data;
+};
+
+export const getRoles = async (): Promise<Role[]> => {
+  const response = await axiosInstance.get("/admin/role");
   return response.data;
 };

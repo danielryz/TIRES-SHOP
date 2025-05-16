@@ -5,6 +5,7 @@ export interface User {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  roles: string[];
 }
 
 export interface UserFilterParams {
@@ -16,5 +17,10 @@ export interface UserFilterParams {
   role?: string;
   page?: number;
   sizePerPage?: number;
-  sort?: string[];
+  sort?: string;
+}
+
+export interface Role {
+  id: number;
+  name: string;
 }

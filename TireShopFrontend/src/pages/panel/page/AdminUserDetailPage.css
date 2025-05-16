@@ -1,0 +1,62 @@
+.user-detail-container {
+    padding: 40px;
+    background-color: #f9fafb;
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-family: "Segoe UI", sans-serif;
+}
+
+.user-detail-container h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #1f2937;
+}
+
+.user-detail-container p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #374151;
+}
+
+.user-role-form {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.user-role-form select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+}
+
+.admin-user-update-role-btn {
+    padding: 8px 16px;
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.admin-user-update-role-btn:hover{
+    background-color: #4338ca;
+}
+
+.admin-user-delete-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.admin-user-delete-btn:hover {
+    background-color: #b91c1c;
+}

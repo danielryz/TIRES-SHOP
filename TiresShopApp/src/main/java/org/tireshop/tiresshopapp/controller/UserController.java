@@ -46,7 +46,7 @@ public class UserController {
       @RequestParam(required = false) String phoneNumber,
       @RequestParam(required = false) String role, @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int sizePerPage,
-      @RequestParam(defaultValue = "id,asc") String[] sort) {
+      @RequestParam(defaultValue = "id,asc") String sort) {
     return ResponseEntity.ok(userService.getUsers(email, username, firstName, lastName, role,
         phoneNumber, page, sizePerPage, sort));
   }

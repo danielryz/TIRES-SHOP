@@ -38,7 +38,7 @@ public class RimService {
   }
 
   public Page<RimResponse> getRims(String material, String size, String boltPattern, String name,
-      BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String[] sort) {
+      BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String sort) {
     Specification<Rim> specification = Specification.where(RimSpecifications.hasMaterial(material))
         .and(RimSpecifications.hasSize(size)).and(RimSpecifications.hasBoltPattern(boltPattern))
         .and(RimSpecifications.hasNameContaining(name)).and(RimSpecifications.hasMinPrice(minPrice))

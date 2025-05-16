@@ -38,7 +38,7 @@ public class TireService {
   }
 
   public Page<TireResponse> getTires(String name, String season, String size, BigDecimal minPrice,
-      BigDecimal maxPrice, int page, int sizePerPage, String[] sort) {
+      BigDecimal maxPrice, int page, int sizePerPage, String sort) {
     Specification<Tire> specification = Specification.where(TireSpecifications.hasSeason(season))
         .and(TireSpecifications.hasSize(size)).and(TireSpecifications.hasNameContaining(name))
         .and(TireSpecifications.hasMinPrice(minPrice))

@@ -42,7 +42,7 @@ public class UserService {
   }
 
   public Page<UserResponse> getUsers(String email, String username, String firstName,
-      String lastName, String role, String phoneNumber, int page, int sizePerPage, String[] sort) {
+      String lastName, String role, String phoneNumber, int page, int sizePerPage, String sort) {
     Specification<User> specification = Specification
         .where(UserSpecification.hasEmailContaining(email))
         .and(UserSpecification.hasUsernameContaining(username))

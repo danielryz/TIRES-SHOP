@@ -132,7 +132,7 @@ public class OrderService {
   @Transactional(readOnly = true)
   public Page<OrderResponse> getOrders(Long userId, OrderStatus status, LocalDateTime createdAtFrom,
       LocalDateTime createdAtTo, Boolean isPaid, LocalDateTime paidAtFrom, LocalDateTime paidAtTo,
-      int page, int sizePerPage, String[] sort) {
+      int page, int sizePerPage, String sort) {
     Specification<Order> specification = Specification.where(OrderSpecifications.hasUserId(userId))
         .and(OrderSpecifications.hasStatus(status))
         .and(OrderSpecifications.createdAtGreaterThan(createdAtFrom))
