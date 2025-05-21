@@ -12,5 +12,5 @@ public record ProductResponse(
         @Schema(example = "Doskonała przyczepność w zimowych warunkach") String description,
         @Schema(example = "15") Integer stock,
         @Schema(example = "TIRE") ProductType type
-) {
+) implements BaseProductResponse{
 }

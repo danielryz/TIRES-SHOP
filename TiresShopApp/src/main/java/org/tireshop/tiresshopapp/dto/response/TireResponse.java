@@ -14,5 +14,5 @@ public record TireResponse(
         @Schema(example = "TIRE") ProductType type,
         @Schema(example = "WINTER") String season,
         @Schema(example = "205/55R16") String size
-) {
+) implements BaseProductResponse{
 }

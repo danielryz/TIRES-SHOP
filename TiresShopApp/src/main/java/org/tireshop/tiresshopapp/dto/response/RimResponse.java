@@ -24,5 +24,5 @@ public record RimResponse(
         String size,
         @Schema(example = "5x112")
         String boltPattern
-) {
+) implements BaseProductResponse {
 }

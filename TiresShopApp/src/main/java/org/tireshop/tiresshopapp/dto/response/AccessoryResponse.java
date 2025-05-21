@@ -21,5 +21,5 @@ public record AccessoryResponse(
         ProductType type,
         @Schema(example = "ALUMINIUM")
         AccessoryType accessoryType
-) {
+) implements BaseProductResponse {
 }

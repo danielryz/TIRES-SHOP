@@ -7,12 +7,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.tireshop.tiresshopapp.dto.request.create.CreateProductRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateProductRequest;
-import org.tireshop.tiresshopapp.dto.response.ProductResponse;
-import org.tireshop.tiresshopapp.entity.Product;
-import org.tireshop.tiresshopapp.entity.ProductType;
+import org.tireshop.tiresshopapp.dto.response.*;
+import org.tireshop.tiresshopapp.entity.*;
 import org.tireshop.tiresshopapp.exception.ProductNotFoundException;
 import org.tireshop.tiresshopapp.repository.ProductRepository;
 import org.tireshop.tiresshopapp.specifications.ProductSpecifications;
@@ -28,14 +29,14 @@ public class ProductService {
   private final ProductRepository productRepository;
   private final ImageService imageService;
 
-  public ProductResponse getProductById(Long id) {
+  public BaseProductResponse getProductById(Long id) {
     Product product =
         productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
     return mapToResponse(product);
   }
 
-  public Page<ProductResponse> getProducts(String name, BigDecimal minPrice, BigDecimal maxPrice,
-      ProductType type, int page, int sizePerPage, String sort) {
+  public Page<BaseProductResponse> getProducts(String name, BigDecimal minPrice,
+      BigDecimal maxPrice, ProductType type, int page, int sizePerPage, String sort) {
     Specification<Product> specification =
         Specification.where(ProductSpecifications.hasNameContaining(name))
             .and(ProductSpecifications.hasMinPrice(minPrice))
@@ -50,9 +51,22 @@ public class ProductService {
     return products.map(this::mapToResponse);
   }
 
+  public Page<BaseProductResponse> searchProducts(String keyword, int page, int sizePerPage,
+      String sort) {
+    Specification<Product> specification =
+        Specification.where(ProductSpecifications.hasKeywordContaining(keyword));
+
+    Sort sorting = SortUtils.parseSort(sort);
+
+    Pageable pageable = PageRequest.of(page, sizePerPage, sorting);
+    Page<Product> products = productRepository.findAll(specification, pageable);
+
+    return products.map(this::mapToResponse);
+  }
+
   // POST
   @Transactional
-  public List<ProductResponse> createProduct(List<CreateProductRequest> requests) {
+  public List<BaseProductResponse> createProduct(List<CreateProductRequest> requests) {
     List<Product> products = requests.stream().map(request -> {
       Product product = new Product();
       product.setName(request.name());
@@ -97,9 +111,21 @@ public class ProductService {
     productRepository.deleteById(id);
   }
 
-  private ProductResponse mapToResponse(Product product) {
-    return new ProductResponse(product.getId(), product.getName(), product.getPrice(),
-        product.getDescription(), product.getStock(), product.getType());
+  private BaseProductResponse mapToResponse(Product product) {
+
+    if (product instanceof Tire tire) {
+      return new TireResponse(tire.getId(), tire.getName(), tire.getPrice(), tire.getDescription(),
+          tire.getStock(), tire.getType(), tire.getSeason(), tire.getSize());
+    } else if (product instanceof Rim rim) {
+      return new RimResponse(rim.getId(), rim.getName(), rim.getPrice(), rim.getDescription(),
+          rim.getStock(), rim.getType(), rim.getMaterial(), rim.getSize(), rim.getBoltPattern());
+    } else if (product instanceof Accessory accessory) {
+      return new AccessoryResponse(accessory.getId(), accessory.getName(), accessory.getPrice(),
+          accessory.getDescription(), accessory.getStock(), accessory.getType(),
+          accessory.getAccessoryType());
+    } else
+      return new ProductResponse(product.getId(), product.getName(), product.getPrice(),
+          product.getDescription(), product.getStock(), product.getType());
   }
 
 }

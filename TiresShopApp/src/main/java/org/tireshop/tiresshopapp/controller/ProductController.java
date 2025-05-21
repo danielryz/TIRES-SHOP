@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.dto.request.create.CreateProductRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateProductRequest;
+import org.tireshop.tiresshopapp.dto.response.BaseProductResponse;
 import org.tireshop.tiresshopapp.dto.response.ProductResponse;
 import org.tireshop.tiresshopapp.entity.ProductType;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
@@ -35,7 +36,7 @@ public class ProductController {
       content = @Content(mediaType = "application/json",
           schema = @Schema(implementation = ProductResponse.class)))
   @GetMapping("/api/products")
-  public ResponseEntity<Page<ProductResponse>> getProducts(
+  public ResponseEntity<Page<BaseProductResponse>> getProducts(
       @RequestParam(required = false) String name,
       @RequestParam(required = false) BigDecimal minPrice,
       @RequestParam(required = false) BigDecimal maxPrice,
@@ -44,6 +45,20 @@ public class ProductController {
       @RequestParam(defaultValue = "id,asc") String sort) {
     return ResponseEntity
         .ok(productService.getProducts(name, minPrice, maxPrice, type, page, sizePerPage, sort));
+  }
+
+  @Operation(summary = "List of search product.", description = "PUBLIC.")
+  @ApiResponse(responseCode = "200", description = "Product list returned.",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = ProductResponse.class)))
+  @GetMapping("/api/products/search")
+  public ResponseEntity<Page<BaseProductResponse>> searchProducts(
+      @RequestParam(required = false) String query, @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int sizePerPage,
+      @RequestParam(defaultValue = "id,asc") String sort) {
+    Page<BaseProductResponse> results =
+        productService.searchProducts(query, page, sizePerPage, sort);
+    return ResponseEntity.ok(results);
   }
 
   @Operation(summary = "Returns data of product by ID.", description = "PUBLIC.")
@@ -55,8 +70,8 @@ public class ProductController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/api/products/{id}")
-  public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
-    ProductResponse product = productService.getProductById(id);
+  public ResponseEntity<BaseProductResponse> getProductById(@PathVariable Long id) {
+    BaseProductResponse product = productService.getProductById(id);
     return ResponseEntity.ok(product);
   }
 
@@ -70,9 +85,9 @@ public class ProductController {
       @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/api/admin/products")
-  public ResponseEntity<List<ProductResponse>> createNewProducts(
+  public ResponseEntity<List<BaseProductResponse>> createNewProducts(
       @RequestBody List<CreateProductRequest> requests) {
-    List<ProductResponse> responses = productService.createProduct(requests);
+    List<BaseProductResponse> responses = productService.createProduct(requests);
     return ResponseEntity.status(HttpStatus.CREATED).body(responses);
   }
 
