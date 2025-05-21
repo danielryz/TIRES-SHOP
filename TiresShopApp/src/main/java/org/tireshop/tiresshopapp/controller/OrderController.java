@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.dto.request.create.CreateOrderRequest;
-import org.tireshop.tiresshopapp.dto.request.update.UpdateOrderStatusRequest;
 import org.tireshop.tiresshopapp.dto.response.OrderResponse;
 import org.tireshop.tiresshopapp.entity.OrderStatus;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
@@ -46,7 +46,7 @@ public class OrderController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PostMapping("/public")
-  public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest request,
+  public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest request,
       @RequestHeader(value = "X-Client-Id", required = false) @Parameter(
           description = "Unique client identifier (required if not authenticated)") String clientId) {
     OrderResponse order = orderService.createOrder(request, clientId);
@@ -143,8 +143,8 @@ public class OrderController {
   @PatchMapping("/admin/{id}/status")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> updateOrderStatus(@PathVariable Long id,
-      @RequestBody UpdateOrderStatusRequest request) {
-    orderService.updateOrderStatus(id, request);
+      @RequestParam OrderStatus status) {
+    orderService.updateOrderStatus(id, status);
     return ResponseEntity.ok("Status has been updated successfully.");
   }
 

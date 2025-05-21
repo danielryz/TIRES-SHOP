@@ -10,14 +10,16 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tireshop.tiresshopapp.dto.request.create.CreateOrderRequest;
-import org.tireshop.tiresshopapp.dto.request.update.UpdateOrderStatusRequest;
 import org.tireshop.tiresshopapp.dto.response.OrderItemResponse;
 import org.tireshop.tiresshopapp.dto.response.OrderResponse;
+import org.tireshop.tiresshopapp.dto.response.ShippingAddressResponse;
+import org.tireshop.tiresshopapp.dto.response.UserForOrderResponse;
 import org.tireshop.tiresshopapp.entity.*;
 import org.tireshop.tiresshopapp.exception.*;
 import org.tireshop.tiresshopapp.repository.CartItemRepository;
 import org.tireshop.tiresshopapp.repository.OrderRepository;
 import org.tireshop.tiresshopapp.repository.ProductRepository;
+import org.tireshop.tiresshopapp.repository.ShippingAddressRepository;
 import org.tireshop.tiresshopapp.specifications.OrderSpecifications;
 import org.tireshop.tiresshopapp.util.SortUtils;
 
@@ -34,6 +36,7 @@ public class OrderService {
   private final ProductRepository productRepository;
   private final CartItemRepository cartItemRepository;
   private final UserService userService;
+  private final ShippingAddressRepository shippingAddressRepository;
 
   public User getCurrentUser() {
     return userService.getCurrentUser();
@@ -42,9 +45,20 @@ public class OrderService {
   // POST
   @Transactional
   public OrderResponse createOrder(CreateOrderRequest request, String clientId) {
+
+    ShippingAddress shippingAddress = new ShippingAddress();
+    shippingAddress.setStreet(request.street());
+    shippingAddress.setHouseNumber(request.houseNumber());
+    shippingAddress.setApartmentNumber(request.apartmentNumber());
+    shippingAddress.setPostalCode(request.postalCode());
+    shippingAddress.setCity(request.city());
+
+    shippingAddressRepository.save(shippingAddress);
+
     Order order = new Order();
     order.setStatus(OrderStatus.CREATED);
     order.setCreatedAt(LocalDateTime.now());
+    order.setShippingAddress(shippingAddress);
     List<CartItem> cartItems;
 
     // login user
@@ -156,14 +170,13 @@ public class OrderService {
 
   // PATCH STATUS for ADMIN MANAGER
   @Transactional
-  public void updateOrderStatus(Long id, UpdateOrderStatusRequest request) {
+  public void updateOrderStatus(Long id, OrderStatus status) {
     Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
-    if (request.status() != null)
-      order.setStatus(request.status());
+    order.setStatus(status);
     orderRepository.save(order);
   }
 
-  // PATCH Status CANCEL for user
+  // PATCH Status CANCEL for a user
   @Transactional
   public void cancelOrder(Long id) {
     User user = getCurrentUser();
@@ -218,10 +231,17 @@ public class OrderService {
   }
 
   private OrderResponse mapOrderToResponse(Order order, BigDecimal totalAmount) {
+    String[] guestNameParts =
+        order.getGuestName() != null ? order.getGuestName().split(" ", 2) : new String[0];
+    String questFirstName = guestNameParts.length > 0 ? guestNameParts[0] : null;
+    String questLastName = guestNameParts.length > 1 ? guestNameParts[1] : null;
+    String questEmail = order.getEmail() != null ? order.getEmail() : null;
+    String questPhoneNumber = order.getPhoneNumber() != null ? order.getPhoneNumber() : null;
     return new OrderResponse(order.getId(), order.getStatus(), totalAmount,
+        order.getUser() != null ? mapUserToResponse(order.getUser()) : null, order.getSessionId(),
+        mapAddressToResponse(order.getShippingAddress()),
         order.getItems().stream().map(this::mapToOrderItemResponse).toList(), order.getCreatedAt(),
-        order.getEmail(), order.getGuestName() != null ? order.getGuestName().split(" ")[0] : null,
-        order.getGuestName() != null ? order.getGuestName().split(" ")[1] : null, order.isPaid(),
+        questEmail, questFirstName, questLastName, questPhoneNumber, order.isPaid(),
         order.getPaidAt());
   }
 
@@ -230,6 +250,18 @@ public class OrderService {
         orderItem.getPriceAtPurchase().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
     return new OrderItemResponse(orderItem.getId(), orderItem.getProduct().getName(),
         orderItem.getQuantity(), orderItem.getPriceAtPurchase(), totalPrice);
+  }
+
+  private UserForOrderResponse mapUserToResponse(User user) {
+
+    return new UserForOrderResponse(user.getId(), user.getUsername(), user.getEmail(),
+        user.getFirstName(), user.getLastName(), user.getPhoneNumber());
+  }
+
+  private ShippingAddressResponse mapAddressToResponse(ShippingAddress shippingAddress) {
+    return new ShippingAddressResponse(shippingAddress.getId(), shippingAddress.getStreet(),
+        shippingAddress.getHouseNumber(), shippingAddress.getApartmentNumber(),
+        shippingAddress.getPostalCode(), shippingAddress.getCity());
   }
 
 }

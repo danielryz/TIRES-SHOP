@@ -10,7 +10,7 @@ public class OrderSpecifications {
 
   public static Specification<Order> hasUserId(Long userId) {
     return (root, query, criteriaBuilder) -> userId == null ? null
-        : criteriaBuilder.equal(root.join("user_id").get("id"), userId);
+        : criteriaBuilder.equal(root.get("user").get("id"), userId);
   }
 
   public static Specification<Order> hasStatus(OrderStatus status) {
