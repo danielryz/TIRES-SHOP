@@ -39,12 +39,11 @@ public class ProductController {
       @RequestParam(required = false) String name,
       @RequestParam(required = false) BigDecimal minPrice,
       @RequestParam(required = false) BigDecimal maxPrice,
-      @RequestParam(required = false) ProductType productType,
-      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(required = false) ProductType type, @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int sizePerPage,
       @RequestParam(defaultValue = "id,asc") String sort) {
-    return ResponseEntity.ok(
-        productService.getProducts(name, minPrice, maxPrice, productType, page, sizePerPage, sort));
+    return ResponseEntity
+        .ok(productService.getProducts(name, minPrice, maxPrice, type, page, sizePerPage, sort));
   }
 
   @Operation(summary = "Returns data of product by ID.", description = "PUBLIC.")

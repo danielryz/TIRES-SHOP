@@ -26,6 +26,7 @@ import java.util.List;
 public class ProductService {
 
   private final ProductRepository productRepository;
+  private final ImageService imageService;
 
   public ProductResponse getProductById(Long id) {
     Product product =
@@ -34,12 +35,12 @@ public class ProductService {
   }
 
   public Page<ProductResponse> getProducts(String name, BigDecimal minPrice, BigDecimal maxPrice,
-      ProductType productType, int page, int sizePerPage, String sort) {
+      ProductType type, int page, int sizePerPage, String sort) {
     Specification<Product> specification =
         Specification.where(ProductSpecifications.hasNameContaining(name))
             .and(ProductSpecifications.hasMinPrice(minPrice))
             .and(ProductSpecifications.hasMaxPrice(maxPrice))
-            .and(ProductSpecifications.hasProductType(productType));
+            .and(ProductSpecifications.hasProductType(type));
 
     Sort sorting = SortUtils.parseSort(sort);
 
@@ -92,6 +93,7 @@ public class ProductService {
     if (!productRepository.existsById(id)) {
       throw new ProductNotFoundException(id);
     }
+    imageService.deleteImagesByProductId(id);
     productRepository.deleteById(id);
   }
 
