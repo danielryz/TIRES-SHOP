@@ -1,0 +1,89 @@
+.order-detail-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.order-detail-title {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.order-detail-content {
+    display: flex;
+    gap: 20px;
+}
+
+/* Lewa kolumna (3 tabele pionowo) */
+.left-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Prawa kolumna (lista produktów) */
+.right-column {
+    flex: 1;
+    overflow-x: auto;
+}
+
+/* Styl sekcji */
+.order-section {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Tabela */
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-table th,
+.order-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.order-table th {
+    background-color: #eee;
+}
+
+/* Sekcja statusu */
+.order-status-section {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.order-status-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.order-status-select {
+    padding: 6px 12px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    width: 200px;
+}
+
+/* Przycisk */
+.save-status-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.save-status-button[disabled],
+.save-status-button[aria-busy="true"] {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
