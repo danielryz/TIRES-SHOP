@@ -1,3 +1,5 @@
+import { User } from "./User";
+
 export enum OrderStatus {
   CREATED = "CREATED",
   CONFIRMED = "CONFIRMED",
@@ -16,15 +18,12 @@ export interface CreateOrderRequest {
   guestLastName: string;
   guestEmail: string;
   guestPhoneNumber: string;
-  items: OrderItemRequest[];
-}
-
-export interface CreateShippingAddressRequest {
   street: string;
   houseNumber: string;
   apartmentNumber?: string;
   postalCode: string;
   city: string;
+  items: OrderItemRequest[];
 }
 
 export interface OrderItemResponse {
@@ -39,20 +38,27 @@ export interface OrderResponse {
   id: number;
   status: string;
   totalAmount: number;
+  user: User;
+  clientId?: string;
+  shippingAddress: {
+    id: number;
+    street: string;
+    houseNumber: string;
+    apartmentNumber?: string;
+    postalCode: string;
+    city: string;
+  };
   items: OrderItemResponse[];
   createdAt: string;
   guestEmail: string;
   guestFirstName: string;
   guestLastName: string;
+  guestPhoneNumber: string;
   isPaid: boolean;
-  paidAt: string;
+  paidAt?: string;
 }
-export interface UpdateOrderStatusRequest {
-  status: OrderStatus;
-}
-
 export interface OrderFilterParams {
-  userId: number;
+  userId?: number;
   status?: OrderStatus;
   createdAtFrom?: string;
   createdAtTo?: string;

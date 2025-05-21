@@ -13,6 +13,7 @@ function AdminUserPanelPage() {
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [filters, setFilters] = useState<UserFilterParams>({});
+  const [filterInputs, setFilterInputs] = useState<UserFilterParams>({});
   const [page, setPage] = useState<number>(0);
   const [sizePerPage, setSizePerPage] = useState<number>(10);
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -95,48 +96,54 @@ function AdminUserPanelPage() {
               <input
                 className="admin-user-filter-input"
                 placeholder="Email"
-                value={filters.email || ""}
+                value={filterInputs.email || ""}
                 onChange={(e) =>
-                  setFilters({ ...filters, email: e.target.value })
+                  setFilterInputs({ ...filterInputs, email: e.target.value })
                 }
               />
               <input
                 className="admin-user-filter-input"
                 placeholder="Nazwa użytkownika"
-                value={filters.username || ""}
+                value={filterInputs.username || ""}
                 onChange={(e) =>
-                  setFilters({ ...filters, username: e.target.value })
+                  setFilterInputs({ ...filterInputs, username: e.target.value })
                 }
               />
               <input
                 className="admin-user-filter-input"
                 placeholder="Imię"
-                value={filters.firstName || ""}
+                value={filterInputs.firstName || ""}
                 onChange={(e) =>
-                  setFilters({ ...filters, firstName: e.target.value })
+                  setFilterInputs({
+                    ...filterInputs,
+                    firstName: e.target.value,
+                  })
                 }
               />
               <input
                 className="admin-user-filter-input"
                 placeholder="Nazwisko"
-                value={filters.lastName || ""}
+                value={filterInputs.lastName || ""}
                 onChange={(e) =>
-                  setFilters({ ...filters, lastName: e.target.value })
+                  setFilterInputs({ ...filterInputs, lastName: e.target.value })
                 }
               />
               <input
                 className="admin-user-filter-input"
                 placeholder="Telefon"
-                value={filters.phoneNumber || ""}
+                value={filterInputs.phoneNumber || ""}
                 onChange={(e) =>
-                  setFilters({ ...filters, phoneNumber: e.target.value })
+                  setFilterInputs({
+                    ...filterInputs,
+                    phoneNumber: e.target.value,
+                  })
                 }
               />
               <select
                 className="admin-user-filter-input"
-                value={filters.role || ""}
+                value={filterInputs.role || ""}
                 onChange={(e) =>
-                  setFilters({ ...filters, role: e.target.value })
+                  setFilterInputs({ ...filterInputs, role: e.target.value })
                 }
               >
                 <option value="">Wszystkie role</option>
@@ -147,9 +154,9 @@ function AdminUserPanelPage() {
 
               <select
                 className="admin-user-filter-input"
-                value={filters.sort?.[0] || "id,asc"}
+                value={filterInputs.sort?.[0] || "id,asc"}
                 onChange={(e) =>
-                  setFilters({ ...filters, sort: [e.target.value] })
+                  setFilterInputs({ ...filterInputs, sort: e.target.value })
                 }
               >
                 <option value="id,asc">ID rosnąco</option>
@@ -175,7 +182,10 @@ function AdminUserPanelPage() {
 
               <button
                 className="admin-user-filter-btn"
-                onClick={() => loadUsers()}
+                onClick={() => {
+                  setFilters(filterInputs);
+                  setPage(0);
+                }}
               >
                 Szukaj
               </button>

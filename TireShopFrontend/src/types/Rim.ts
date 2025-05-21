@@ -6,7 +6,7 @@ export interface Rim {
   price: number;
   stock: number;
   description: string;
-  productType: ProductType;
+  type: ProductType;
   size: string;
   material: string;
   boltPattern: string;
@@ -15,9 +15,9 @@ export interface Rim {
 
 export interface RimFilterParams {
   name?: string;
-  material?: string;
-  size?: string;
-  boltPattern?: string;
+  material?: string[];
+  size?: string[];
+  boltPattern?: string[];
   minPrice?: number;
   maxPrice?: number;
   page?: number;
@@ -45,4 +45,17 @@ export interface UpdateRimRequest {
   material: string;
   size: string;
   boltPattern: string;
+}
+
+export interface FilterCount {
+  value: string;
+  count: number;
+}
+
+export interface RimFilters {
+  material: FilterCount[];
+  size: FilterCount[];
+  boltPattern: FilterCount[];
+  minPrice: number;
+  maxPrice: number;
 }

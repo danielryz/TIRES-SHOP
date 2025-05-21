@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCartWithImages, CartItem } from "../../api/cartApi";
-import { createOrder, addShippingAddressToMyOrder } from "../../api/ordersApi";
+import { createOrder } from "../../api/ordersApi";
 import { getUserProfile } from "../../api/userApi";
 import { getAddressByType } from "../../api/addressesApi";
 import AlertStack from "../../components/alert/AlertStack";
 import { useCart } from "../../context/CartContext";
 import "./CheckoutPage.css";
-import { CreateShippingAddressRequest } from "../../types/Order";
 
 interface Address {
   id: number;
@@ -103,66 +102,41 @@ function CheckoutPage() {
   };
 
   const handleOrder = async () => {
-    if (selectedAddressId === "new") {
-      if (
-        !formData.street ||
-        !formData.houseNumber ||
-        !formData.postalCode ||
-        !formData.city
-      ) {
-        showAlert("Uzupełnij adres dostawy.", "error");
-        return;
-      }
+    if (
+      !formData.street ||
+      !formData.houseNumber ||
+      !formData.postalCode ||
+      !formData.city
+    ) {
+      showAlert("Uzupełnij adres dostawy.", "error");
+      return;
     }
+
     try {
       setLoading(true);
+      const items = cartItems.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      }));
 
-      const createdOrder = await createOrder({
-        guestFirstName: isLoggedIn ? "" : formData.firstName,
-        guestLastName: isLoggedIn ? "" : formData.lastName,
-        guestEmail: isLoggedIn ? "" : formData.email,
-        guestPhoneNumber: isLoggedIn ? "" : formData.phone,
-        items: cartItems.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-        })),
-      });
+      const orderRequest = {
+        guestFirstName: formData.firstName,
+        guestLastName: formData.lastName,
+        guestEmail: formData.email,
+        guestPhoneNumber: formData.phone,
+        street: formData.street,
+        houseNumber: formData.houseNumber,
+        apartmentNumber: formData.apartmentNumber || undefined,
+        postalCode: formData.postalCode,
+        city: formData.city,
+        items,
+      };
 
-      if (selectedAddressId === "new") {
-        const newAddress: CreateShippingAddressRequest = {
-          street: formData.street,
-          houseNumber: formData.houseNumber,
-          apartmentNumber: formData.apartmentNumber,
-          postalCode: formData.postalCode,
-          city: formData.city,
-        };
-
-        await addShippingAddressToMyOrder(createdOrder.id, newAddress);
-        showAlert("Adres został dodany do zamówienia.", "success");
-      } else {
-        const selectedAddress = addresses.find(
-          (address) => address.id === selectedAddressId,
-        );
-
-        if (!selectedAddress) {
-          showAlert("Wybrany adres nie istnieje.", "error");
-          return;
-        }
-
-        const addressToAdd: CreateShippingAddressRequest = {
-          street: selectedAddress.street,
-          houseNumber: selectedAddress.houseNumber,
-          apartmentNumber: selectedAddress.apartmentNumber,
-          postalCode: selectedAddress.postalCode,
-          city: selectedAddress.city,
-        };
-
-        await addShippingAddressToMyOrder(createdOrder.id, addressToAdd);
-        showAlert("Adres został dodany do zamówienia.", "success");
-      }
+      const createdOrder = await createOrder(orderRequest);
 
       showAlert("Zamówienie złożone pomyślnie!", "success");
       refreshCart();
+
       setTimeout(() => navigate(`/payment/${createdOrder.id}`), 10000);
     } catch {
       showAlert("Nie udało się złożyć zamówienia.", "error");
@@ -170,6 +144,31 @@ function CheckoutPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedAddressId !== "new") {
+      const selected = addresses.find((addr) => addr.id === selectedAddressId);
+      if (selected) {
+        setFormData((prev) => ({
+          ...prev,
+          street: selected.street,
+          houseNumber: selected.houseNumber,
+          apartmentNumber: selected.apartmentNumber || "",
+          postalCode: selected.postalCode,
+          city: selected.city,
+        }));
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        street: "",
+        houseNumber: "",
+        apartmentNumber: "",
+        postalCode: "",
+        city: "",
+      }));
+    }
+  }, [selectedAddressId, addresses]);
 
   return (
     <div className="checkout-page">

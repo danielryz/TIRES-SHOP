@@ -3,13 +3,15 @@ import {
   Product,
   CreateProductRequest,
   UpdateProductRequest,
+  ProductApiResponse,
+  ProductSearchParams,
 } from "../types/Product";
 import { Page } from "../types/Page";
 import axiosInstance from "./axiosInstance";
 
 export const getProducts = async (
   params: ProductFilterParams,
-): Promise<Page<Product>> => {
+): Promise<Page<ProductApiResponse>> => {
   const searchParams = new URLSearchParams();
 
   if (params.name) searchParams.append("name", params.name);
@@ -26,12 +28,30 @@ export const getProducts = async (
   const response = await axiosInstance.get(
     `/products?${searchParams.toString()}`,
   );
-  return response.data;
+  return response.data as Page<ProductApiResponse>;
 };
 
-export const getProductById = async (id: number): Promise<Product> => {
-  const response = await axiosInstance.get(`/product/${id}`);
-  return response.data;
+export const searchProduct = async (
+  params: ProductSearchParams,
+): Promise<Page<ProductApiResponse>> => {
+  const searchParams = new URLSearchParams();
+  if (params.query) searchParams.append("query", params.query);
+
+  searchParams.append("page", (params.page ?? 0).toString());
+  searchParams.append("sizePerPage", (params.sizePerPage ?? 10).toString());
+  searchParams.append("sort", params.sort ?? "id,asc");
+
+  const response = await axiosInstance.get(
+    `/products/search?${searchParams.toString()}`,
+  );
+  return response.data as Page<ProductApiResponse>;
+};
+
+export const getProductById = async (
+  id: number,
+): Promise<ProductApiResponse> => {
+  const response = await axiosInstance.get(`/products/${id}`);
+  return response.data as ProductApiResponse;
 };
 
 export const createProducts = async (

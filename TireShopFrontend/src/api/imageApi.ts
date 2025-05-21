@@ -1,4 +1,4 @@
-import { AddImageRequest, CreateImageRequest, Image } from "../types/Image";
+import { Image } from "../types/Image";
 import axiosInstance from "./axiosInstance";
 
 export const getImagesByProductId = async (
@@ -18,42 +18,26 @@ export const getImageById = async (id: number): Promise<Image> => {
   return response.data;
 };
 
-export const createImage = async (
-  request: CreateImageRequest,
-): Promise<string> => {
-  const response = await axiosInstance.post("/admin/image", request);
-  return response.data;
-};
-
-export const addImagesToProduct = async (
-  productId: number,
-  request: AddImageRequest[],
-): Promise<string> => {
-  const response = await axiosInstance.post(
-    `/admin/images/product/${productId}`,
-    request,
-  );
-  return response.data;
-};
-
-export const updateImage = async (
-  id: number,
-  request: CreateImageRequest,
-): Promise<string> => {
-  const response = await axiosInstance.patch(`/admin/image/${id}`, request);
-  return response.data;
-};
-
 export const deleteImage = async (id: number): Promise<string> => {
   const response = await axiosInstance.delete(`/admin/image/${id}`);
   return response.data;
 };
 
-export const deleteImageByProductId = async (
+export const uploadImageForProduct = async (
   productId: number,
-): Promise<string> => {
-  const response = await axiosInstance.delete(
-    `/admin/image/products/${productId}`,
+  file: File,
+): Promise<Image> => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await axiosInstance.post<Image>(
+    `/admin/image/upload/${productId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
   );
   return response.data;
 };

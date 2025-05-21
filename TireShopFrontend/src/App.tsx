@@ -29,10 +29,16 @@ import CheckoutPage from "./pages/order/CheckoutPage";
 import UserOrdersPage from "./pages/user/UserOrdersPage";
 import PaymentPage from "./pages/order/PaymentPage";
 import AdminOrderPanelPage from "./pages/panel/page/AdminOrderPanelPage";
-import AdminProductPanelPage from "./pages/panel/page/AdminOrderPanelPage";
+import AdminProductPanelPage from "./pages/panel/page/AdminProductPanelPage";
 import AdminUserPanelPage from "./pages/panel/page/AdminUserPanelPage";
 import AdminUserDetailPage from "./pages/panel/page/AdminUserDetailPage";
-
+import AdminAccessoryPanelPage from "./pages/panel/page/AdminAccessoryPanelPage";
+import AdminTirePanelPage from "./pages/panel/page/AdminTirePanelPage";
+import AdminRimPanelPage from "./pages/panel/page/AdminRimPanelPage";
+import AdminProductDetailPage from "./pages/panel/page/AdminProductDetailPage";
+import AdminOrderDetailPage from "./pages/panel/page/AdminOrderDetailPage";
+import ProductDetailPage from "./pages/category/ProductDetailPage";
+import ProductSearchPage from "./pages/category/ProductSearchPage";
 function AppWrapper() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
@@ -44,13 +50,16 @@ function AppWrapper() {
 
       <Routes>
         <Route path="/" element={<HomePage />} />
+
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
         <Route path="/tires" element={<TiresPage />} />
         <Route path="/accessories" element={<AccessoryPage />} />
         <Route path="/rims" element={<RimPage />} />
-
+        <Route path="/others" element={<ProductSearchPage />} />
+        <Route path="product/:type/:id" element={<ProductDetailPage />} />
+        <Route path="/products" element={<ProductSearchPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/settings" element={<SettingsPage />} />
@@ -71,8 +80,23 @@ function AppWrapper() {
           <Route path="/admin/users" element={<AdminUserPanelPage />} />
           <Route path="/admin/users/:id" element={<AdminUserDetailPage />} />
           <Route path="/admin/products" element={<AdminProductPanelPage />} />
+          <Route
+            path="/admin/products/:type/:id"
+            element={<AdminProductDetailPage />}
+          />
+          <Route
+            path="/admin/products/tires"
+            element={<AdminTirePanelPage />}
+          />
+          <Route path="/admin/products/rims" element={<AdminRimPanelPage />} />
+
+          <Route
+            path="/admin/products/accessories"
+            element={<AdminAccessoryPanelPage />}
+          />
           <Route path="/admin/orders" element={<AdminOrderPanelPage />} />
         </Route>
+        <Route path="/admin/order/:id" element={<AdminOrderDetailPage />} />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

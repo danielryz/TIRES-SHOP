@@ -14,14 +14,14 @@ export interface Accessory {
   price: number;
   stock: number;
   description: string;
-  productType: ProductType;
+  type: ProductType;
   accessoryType: AccessoryType;
   imageUrls?: string[];
 }
 
 export interface AccessoryFilterParams {
   name?: string;
-  accessoryType?: AccessoryType;
+  accessoryType?: AccessoryType[];
   minPrice?: number;
   maxPrice?: number;
   page?: number;
@@ -34,7 +34,7 @@ export interface CreateAccessoryRequest {
   price: number;
   stock: number;
   description: string;
-  productType: ProductType;
+  type: ProductType;
   accessoryType: AccessoryType;
 }
 
@@ -43,6 +43,17 @@ export interface UpdateAccessoryRequest {
   price: number;
   stock: number;
   description: string;
-  productType: ProductType;
+  type: ProductType;
   accessoryType: AccessoryType;
+}
+
+export interface FilterCount {
+  value: AccessoryType;
+  count: number;
+}
+
+export interface AccessoryFilters {
+  accessoryType: FilterCount[];
+  minPrice: number;
+  maxPrice: number;
 }

@@ -8,14 +8,14 @@ export interface Tire {
   season: string;
   stock: number;
   description: string;
-  productType: ProductType;
+  type: ProductType;
   imageUrls?: string[];
 }
 
 export interface TireFilterParams {
   name?: string;
-  season?: string;
-  size?: string;
+  season?: string[];
+  size?: string[];
   minPrice?: number;
   maxPrice?: number;
   page?: number;
@@ -41,4 +41,16 @@ export interface UpdateTireRequest {
   type: ProductType;
   season: string;
   size: string;
+}
+
+export interface FilterCount {
+  value: string;
+  count: number;
+}
+
+export interface TireFilters {
+  seasons: FilterCount[];
+  sizes: FilterCount[];
+  minPrice: number;
+  maxPrice: number;
 }

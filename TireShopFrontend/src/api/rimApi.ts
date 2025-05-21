@@ -2,15 +2,11 @@ import {
   CreateRimRequest,
   Rim,
   RimFilterParams,
+  RimFilters,
   UpdateRimRequest,
 } from "../types/Rim";
 import axiosInstance from "./axiosInstance";
 import { Page } from "../types/Page";
-
-export const getRim = async (): Promise<Rim[]> => {
-  const response = await axiosInstance.get("/rim");
-  return response.data;
-};
 
 export const getRimById = async (id: number): Promise<Rim> => {
   const response = await axiosInstance.get(`/rim/${id}`);
@@ -21,10 +17,19 @@ export const getRims = async (params: RimFilterParams): Promise<Page<Rim>> => {
   const searchParams = new URLSearchParams();
 
   if (params.name) searchParams.append("name", params.name);
-  if (params.material) searchParams.append("material", params.material);
-  if (params.size) searchParams.append("size", params.size);
-  if (params.boltPattern)
-    searchParams.append("boltPattern", params.boltPattern);
+  if (params.material) {
+    params.material.forEach((material) =>
+      searchParams.append("material", material),
+    );
+  }
+  if (params.size) {
+    params.size.forEach((size) => searchParams.append("size", size));
+  }
+  if (params.boltPattern) {
+    params.boltPattern.forEach((boltPattern) =>
+      searchParams.append("boltPattern", boltPattern),
+    );
+  }
   if (params.minPrice != null)
     searchParams.append("minPrice", params.minPrice.toString());
   if (params.maxPrice != null)
@@ -53,5 +58,10 @@ export const updateRim = async (
 
 export const deleteRim = async (id: number): Promise<string> => {
   const response = await axiosInstance.delete(`/admin/rim/${id}`);
+  return response.data;
+};
+
+export const getAvailableRimFilters = async (): Promise<RimFilters> => {
+  const response = await axiosInstance.get("/rim/filters");
   return response.data;
 };

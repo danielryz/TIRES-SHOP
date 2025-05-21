@@ -13,17 +13,24 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import { useCart } from "../../context/CartContext";
+import { useState } from "react";
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const tokenPayload = getTokenPayload();
-
+  const [searchTerm, setSearchTerm] = useState("");
   const { count } = useCart();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim().length === 0) return;
+    navigate(`/products?query=${encodeURIComponent(searchTerm.trim())}`);
   };
 
   if (
@@ -43,14 +50,18 @@ function Navbar() {
           </Link>
         </div>
 
-        <form className="navbar-search">
+        <form className="navbar-search" onSubmit={handleSubmit}>
           <FaSearch className="search-icon-left" />
-          <input type="text" placeholder="Szukaj produktów..." />
+          <input
+            type="text"
+            placeholder="Szukaj produktów..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <button type="submit" className="search-submit-btn">
             Szukaj
           </button>
         </form>
-
         <div className="navbar-right">
           <Link to="/contact" className="navbar-icon-link">
             <FaPhoneAlt size={25} style={{ marginRight: 6 }} />

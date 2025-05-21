@@ -1,16 +1,12 @@
 import {
   Accessory,
   AccessoryFilterParams,
+  AccessoryFilters,
   CreateAccessoryRequest,
   UpdateAccessoryRequest,
 } from "../types/Accessory";
 import axiosInstance from "./axiosInstance";
 import { Page } from "../types/Page";
-
-export const getAccessory = async (): Promise<Accessory[]> => {
-  const response = await axiosInstance.get("/accessory");
-  return response.data;
-};
 
 export const getAccessoryById = async (id: number): Promise<Accessory> => {
   const response = await axiosInstance.get(`/accessory/${id}`);
@@ -23,7 +19,11 @@ export const getAccessories = async (
   const searchParams = new URLSearchParams();
 
   if (params.name) searchParams.append("name", params.name);
-  if (params.accessoryType) searchParams.append("name", params.accessoryType);
+  if (params.accessoryType) {
+    params.accessoryType.forEach((accessoryType) =>
+      searchParams.append("accessoryType", accessoryType),
+    );
+  }
   if (params.minPrice != null)
     searchParams.append("minPrice", params.minPrice.toString());
   if (params.maxPrice != null)
@@ -64,3 +64,9 @@ export const deleteAccessory = async (id: number): Promise<string> => {
   const response = await axiosInstance.delete(`/admin/accessory/${id}`);
   return response.data;
 };
+
+export const getAvailableAccessoryFilters =
+  async (): Promise<AccessoryFilters> => {
+    const response = await axiosInstance.get("/accessory/filters");
+    return response.data;
+  };

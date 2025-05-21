@@ -8,7 +8,7 @@ import {
   getRoles,
   deleteUserById,
 } from "../../../api/userApi";
-import { User } from "../../../types/User";
+import { Role, User } from "../../../types/User";
 import "./AdminUserDetailPage.css";
 import ConfirmModalPanel from "../../../components/ConfirmModalPanel";
 import { AxiosError } from "axios";

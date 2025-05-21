@@ -2,15 +2,11 @@ import {
   CreateTireRequest,
   Tire,
   TireFilterParams,
+  TireFilters,
   UpdateTireRequest,
 } from "../types/Tire";
 import { Page } from "../types/Page";
 import axiosInstance from "./axiosInstance";
-
-export const getTires = async (): Promise<Tire[]> => {
-  const response = await axiosInstance.get("/tire");
-  return response.data;
-};
 
 export const getTireById = async (id: number): Promise<Tire> => {
   const response = await axiosInstance.get(`/tire/${id}`);
@@ -23,8 +19,13 @@ export const getTire = async (
   const searchParams = new URLSearchParams();
 
   if (params.name) searchParams.append("name", params.name);
-  if (params.season) searchParams.append("season", params.season);
-  if (params.size) searchParams.append("size", params.size);
+  if (params.season) {
+    params.season.forEach((season) => searchParams.append("season", season));
+  }
+
+  if (params.size) {
+    params.size.forEach((size) => searchParams.append("size", size));
+  }
   if (params.minPrice != null)
     searchParams.append("minPrice", params.minPrice.toString());
   if (params.maxPrice != null)
@@ -55,5 +56,10 @@ export const updateTire = async (
 
 export const deleteTire = async (id: number): Promise<string> => {
   const response = await axiosInstance.delete(`/admin/tire/${id}`);
+  return response.data;
+};
+
+export const getAvailableTireFilters = async (): Promise<TireFilters> => {
+  const response = await axiosInstance.get("/tire/filters");
   return response.data;
 };

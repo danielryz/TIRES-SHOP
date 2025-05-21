@@ -1,10 +1,9 @@
 import axiosInstance from "./axiosInstance";
 import {
   CreateOrderRequest,
-  CreateShippingAddressRequest,
   OrderFilterParams,
   OrderResponse,
-  UpdateOrderStatusRequest,
+  OrderStatus,
 } from "../types/Order";
 import { Page } from "../types/Page";
 
@@ -12,17 +11,6 @@ export const createOrder = async (
   data: CreateOrderRequest,
 ): Promise<OrderResponse> => {
   const response = await axiosInstance.post("/orders/public", data);
-  return response.data;
-};
-
-export const addShippingAddressToMyOrder = async (
-  orderId: number,
-  data: CreateShippingAddressRequest,
-): Promise<string> => {
-  const response = await axiosInstance.post(
-    `/shippingAddress/my_order/${orderId}`,
-    data,
-  );
   return response.data;
 };
 
@@ -82,8 +70,10 @@ export const getOrderByIdAdmin = async (id: number): Promise<OrderResponse> => {
 
 export const updateOrderStatus = async (
   id: number,
-  request: UpdateOrderStatusRequest,
+  status: OrderStatus,
 ): Promise<string> => {
-  const response = await axiosInstance.patch(`/admin/${id}/status`, request);
+  const response = await axiosInstance.patch(
+    `/orders/admin/${id}/status?status=${status}`,
+  );
   return response.data;
 };
