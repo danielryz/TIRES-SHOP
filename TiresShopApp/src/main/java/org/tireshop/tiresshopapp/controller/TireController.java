@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.dto.request.create.CreateTireRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateTireRequest;
+import org.tireshop.tiresshopapp.dto.response.TireFilterResponse;
 import org.tireshop.tiresshopapp.dto.response.TireResponse;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.TireService;
@@ -28,16 +29,6 @@ import java.util.List;
 public class TireController {
 
   private final TireService tireService;
-
-  // do usunięcia po przpięciu się na ten lepszy
-  @Operation(summary = "List of all Tire.", description = "PUBLIC.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Tire list returned.",
-      content = @Content(mediaType = "application/json",
-          schema = @Schema(implementation = TireResponse.class)))})
-  @GetMapping("/api/tire")
-  public List<TireResponse> getAllTire() {
-    return tireService.getAllTire();
-  }
 
   @Operation(summary = "Returns data of tire by ID.", description = "PUBLIC.")
   @ApiResponses({
@@ -63,7 +54,8 @@ public class TireController {
               schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/api/tires")
   public ResponseEntity<Page<TireResponse>> getTires(@RequestParam(required = false) String name,
-      @RequestParam(required = false) String season, @RequestParam(required = false) String size,
+      @RequestParam(required = false) List<String> season,
+      @RequestParam(required = false) List<String> size,
       @RequestParam(required = false) BigDecimal minPrice,
       @RequestParam(required = false) BigDecimal maxPrice,
       @RequestParam(defaultValue = "0") int page,
@@ -116,6 +108,11 @@ public class TireController {
   public ResponseEntity<String> deleteTire(@PathVariable Long id) {
     tireService.deleteTire(id);
     return ResponseEntity.ok("Tire deleted successfully.");
+  }
+
+  @GetMapping("api/tire/filters")
+  public TireFilterResponse getFilterOptions() {
+    return tireService.getAvailableFilterOptions();
   }
 
 

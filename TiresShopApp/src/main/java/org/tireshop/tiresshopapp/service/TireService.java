@@ -10,6 +10,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateTireRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateTireRequest;
+import org.tireshop.tiresshopapp.dto.response.FilterCountResponse;
+import org.tireshop.tiresshopapp.dto.response.TireFilterResponse;
 import org.tireshop.tiresshopapp.dto.response.TireResponse;
 import org.tireshop.tiresshopapp.entity.Tire;
 import org.tireshop.tiresshopapp.exception.TireNotFoundException;
@@ -25,32 +27,29 @@ import java.util.List;
 public class TireService {
 
   private final TireRepository tireRepository;
-  private final ProductService productService;
-
+  private final ImageService imageService;
   // GET
-  public List<TireResponse> getAllTire() {
-    return tireRepository.findAll().stream().map(this::mapToResponse).toList();
-  }
 
   public TireResponse getTireById(Long id) {
     Tire tire = tireRepository.findById(id).orElseThrow(() -> new TireNotFoundException(id));
     return mapToResponse(tire);
   }
 
-  public Page<TireResponse> getTires(String name, String season, String size, BigDecimal minPrice,
-      BigDecimal maxPrice, int page, int sizePerPage, String sort) {
-    Specification<Tire> specification = Specification.where(TireSpecifications.hasSeason(season))
-        .and(TireSpecifications.hasSize(size)).and(TireSpecifications.hasNameContaining(name))
+  public Page<TireResponse> getTires(String name, List<String> seasons, List<String> sizes,
+      BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String sort) {
+
+    Specification<Tire> specification = Specification.where(TireSpecifications.hasSeasons(seasons))
+        .and(TireSpecifications.hasSizes(sizes)).and(TireSpecifications.hasNameContaining(name))
         .and(TireSpecifications.hasMinPrice(minPrice))
         .and(TireSpecifications.hasMaxPrice(maxPrice));
 
     Sort sorting = SortUtils.parseSort(sort);
-
     Pageable pageable = PageRequest.of(page, sizePerPage, sorting);
-    Page<Tire> tires = tireRepository.findAll(specification, pageable);
 
+    Page<Tire> tires = tireRepository.findAll(specification, pageable);
     return tires.map(this::mapToResponse);
   }
+
 
   // POST
   @Transactional
@@ -76,7 +75,21 @@ public class TireService {
   public void updateTire(Long id, UpdateTireRequest request) {
     Tire tire = tireRepository.findById(id).orElseThrow(() -> new TireNotFoundException(id));
 
-    productService.updateProduct(id, request.request());
+    if (request.name() != null && !request.name().isBlank()) {
+      tire.setName(request.name());
+    }
+    if (request.price() != null) {
+      tire.setPrice(request.price());
+    }
+    if (request.description() != null && !request.description().isBlank()) {
+      tire.setDescription(request.description());
+    }
+    if (request.stock() != null) {
+      tire.setStock(request.stock());
+    }
+    if (request.type() != null) {
+      tire.setType(request.type());
+    }
     if (request.season() != null && !request.season().isBlank())
       tire.setSeason(request.season());
     if (request.size() != null && !request.size().isBlank())
@@ -90,8 +103,19 @@ public class TireService {
     if (!tireRepository.existsById(id)) {
       throw new TireNotFoundException(id);
     }
+    imageService.deleteImagesByProductId(id);
     tireRepository.deleteById(id);
 
+  }
+
+  public TireFilterResponse getAvailableFilterOptions() {
+    List<FilterCountResponse> seasonsWithCount = tireRepository.countTiresBySeason();
+    List<FilterCountResponse> sizesWithCount = tireRepository.countTiresBySize();
+    BigDecimal minPrice = tireRepository.findMinPrice();
+    BigDecimal maxPrice = tireRepository.findMaxPrice();
+    return new TireFilterResponse(seasonsWithCount, sizesWithCount,
+        minPrice != null ? minPrice : BigDecimal.ZERO,
+        maxPrice != null ? maxPrice : BigDecimal.valueOf(1000));
   }
 
   public TireResponse mapToResponse(Tire tire) {

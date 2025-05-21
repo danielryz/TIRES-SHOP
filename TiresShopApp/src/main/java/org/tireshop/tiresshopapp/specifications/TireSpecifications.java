@@ -1,21 +1,42 @@
 package org.tireshop.tiresshopapp.specifications;
 
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.tireshop.tiresshopapp.entity.Tire;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class TireSpecifications {
-  public static Specification<Tire> hasSeason(String seasonName) {
-    return (root, query, criteriaBuilder) -> seasonName == null ? null
-        : criteriaBuilder.equal(criteriaBuilder.lower(root.get("season")),
-            seasonName.toLowerCase());
+  public static Specification<Tire> hasSeasons(List<String> seasonNames) {
+    return (root, query, criteriaBuilder) -> {
+      if (seasonNames == null || seasonNames.isEmpty()) {
+        return null;
+      }
+
+      CriteriaBuilder.In<String> inClause =
+          criteriaBuilder.in(criteriaBuilder.lower(root.get("season")));
+      for (String season : seasonNames) {
+        inClause.value(season.toLowerCase());
+      }
+      return inClause;
+    };
   }
 
-  public static Specification<Tire> hasSize(String size) {
-    return (root, query, criteriaBuilder) -> size == null ? null
-        : criteriaBuilder.equal(criteriaBuilder.lower(root.get("size")), size.toLowerCase());
+  public static Specification<Tire> hasSizes(List<String> sizes) {
+    return (root, query, criteriaBuilder) -> {
+      if (sizes == null || sizes.isEmpty()) {
+        return null;
+      }
+
+      CriteriaBuilder.In<String> inClause =
+          criteriaBuilder.in(criteriaBuilder.lower(root.get("size")));
+      for (String size : sizes) {
+        inClause.value(size.toLowerCase());
+      }
+      return inClause;
+    };
   }
 
   public static Specification<Tire> hasNameContaining(String name) {
@@ -26,11 +47,11 @@ public class TireSpecifications {
 
   public static Specification<Tire> hasMinPrice(BigDecimal minPrice) {
     return (root, query, criteriaBuilder) -> minPrice == null ? null
-        : criteriaBuilder.greaterThanOrEqualTo(root.get("minPrice"), minPrice);
+        : criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
   }
 
   public static Specification<Tire> hasMaxPrice(BigDecimal maxPrice) {
     return (root, query, criteriaBuilder) -> maxPrice == null ? null
-        : criteriaBuilder.lessThanOrEqualTo(root.get("maxPrice"), maxPrice);
+        : criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
   }
 }
