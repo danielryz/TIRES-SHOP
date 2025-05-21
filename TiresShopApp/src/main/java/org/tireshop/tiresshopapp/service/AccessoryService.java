@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateAccessoryRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateAccessoryRequest;
-import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
+import org.tireshop.tiresshopapp.dto.response.*;
 import org.tireshop.tiresshopapp.entity.Accessory;
 import org.tireshop.tiresshopapp.entity.AccessoryType;
 import org.tireshop.tiresshopapp.exception.AccessoryNotFoundException;
@@ -26,12 +26,8 @@ import java.util.List;
 public class AccessoryService {
 
   private final AccessoryRepository accessoryRepository;
-  private final ProductService productService;
-
+  private final ImageService imageService;
   // GET
-  public List<AccessoryResponse> getAllAccessory() {
-    return accessoryRepository.findAll().stream().map(this::mapToResponse).toList();
-  }
 
   public AccessoryResponse getAccessoryById(Long id) {
     Accessory accessory =
@@ -39,7 +35,7 @@ public class AccessoryService {
     return mapToResponse(accessory);
   }
 
-  public Page<AccessoryResponse> getAccessory(AccessoryType accessoryType, String name,
+  public Page<AccessoryResponse> getAccessory(List<AccessoryType> accessoryType, String name,
       BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String sort) {
     Specification<Accessory> specification =
         Specification.where(AccessorySpecification.hasAccessoryType(accessoryType))
@@ -78,7 +74,21 @@ public class AccessoryService {
     Accessory accessory =
         accessoryRepository.findById(id).orElseThrow(() -> new AccessoryNotFoundException(id));
 
-    productService.updateProduct(id, request.request());
+    if (request.name() != null && !request.name().isBlank()) {
+      accessory.setName(request.name());
+    }
+    if (request.price() != null) {
+      accessory.setPrice(request.price());
+    }
+    if (request.description() != null && !request.description().isBlank()) {
+      accessory.setDescription(request.description());
+    }
+    if (request.stock() != null) {
+      accessory.setStock(request.stock());
+    }
+    if (request.type() != null) {
+      accessory.setType(request.type());
+    }
     if (request.accessoryType() != null) {
       accessory.setAccessoryType(request.accessoryType());
     }
@@ -92,7 +102,18 @@ public class AccessoryService {
     if (!accessoryRepository.existsById(id)) {
       throw new AccessoryNotFoundException(id);
     }
+    imageService.deleteImagesByProductId(id);
     accessoryRepository.deleteById(id);
+  }
+
+  public AccessoryFilterResponse getAvailableFilterOptions() {
+    List<AccessoryFilterCountResponse> accessoryWithCount =
+        accessoryRepository.countAccessoryByType();
+    BigDecimal minPrice = accessoryRepository.findMinPrice();
+    BigDecimal maxPrice = accessoryRepository.findMaxPrice();
+    return new AccessoryFilterResponse(accessoryWithCount,
+        minPrice != null ? minPrice : BigDecimal.ZERO,
+        maxPrice != null ? maxPrice : BigDecimal.valueOf(1000));
   }
 
   private AccessoryResponse mapToResponse(Accessory accessory) {

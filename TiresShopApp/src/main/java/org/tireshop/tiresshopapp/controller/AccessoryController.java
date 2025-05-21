@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.dto.request.create.CreateAccessoryRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateAccessoryRequest;
+import org.tireshop.tiresshopapp.dto.response.AccessoryFilterResponse;
 import org.tireshop.tiresshopapp.dto.response.AccessoryResponse;
 import org.tireshop.tiresshopapp.entity.AccessoryType;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
@@ -29,15 +30,6 @@ import java.util.List;
 public class AccessoryController {
 
   private final AccessoryService accessoryService;
-
-  @Operation(summary = "List of all Accessory.", description = "PUBLIC.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Accessory list returned.",
-      content = @Content(mediaType = "application/json",
-          schema = @Schema(implementation = AccessoryResponse.class)))})
-  @GetMapping("/api/accessory")
-  public List<AccessoryResponse> getAllAccessory() {
-    return accessoryService.getAllAccessory();
-  }
 
   @Operation(summary = "Returns data of accessory by ID.", description = "PUBLIC.")
   @ApiResponses({
@@ -64,14 +56,14 @@ public class AccessoryController {
   @GetMapping("/api/accessories")
   public ResponseEntity<Page<AccessoryResponse>> getAccessories(
       @RequestParam(required = false) String name,
-      @RequestParam(required = false) AccessoryType type,
+      @RequestParam(required = false) List<AccessoryType> accessoryType,
       @RequestParam(required = false) BigDecimal minPrice,
       @RequestParam(required = false) BigDecimal maxPrice,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int sizePerPage,
       @RequestParam(defaultValue = "id,asc") String sort) {
-    return ResponseEntity
-        .ok(accessoryService.getAccessory(type, name, minPrice, maxPrice, page, sizePerPage, sort));
+    return ResponseEntity.ok(accessoryService.getAccessory(accessoryType, name, minPrice, maxPrice,
+        page, sizePerPage, sort));
   }
 
   @Operation(summary = "Adding Accessory Products.", description = "ADMIN.")
@@ -117,6 +109,11 @@ public class AccessoryController {
   public ResponseEntity<String> deleteAccessory(@PathVariable Long id) {
     accessoryService.deleteAccessory(id);
     return ResponseEntity.ok("Accessory deleted successfully.");
+  }
+
+  @GetMapping("api/accessory/filters")
+  public AccessoryFilterResponse getFilterOptions() {
+    return accessoryService.getAvailableFilterOptions();
   }
 }
 
