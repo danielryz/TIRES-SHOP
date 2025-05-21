@@ -11,12 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.tireshop.tiresshopapp.dto.request.create.AddImagesRequest;
 import org.tireshop.tiresshopapp.dto.request.create.CreateImageRequest;
-import org.tireshop.tiresshopapp.dto.request.update.UpdateImageRequest;
 import org.tireshop.tiresshopapp.dto.response.ImageResponse;
 import org.tireshop.tiresshopapp.service.ImageService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -87,20 +88,6 @@ public class ImageController {
     return ResponseEntity.ok("Images added successfully.");
   }
 
-  @Operation(summary = "Update product image.", description = "ADMIN.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Image updated successfully."),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
-      @ApiResponse(responseCode = "404", description = "Image Not Found.",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = ErrorResponse.class)))})
-  @PatchMapping("/api/admin/image/{id}")
-  @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<String> updateImage(@PathVariable Long id,
-      @RequestBody UpdateImageRequest request) {
-    imageService.updateImage(id, request);
-    return ResponseEntity.ok("Image updated successfully.");
-  }
-
   @Operation(summary = "Delete product image.", description = "ADMIN.")
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Image has been deleted successfully."),
@@ -129,6 +116,23 @@ public class ImageController {
     return ResponseEntity.ok("All image has been deleted successfully.");
   }
 
-
+  @Operation(summary = "Upload image file to product.", description = "ADMIN.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Image uploaded successfully.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ImageResponse.class))),
+      @ApiResponse(responseCode = "404", description = "Product Not Found.",
+          content = @Content(mediaType = "application/json")),
+      @ApiResponse(responseCode = "500", description = "Internal Server Error.",
+          content = @Content(mediaType = "application/json"))})
+  @PostMapping("/api/admin/image/upload/{productId}")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<ImageResponse> uploadImageFile(@RequestParam("file") MultipartFile file,
+      @PathVariable Long productId) throws IOException {
+    ImageResponse savedImage = imageService.saveImage(file, productId);
+    return ResponseEntity.ok(savedImage);
+  }
 
 }
+
+

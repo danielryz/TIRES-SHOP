@@ -1,0 +1,1 @@
+ALTER TABLE image ADD COLUMN public_id VARCHAR(255);

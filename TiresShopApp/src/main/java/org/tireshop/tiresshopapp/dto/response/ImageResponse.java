@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record ImageResponse(
         @Schema(example = "1", description = "Id zdjęcia") Long id,
         @Schema(example = "https://link.com", description = "Adres Url") String url,
-        @Schema(example = "1", description = "Id produktu") Long productId
+        @Schema(example = "1", description = "Id produktu") Long productId,
+        @Schema(example = "/upload", description = "Public Id") String publicId
 ) {
 }
