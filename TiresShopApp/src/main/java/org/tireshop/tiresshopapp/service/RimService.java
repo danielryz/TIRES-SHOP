@@ -10,6 +10,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.tireshop.tiresshopapp.dto.request.create.CreateRimRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateRimRequest;
+import org.tireshop.tiresshopapp.dto.response.FilterCountResponse;
+import org.tireshop.tiresshopapp.dto.response.RimFilterResponse;
 import org.tireshop.tiresshopapp.dto.response.RimResponse;
 import org.tireshop.tiresshopapp.entity.Rim;
 import org.tireshop.tiresshopapp.exception.RimNotFoundException;
@@ -25,20 +27,17 @@ import java.util.List;
 public class RimService {
 
   private final RimRepository rimRepository;
-  private final ProductService productService;
-
+  private final ImageService imageService;
   // GET
-  public List<RimResponse> getAllRim() {
-    return rimRepository.findAll().stream().map(this::mapToResponse).toList();
-  }
 
   public RimResponse getRimById(Long id) {
     Rim rim = rimRepository.findById(id).orElseThrow(() -> new RimNotFoundException(id));
     return mapToResponse(rim);
   }
 
-  public Page<RimResponse> getRims(String material, String size, String boltPattern, String name,
-      BigDecimal minPrice, BigDecimal maxPrice, int page, int sizePerPage, String sort) {
+  public Page<RimResponse> getRims(List<String> material, List<String> size,
+      List<String> boltPattern, String name, BigDecimal minPrice, BigDecimal maxPrice, int page,
+      int sizePerPage, String sort) {
     Specification<Rim> specification = Specification.where(RimSpecifications.hasMaterial(material))
         .and(RimSpecifications.hasSize(size)).and(RimSpecifications.hasBoltPattern(boltPattern))
         .and(RimSpecifications.hasNameContaining(name)).and(RimSpecifications.hasMinPrice(minPrice))
@@ -76,7 +75,21 @@ public class RimService {
   public void updateRim(Long id, UpdateRimRequest request) {
     Rim rim = rimRepository.findById(id).orElseThrow(() -> new RimNotFoundException(id));
 
-    productService.updateProduct(id, request.request());
+    if (request.name() != null && !request.name().isBlank()) {
+      rim.setName(request.name());
+    }
+    if (request.price() != null) {
+      rim.setPrice(request.price());
+    }
+    if (request.description() != null && !request.description().isBlank()) {
+      rim.setDescription(request.description());
+    }
+    if (request.stock() != null) {
+      rim.setStock(request.stock());
+    }
+    if (request.type() != null) {
+      rim.setType(request.type());
+    }
     if (request.material() != null && !request.material().isBlank())
       rim.setMaterial(request.material());
     if (request.size() != null && !request.size().isBlank())
@@ -91,8 +104,20 @@ public class RimService {
     if (!rimRepository.existsById(id)) {
       throw new RimNotFoundException(id);
     }
+    imageService.deleteImagesByProductId(id);
     rimRepository.deleteById(id);
 
+  }
+
+  public RimFilterResponse getAvailableFilterOptions() {
+    List<FilterCountResponse> materialWithCount = rimRepository.countRimByMaterial();
+    List<FilterCountResponse> sizeWithCount = rimRepository.countRimBySize();
+    List<FilterCountResponse> boltPatternsWithCount = rimRepository.countRimByBoltPattern();
+    BigDecimal minPrice = rimRepository.findMinPrice();
+    BigDecimal maxPrice = rimRepository.findMaxPrice();
+    return new RimFilterResponse(materialWithCount, sizeWithCount, boltPatternsWithCount,
+        minPrice != null ? minPrice : BigDecimal.ZERO,
+        maxPrice != null ? maxPrice : BigDecimal.valueOf(1000));
   }
 
   private RimResponse mapToResponse(Rim rim) {

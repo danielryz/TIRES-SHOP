@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.tireshop.tiresshopapp.dto.request.create.CreateRimRequest;
 import org.tireshop.tiresshopapp.dto.request.update.UpdateRimRequest;
+import org.tireshop.tiresshopapp.dto.response.RimFilterResponse;
 import org.tireshop.tiresshopapp.dto.response.RimResponse;
 import org.tireshop.tiresshopapp.exception.ErrorResponse;
 import org.tireshop.tiresshopapp.service.RimService;
@@ -29,15 +30,6 @@ import java.util.List;
 public class RimController {
 
   private final RimService rimService;
-
-  @Operation(summary = "List of all Rim.", description = "PUBLIC.")
-  @ApiResponses({@ApiResponse(responseCode = "200", description = "Rim list returned.",
-      content = @Content(mediaType = "application/json",
-          schema = @Schema(implementation = RimResponse.class)))})
-  @GetMapping("/api/rim")
-  public List<RimResponse> getAllRim() {
-    return rimService.getAllRim();
-  }
 
   @Operation(summary = "Returns data of rim by ID.", description = "PUBLIC.")
   @ApiResponses({
@@ -63,8 +55,9 @@ public class RimController {
               schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/api/rims")
   public ResponseEntity<Page<RimResponse>> getRims(@RequestParam(required = false) String name,
-      @RequestParam(required = false) String material, @RequestParam(required = false) String size,
-      @RequestParam(required = false) String boltPattern,
+      @RequestParam(required = false) List<String> material,
+      @RequestParam(required = false) List<String> size,
+      @RequestParam(required = false) List<String> boltPattern,
       @RequestParam(required = false) BigDecimal minPrice,
       @RequestParam(required = false) BigDecimal maxPrice,
       @RequestParam(defaultValue = "0") int page,
@@ -117,6 +110,11 @@ public class RimController {
   public ResponseEntity<String> deleteRim(@PathVariable Long id) {
     rimService.deleteRim(id);
     return ResponseEntity.ok("Rim deleted successfully.");
+  }
+
+  @GetMapping("api/rim/filters")
+  public RimFilterResponse getFilterOptions() {
+    return rimService.getAvailableFilterOptions();
   }
 
 

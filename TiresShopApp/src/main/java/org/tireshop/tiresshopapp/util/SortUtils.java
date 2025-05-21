@@ -2,8 +2,6 @@ package org.tireshop.tiresshopapp.util;
 
 import org.springframework.data.domain.Sort;
 
-import java.util.Arrays;
-
 public class SortUtils {
 
   public static Sort parseSort(String sortParam) {
