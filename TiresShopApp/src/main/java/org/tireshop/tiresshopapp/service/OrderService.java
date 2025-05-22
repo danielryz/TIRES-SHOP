@@ -155,7 +155,7 @@ public class OrderService {
         .and(OrderSpecifications.paidAtLessThan(paidAtTo))
         .and(OrderSpecifications.hasIsPaid(isPaid));
 
-    Sort sorting = SortUtils.parseSort(sort);
+    Sort sorting = (sort == null || sort.isBlank()) ? Sort.unsorted() : SortUtils.parseSort(sort);
     Pageable pageable = PageRequest.of(page, sizePerPage, sorting);
     Page<Order> orders = orderRepository.findAll(specification, pageable);
     return orders.map(this::mapOrderToResponse);

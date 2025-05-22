@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "tire")
 @Getter
@@ -19,4 +21,5 @@ public class Tire extends Product {
   @Column(nullable = false)
   @Schema(example = "205/55R16", description = "Tire size")
   private String size; // np. 205/55R16
+
 }

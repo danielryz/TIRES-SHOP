@@ -47,4 +47,15 @@ public class Order {
 
   private LocalDateTime paidAt;
 
+  public Order(User user, OrderStatus status, boolean isPaid, LocalDateTime createdAt,
+      LocalDateTime paidAt) {
+    this.user = user;
+    this.status = status;
+    this.isPaid = isPaid;
+    this.createdAt = createdAt;
+    this.paidAt = paidAt;
+  }
+
 }
+
+

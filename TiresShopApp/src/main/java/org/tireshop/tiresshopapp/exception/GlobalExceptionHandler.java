@@ -177,24 +177,6 @@ public class GlobalExceptionHandler {
   }
 
   @Operation(hidden = true)
-  @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ExceptionHandler(NoShippingAddressAssignException.class)
-  public ResponseEntity<ErrorResponse> handleNoShippingAddressAssign(
-      NoShippingAddressAssignException ex) {
-    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
-    return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-  }
-
-  @Operation(hidden = true)
-  @ResponseStatus(HttpStatus.CONFLICT)
-  @ExceptionHandler(ShippingAddressAlreadyInUseException.class)
-  public ResponseEntity<ErrorResponse> handleShippingAddressAlreadyInUse(
-      ShippingAddressAlreadyInUseException ex) {
-    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
-    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
-  }
-
-  @Operation(hidden = true)
   @ResponseStatus(HttpStatus.CONFLICT)
   @ExceptionHandler(OrderIsPaidException.class)
   public ResponseEntity<ErrorResponse> handleOrderIsPaid(OrderIsPaidException ex) {
