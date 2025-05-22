@@ -2,7 +2,6 @@ package org.tireshop.tiresshopapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.tireshop.tiresshopapp.entity.AccessoryType;
 import org.tireshop.tiresshopapp.entity.User;
 import org.tireshop.tiresshopapp.exception.*;
