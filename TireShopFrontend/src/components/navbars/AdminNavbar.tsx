@@ -1,12 +1,7 @@
 // components/navbar/AdminNavbar.tsx
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../../api/userApi";
-import LogoutButton from "../button/LogoutButton";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import logo from "../../assets/logo.png";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import avatar from "../../assets/admin.png";
 import "./AdminNavbar.css";
 import { Link, useNavigate } from "react-router-dom";

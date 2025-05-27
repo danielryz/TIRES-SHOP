@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerUser } from "../../api/authApi";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import logo from "../../assets/logo.png";
 import "./RegisterPage.css";
 import AlertStack from "../../components/alert/AlertStack";

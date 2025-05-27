@@ -1,22 +1,7 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import AlertStack from "../../../components/alert/AlertStack";
 import "./AdminPanelPage.css";
 import AdminNavbar from "../../../components/navbars/AdminNavbar";
 function AdminPanelPage() {
-  const [alerts, setAlerts] = useState<
-    { id: number; message: string; type: "success" | "error" }[]
-  >([]);
-
-  const showAlert = (message: string, type: "success" | "error") => {
-    const id = Date.now() + Math.random();
-    setAlerts((prev) => [...prev, { id, message, type }]);
-  };
-
-  const removeAlert = (id: number) => {
-    setAlerts((prev) => prev.filter((a) => a.id !== id));
-  };
-
   return (
     <>
       <AdminNavbar />
@@ -56,8 +41,6 @@ function AdminPanelPage() {
               </div>
             </Link>
           </div>
-
-          <AlertStack alerts={alerts} onRemove={removeAlert} />
         </div>
       </div>
     </>

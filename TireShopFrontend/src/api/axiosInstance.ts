@@ -2,7 +2,7 @@ import axios from "axios";
 import { getOrCreateClientId } from "../utils/clientId";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 axiosInstance.interceptors.request.use(
@@ -11,8 +11,7 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     } else {
-      const clientId = getOrCreateClientId();
-      config.headers["X-Client-Id"] = clientId;
+      config.headers["X-Client-Id"] = getOrCreateClientId();
     }
 
     return config;

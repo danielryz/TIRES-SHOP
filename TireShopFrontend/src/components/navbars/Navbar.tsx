@@ -1,7 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { getTokenPayload } from "../../utils/authUtils";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import logo from "../../assets/logo.png";
 import "./Navbar.css";
 import {

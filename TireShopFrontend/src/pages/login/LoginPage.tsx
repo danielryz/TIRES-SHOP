@@ -2,8 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/authApi";
 import "./LoginPage.css";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import logo from "../../assets/logo.png";
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";

@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../../api/authApi";
 import { isAdmin } from "../../../utils/authUtils";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 import logo from "../../../assets/logo.png";
 import "./AdminLoginPage.css";
 import AlertStack from "../../../components/alert/AlertStack";
