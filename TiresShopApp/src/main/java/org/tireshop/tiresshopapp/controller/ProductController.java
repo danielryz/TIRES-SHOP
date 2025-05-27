@@ -1,6 +1,7 @@
 package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,11 +38,18 @@ public class ProductController {
           schema = @Schema(implementation = ProductResponse.class)))
   @GetMapping("/api/products")
   public ResponseEntity<Page<BaseProductResponse>> getProducts(
-      @RequestParam(required = false) String name,
+      @Parameter(description = "Name of product.") @RequestParam(required = false) String name,
+      @Parameter(description = "Min value of price for product.")
       @RequestParam(required = false) BigDecimal minPrice,
+      @Parameter(description = "Max value of price for product.")
       @RequestParam(required = false) BigDecimal maxPrice,
-      @RequestParam(required = false) ProductType type, @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Product Type ENUM.")
+      @RequestParam(required = false) ProductType type,
+      @Parameter(description = "Page number for pagination.")
+      @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Size of page for pagination.")
       @RequestParam(defaultValue = "10") int sizePerPage,
+      @Parameter(description = "Sort by field and direction.")
       @RequestParam(defaultValue = "id,asc") String sort) {
     return ResponseEntity
         .ok(productService.getProducts(name, minPrice, maxPrice, type, page, sizePerPage, sort));
@@ -53,8 +61,13 @@ public class ProductController {
           schema = @Schema(implementation = ProductResponse.class)))
   @GetMapping("/api/products/search")
   public ResponseEntity<Page<BaseProductResponse>> searchProducts(
-      @RequestParam(required = false) String query, @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Query for search product.")
+      @RequestParam(required = false) String query,
+      @Parameter(description = "Page number for pagination.")
+      @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Size of page for pagination.")
       @RequestParam(defaultValue = "10") int sizePerPage,
+      @Parameter(description = "Sort by field and direction.")
       @RequestParam(defaultValue = "id,asc") String sort) {
     Page<BaseProductResponse> results =
         productService.searchProducts(query, page, sizePerPage, sort);
@@ -70,7 +83,8 @@ public class ProductController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/api/products/{id}")
-  public ResponseEntity<BaseProductResponse> getProductById(@PathVariable Long id) {
+  public ResponseEntity<BaseProductResponse> getProductById(
+      @Parameter(description = "Product ID.") @PathVariable Long id) {
     BaseProductResponse product = productService.getProductById(id);
     return ResponseEntity.ok(product);
   }
@@ -82,7 +96,15 @@ public class ProductController {
       @ApiResponse(responseCode = "201", description = "The products has been created.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ProductResponse.class))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/api/admin/products")
   public ResponseEntity<List<BaseProductResponse>> createNewProducts(
@@ -95,13 +117,22 @@ public class ProductController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Product updated successfully.",
           content = @Content(examples = @ExampleObject(value = "Product updated successfully."))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Product Not Found",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PreAuthorize("hasRole('ADMIN')")
   @PatchMapping("/api/admin/products/{id}")
-  public ResponseEntity<String> updateProduct(@PathVariable Long id,
+  public ResponseEntity<String> updateProduct(
+      @Parameter(description = "Product ID.") @PathVariable Long id,
       @RequestBody UpdateProductRequest request) {
     productService.updateProduct(id, request);
     return ResponseEntity.ok("Product updated successfully.");
@@ -111,13 +142,19 @@ public class ProductController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Product deleted successfully.",
           content = @Content(examples = @ExampleObject(value = "Product deleted successfully."))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Product Not Found",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/api/admin/products/{id}")
-  public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+  public ResponseEntity<String> deleteProduct(
+      @Parameter(description = "Product ID.") @PathVariable Long id) {
     productService.deleteProduct(id);
     return ResponseEntity.ok("Product deleted successfully.");
   }

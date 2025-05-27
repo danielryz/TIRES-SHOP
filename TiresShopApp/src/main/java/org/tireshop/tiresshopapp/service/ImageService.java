@@ -43,7 +43,7 @@ public class ImageService {
   }
 
   @Transactional
-  public void createImage(CreateImageRequest request) {
+  public ImageResponse createImage(CreateImageRequest request) {
     Product product = productRepository.findById(request.productId())
         .orElseThrow(() -> new ProductNotFoundException(request.productId()));
 
@@ -51,19 +51,24 @@ public class ImageService {
     image.setUrl(request.url());
     image.setProduct(product);
     image.setPublicId(request.publicId());
-    imageRepository.save(image);
+    return mapToResponse(imageRepository.save(image));
+
   }
 
-  public void addImagesToProduct(Long productId, List<AddImagesRequest> requests) {
+  @Transactional
+  public List<ImageResponse> addImagesToProduct(Long productId, List<AddImagesRequest> requests) {
     Product product = productRepository.findById(productId)
         .orElseThrow(() -> new ProductNotFoundException(productId));
-    for (AddImagesRequest request : requests) {
+
+    List<Image> images = requests.stream().map(request -> {
       Image image = new Image();
       image.setUrl(request.url());
       image.setProduct(product);
       image.setPublicId(request.publicId());
-      imageRepository.save(image);
-    }
+      return image;
+    }).toList();
+    List<Image> savedImages = imageRepository.saveAll(images);
+    return savedImages.stream().map(this::mapToResponse).toList();
   }
 
   @Transactional

@@ -1,6 +1,7 @@
 package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,28 +41,33 @@ public class RimController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/api/rim/{id}")
-  public ResponseEntity<RimResponse> getRimById(@PathVariable Long id) {
+  public ResponseEntity<RimResponse> getRimById(
+      @Parameter(description = "Rim ID.") @PathVariable Long id) {
     RimResponse rim = rimService.getRimById(id);
     return ResponseEntity.ok(rim);
   }
 
   @Operation(summary = "List of Rim with filter and sort.", description = "PUBLIC.")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Rim list returned.",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = RimResponse.class))),
-      @ApiResponse(responseCode = "404", description = "Rim Not Found.",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = ErrorResponse.class)))})
+  @ApiResponse(responseCode = "200", description = "Rim list returned.",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = RimResponse.class)))
   @GetMapping("/api/rims")
-  public ResponseEntity<Page<RimResponse>> getRims(@RequestParam(required = false) String name,
+  public ResponseEntity<Page<RimResponse>> getRims(
+      @Parameter(description = "Name of rim.") @RequestParam(required = false) String name,
+      @Parameter(description = "Material of rim.")
       @RequestParam(required = false) List<String> material,
-      @RequestParam(required = false) List<String> size,
+      @Parameter(description = "Size of rim.") @RequestParam(required = false) List<String> size,
+      @Parameter(description = "Bolt Pattern for rim.")
       @RequestParam(required = false) List<String> boltPattern,
+      @Parameter(description = "Min value of price for rim.")
       @RequestParam(required = false) BigDecimal minPrice,
+      @Parameter(description = "Max value of price for rim.")
       @RequestParam(required = false) BigDecimal maxPrice,
+      @Parameter(description = "Page number for pagination.")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Size of page for pagination.")
       @RequestParam(defaultValue = "10") int sizePerPage,
+      @Parameter(description = "Sort by field and direction.")
       @RequestParam(defaultValue = "id,asc") String sort) {
     return ResponseEntity.ok(rimService.getRims(material, size, boltPattern, name, minPrice,
         maxPrice, page, sizePerPage, sort));
@@ -72,7 +78,15 @@ public class RimController {
       @ApiResponse(responseCode = "201", description = "The rims has been created.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = RimResponse.class))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PostMapping("/api/admin/rim")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<RimResponse>> createNewRim(
@@ -85,13 +99,21 @@ public class RimController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Rim updated successfully.",
           content = @Content(examples = @ExampleObject(value = "Rim updated successfully."))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Rim Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PatchMapping("/api/admin/rim/{id}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<String> updateRim(@PathVariable Long id,
+  public ResponseEntity<String> updateRim(@Parameter(description = "Rim ID.") @PathVariable Long id,
       @RequestBody UpdateRimRequest request) {
     rimService.updateRim(id, request);
     return ResponseEntity.ok("Rim updated successfully.");
@@ -101,21 +123,29 @@ public class RimController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Rim deleted successfully.",
           content = @Content(examples = @ExampleObject(value = "Rim deleted successfully."))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Rim Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @DeleteMapping("/api/admin/rim/{id}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<String> deleteRim(@PathVariable Long id) {
+  public ResponseEntity<String> deleteRim(
+      @Parameter(description = "Rim ID.") @PathVariable Long id) {
     rimService.deleteRim(id);
     return ResponseEntity.ok("Rim deleted successfully.");
   }
 
+  @Operation(summary = "Get Filters for Rim.", description = "PUBLIC.")
+  @ApiResponse(responseCode = "200", description = "Filters returned successfully.",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = RimFilterResponse.class)))
   @GetMapping("api/rim/filters")
   public RimFilterResponse getFilterOptions() {
     return rimService.getAvailableFilterOptions();
   }
-
-
 }

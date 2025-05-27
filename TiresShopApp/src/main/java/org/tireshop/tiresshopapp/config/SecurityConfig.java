@@ -17,6 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.tireshop.tiresshopapp.security.CustomAccessDeniedHandler;
+import org.tireshop.tiresshopapp.security.CustomAuthenticationEntryPoint;
 import org.tireshop.tiresshopapp.service.security.JwtAuthenticationFilter;
 
 @Configuration
@@ -25,6 +27,10 @@ import org.tireshop.tiresshopapp.service.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthFilter;
+
+  private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+  private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -39,6 +45,9 @@ public class SecurityConfig {
                 "/api/cart", "/api/cart/**").permitAll().anyRequest().authenticated())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(
+            exception -> exception.authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler))
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();

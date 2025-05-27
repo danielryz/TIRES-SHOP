@@ -130,8 +130,8 @@ public class OrderService {
 
   @Transactional(readOnly = true)
   public OrderResponse getUserOrderById(Long id, String clientId) {
-    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
     User user = getCurrentUser();
+    Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
     if (user != null && user.getId().equals(order.getUser().getId())) {
       return mapOrderToResponse(order);
     } else if (clientId != null && clientId.equals(order.getSessionId())) {

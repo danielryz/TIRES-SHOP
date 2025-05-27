@@ -89,6 +89,8 @@ class ImageServiceTest {
   void shouldCreateImage() {
     CreateImageRequest request = new CreateImageRequest("url", 1L, "publicId");
     when(productRepository.findById(1L)).thenReturn(Optional.of(product));
+    when(imageRepository.save(any(Image.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0)); // <- ta linia jest ważna
 
     imageService.createImage(request);
 
@@ -102,7 +104,7 @@ class ImageServiceTest {
 
     imageService.addImagesToProduct(1L, List.of(request));
 
-    verify(imageRepository, times(1)).save(any(Image.class));
+    verify(imageRepository).saveAll(anyList());
   }
 
   @Test

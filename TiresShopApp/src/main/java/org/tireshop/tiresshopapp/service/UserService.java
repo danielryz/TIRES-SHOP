@@ -20,6 +20,7 @@ import org.tireshop.tiresshopapp.entity.User;
 import org.tireshop.tiresshopapp.exception.InvalidPasswordException;
 import org.tireshop.tiresshopapp.exception.RoleNotFoundException;
 import org.tireshop.tiresshopapp.exception.UserNotFoundException;
+import org.tireshop.tiresshopapp.exception.UsernameAlreadyExistException;
 import org.tireshop.tiresshopapp.repository.RoleRepository;
 import org.tireshop.tiresshopapp.repository.UserRepository;
 import org.tireshop.tiresshopapp.specifications.UserSpecification;
@@ -94,6 +95,10 @@ public class UserService {
     String email = authentication.getName();
     User user =
         userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+    if (userRepository.existsByUsername(request.username())
+        && !user.getUsername().equals(request.username())) {
+      throw new UsernameAlreadyExistException();
+    }
 
     if (request.username() != null && !request.username().isBlank()) {
       user.setUsername(request.username());

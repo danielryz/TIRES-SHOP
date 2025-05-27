@@ -1,7 +1,9 @@
 package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -36,7 +38,12 @@ public class AddressController {
       @ApiResponse(responseCode = "200", description = "Address list returned",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = AddressResponse.class))),
-      @ApiResponse(responseCode = "403", description = "No authorization", content = @Content())})
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping
   public List<AddressResponse> getCurrentUserAllAddresses() {
     return addressService.getCurrentUserAllAddresses();
@@ -47,12 +54,18 @@ public class AddressController {
       @ApiResponse(responseCode = "200", description = "Address returned",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = AddressResponse.class))),
-      @ApiResponse(responseCode = "403", description = "No authorization", content = @Content),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Address Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/{id}")
-  public ResponseEntity<AddressResponse> getAddressById(@PathVariable Long id) {
+  public ResponseEntity<AddressResponse> getAddressById(
+      @Parameter(description = "Address ID") @PathVariable Long id) {
     AddressResponse address = addressService.getAddressById(id);
     return ResponseEntity.ok(address);
   }
@@ -62,12 +75,21 @@ public class AddressController {
       @ApiResponse(responseCode = "200", description = "Addresses returned.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = AddressResponse.class))),
-      @ApiResponse(responseCode = "403", description = "No authorization", content = @Content()),
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Address Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/type")
-  public List<AddressResponse> getAddressByType(@RequestParam(required = false) AddressType type) {
+  public List<AddressResponse> getAddressByType(
+      @Parameter(description = "Address Type") @RequestParam(required = false) AddressType type) {
     if (type == null) {
       return addressService.getCurrentUserAllAddresses();
     }
@@ -80,7 +102,15 @@ public class AddressController {
       @ApiResponse(responseCode = "201", description = "Address has been created successfully.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = AddressResponse.class))),
-      @ApiResponse(responseCode = "403", description = "No authorization", content = @Content())})
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PostMapping
   public ResponseEntity<AddressResponse> addAddress(
       @Valid @RequestBody CreateAddressRequest request) {
@@ -90,13 +120,24 @@ public class AddressController {
 
   @Operation(summary = "Update address.", description = "USER.")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Address has been updated successfully."),
-      @ApiResponse(responseCode = "403", description = "No authorization", content = @Content()),
+      @ApiResponse(responseCode = "200", description = "Address has been updated successfully.",
+          content = @Content(
+              examples = @ExampleObject(value = "Address has been updated successfully."))),
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Address Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PatchMapping("/{id}")
-  public ResponseEntity<String> updateAddress(@PathVariable Long id,
+  public ResponseEntity<String> updateAddress(
+      @Parameter(description = "Address ID") @PathVariable Long id,
       @Valid @RequestBody UpdateAddressRequest request) {
     addressService.updateAddress(id, request);
     return ResponseEntity.ok("Address has been updated successfully.");
@@ -104,13 +145,21 @@ public class AddressController {
 
   @Operation(summary = "Delete Address", description = "ADMIN")
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Address has been deleted successfully."),
-      @ApiResponse(responseCode = "403", description = "No authorization", content = @Content()),
+      @ApiResponse(responseCode = "200", description = "Address has been deleted successfully.",
+          content = @Content(
+              examples = @ExampleObject(value = "Address has been deleted successfully."))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Address Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteAddress(@PathVariable Long id) {
+  public ResponseEntity<String> deleteAddress(
+      @Parameter(description = "Address ID") @PathVariable Long id) {
     addressService.deleteAddress(id);
     return ResponseEntity.ok("Address has been deleted successfully.");
   }

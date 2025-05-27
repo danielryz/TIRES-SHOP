@@ -1,6 +1,7 @@
 package org.tireshop.tiresshopapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,27 +40,31 @@ public class TireController {
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @GetMapping("/api/tire/{id}")
-  public ResponseEntity<TireResponse> getTireById(@PathVariable Long id) {
+  public ResponseEntity<TireResponse> getTireById(
+      @Parameter(description = "Tire ID.") @PathVariable Long id) {
     TireResponse tire = tireService.getTireById(id);
     return ResponseEntity.ok(tire);
   }
 
   @Operation(summary = "List of Tire with filter and sort.", description = "PUBLIC.")
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Tire list returned.",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = TireResponse.class))),
-      @ApiResponse(responseCode = "404", description = "Tire Not Found.",
-          content = @Content(mediaType = "application/json",
-              schema = @Schema(implementation = ErrorResponse.class)))})
+  @ApiResponse(responseCode = "200", description = "Tire list returned.",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = TireResponse.class)))
   @GetMapping("/api/tires")
-  public ResponseEntity<Page<TireResponse>> getTires(@RequestParam(required = false) String name,
+  public ResponseEntity<Page<TireResponse>> getTires(
+      @Parameter(description = "Name of tire.") @RequestParam(required = false) String name,
+      @Parameter(description = "Season of tire.")
       @RequestParam(required = false) List<String> season,
-      @RequestParam(required = false) List<String> size,
+      @Parameter(description = "Size of tire.") @RequestParam(required = false) List<String> size,
+      @Parameter(description = "Min value of price for tire.")
       @RequestParam(required = false) BigDecimal minPrice,
+      @Parameter(description = "Max value of price for tire.")
       @RequestParam(required = false) BigDecimal maxPrice,
+      @Parameter(description = "Page number for pagination.")
       @RequestParam(defaultValue = "0") int page,
+      @Parameter(description = "Size of page for pagination.")
       @RequestParam(defaultValue = "10") int sizePerPage,
+      @Parameter(description = "Sort by field and direction.")
       @RequestParam(defaultValue = "id,asc") String sort) {
     return ResponseEntity
         .ok(tireService.getTires(name, season, size, minPrice, maxPrice, page, sizePerPage, sort));
@@ -70,7 +75,15 @@ public class TireController {
       @ApiResponse(responseCode = "201", description = "The tires has been created.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = TireResponse.class))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content())})
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class)))})
   @PostMapping("/api/admin/tire")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<List<TireResponse>> createNewTire(
@@ -83,13 +96,22 @@ public class TireController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Tire updated successfully.",
           content = @Content(examples = @ExampleObject(value = "Tire updated successfully."))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Tire Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @PatchMapping("/api/admin/tire/{id}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<String> updateTire(@PathVariable Long id,
+  public ResponseEntity<String> updateTire(
+      @Parameter(description = "Tire ID.") @PathVariable Long id,
       @RequestBody UpdateTireRequest request) {
     tireService.updateTire(id, request);
     return ResponseEntity.ok("Tire updated successfully.");
@@ -99,17 +121,30 @@ public class TireController {
   @ApiResponses({
       @ApiResponse(responseCode = "200", description = "Tire deleted successfully.",
           content = @Content(examples = @ExampleObject(value = "Tire deleted successfully."))),
-      @ApiResponse(responseCode = "403", description = "No authorization.", content = @Content()),
+      @ApiResponse(responseCode = "400", description = "Bad Request.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "401", description = "Unauthorized.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "403", description = "Access Denied.",
+          content = @Content(mediaType = "application/json",
+              schema = @Schema(implementation = ErrorResponse.class))),
       @ApiResponse(responseCode = "404", description = "Tire Not Found.",
           content = @Content(mediaType = "application/json",
               schema = @Schema(implementation = ErrorResponse.class)))})
   @DeleteMapping("/api/admin/tire/{id}")
   @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<String> deleteTire(@PathVariable Long id) {
+  public ResponseEntity<String> deleteTire(
+      @Parameter(description = "Tire ID.") @PathVariable Long id) {
     tireService.deleteTire(id);
     return ResponseEntity.ok("Tire deleted successfully.");
   }
 
+  @Operation(summary = "Get Filters for Tire.", description = "PUBLIC.")
+  @ApiResponse(responseCode = "200", description = "Filters returned successfully.",
+      content = @Content(mediaType = "application/json",
+          schema = @Schema(implementation = TireFilterResponse.class)))
   @GetMapping("api/tire/filters")
   public TireFilterResponse getFilterOptions() {
     return tireService.getAvailableFilterOptions();

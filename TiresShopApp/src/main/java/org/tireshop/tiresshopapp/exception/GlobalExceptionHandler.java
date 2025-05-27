@@ -7,7 +7,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -16,16 +16,12 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(RuntimeException.class)
   public ResponseEntity<ErrorResponse> handleRuntime(RuntimeException ex) {
+    if (ex instanceof AccessDeniedException) {
+      throw ex;
+    }
+
     ErrorResponse response = new ErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-  }
-
-  @Operation(hidden = true)
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
-  @ExceptionHandler(AccessDeniedException.class)
-  public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
-    ErrorResponse response = new ErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED.value());
-    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
   }
 
   @Operation(hidden = true)
@@ -180,6 +176,15 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.CONFLICT)
   @ExceptionHandler(OrderIsPaidException.class)
   public ResponseEntity<ErrorResponse> handleOrderIsPaid(OrderIsPaidException ex) {
+    ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
+    return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+  }
+
+  @Operation(hidden = true)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler(UsernameAlreadyExistException.class)
+  public ResponseEntity<ErrorResponse> handleUsernameAlreadyExist(
+      UsernameAlreadyExistException ex) {
     ErrorResponse error = new ErrorResponse(ex.getMessage(), HttpStatus.CONFLICT.value());
     return new ResponseEntity<>(error, HttpStatus.CONFLICT);
   }
