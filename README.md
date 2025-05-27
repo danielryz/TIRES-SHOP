@@ -1,15 +1,18 @@
 # Tires Shop App
 
-System sprzedaży opon, felg i akcesoriów motoryzacyjnych planowo(z panelem 
-klienta i administracyjnym). Projekt stworzony jako aplikacja webowa REST 
+System sprzedaży opon, felg i akcesoriów motoryzacyjnych planowo, z panelem 
+klienta i administracyjnym. Projekt stworzony jako aplikacja webowa REST 
 z wykorzystaniem Spring Boot, Spring Security, Hibernate, JWT 
 oraz dokumentacją Swagger UI.
+Aplikacja frontowa zbudowana z wykorzystaniem Reacta, TS, Vite, komunikuje się z backendem 
+z wykorzystaniem axiosInstance.
+2 klucze authoryzacyjne `bearerAuth  (http, Bearer) JWT auth` oraz `clintId` dla klienta niezalogowanego.
 
 ---
 
 ## Tech Stack
 
-- **Frontend**: React, TypeScript, Vite, Zustand, TailwindCSS, React Router
+- **Frontend**: React, TypeScript, Vite, React Router
 - **Backend**: Spring Boot, Spring Security, JWT, Hibernate, JPA, Maven
 - **Baza danych**: PostgreSQL
 - **DevOps**: Docker, Flyway, Cloudinary, GitHub Actions (CI/CD)
@@ -56,7 +59,10 @@ Aplikacja wykorzystuje:
 - JWT do logowania i autoryzacji
 - Role użytkowników: `USER`, `ADMIN`
 - Role przypisywane podczas rejestracji (domyślnie: `USER`)
-- Endpoints zabezpieczone adnotacjami `@PreAuthorize`
+- Endpointy zabezpieczone adnotacjami `@PreAuthorize`
+
+- Niektóre endpointy, koszyk, składanie zamówienia, wykorzystują Header - clientId - generowany 
+automatycznie przez clientId.ts na froncie losowe uuid jeśli istnieje to jest pobierane z Local storage
 
 ---
 
@@ -112,8 +118,47 @@ TiresShopApp/
 
 ## Testy
 
-Aplikacja została otestowana w 82%, za pomocą `testów jednostkowych` i `testów integracyjnych`
+Aplikacja została otestowana w 81%, za pomocą `testów jednostkowych` i `testów integracyjnych`
 
+Wyniki Jacoco:
+![img.png](img.png)
+
+(Planuje zautomatyzować narazie nie zdążyłem);
+Aby przetestować aplikacje, należy wejść do folderu:
+```bash
+cd TiresShopApp
+```
+A następnie w application.properties użyć konfiguracji bazy danych jak poniżej:
+```properties
+# Database PostgresSQL
+#For test
+spring.datasource.url=jdbc:postgresql://localhost:5432/tire_shop
+#For docker
+#spring.datasource.url=jdbc:postgresql://db:5432/tire_shop
+```
+Do tego celu należy stworzyć bazę localną PostgreSQL:
+
+zalogowac się jako postgres
+```bash
+psql -U postgres 
+```
+```sql
+CREATE DATABASE tire_shop;
+CREATE USER myuser WITH PASSWORD 'pass';
+GRANT ALL PRIVILEGES ON DATABASE tire_shop TO myuser;
+\c tiresshop_local
+
+--opcjonalnie
+ALTER SCHEMA public OWNER TO myuser;
+GRANT ALL ON SCHEMA public TO myuser;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO myuser;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO myuser;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO myuser;
+```
+I uruchomić testy:
+```bash
+mvn clean verify 
+```
 
 ---
 
@@ -125,5 +170,6 @@ Daniel Ryż
 
 ## Status
 
-Projekt w trakcie rozwoju
+Projekt w trakcie rozwoju(do poprawy nie które endpointy, żeby były wydajniejsze dla frontu, 
+szczególnie gety żeby nie szło tak dużo zapytań do bazy, bo teraz front wysyła mnustwo zapytań o zdjęcia produktów.)
 
