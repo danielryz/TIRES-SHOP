@@ -13,7 +13,7 @@ public class ProductSpecifications {
 
   public static Specification<Product> hasNameContaining(String name) {
     return (root, query, criteriaBuilder) -> name == null ? null
-        : criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name + "%");
+        : criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%");
   }
 
   public static Specification<Product> hasMinPrice(BigDecimal minPrice) {
