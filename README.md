@@ -6,7 +6,8 @@ z wykorzystaniem Spring Boot, Spring Security, Hibernate, JWT
 oraz dokumentacją Swagger UI.
 Aplikacja frontowa zbudowana z wykorzystaniem Reacta, TS, Vite, komunikuje się z backendem 
 z wykorzystaniem axiosInstance.
-2 klucze authoryzacyjne `bearerAuth  (http, Bearer) JWT auth` oraz `clintId` dla klienta niezalogowanego.
+Aplikacja posiada klucz autoryzacyjny `bearerAuth  (http, Bearer) JWT auth`, a także `clintId` dla klienta niezalogowanego, jest 
+to uuid generowane przez front.
 
 ---
 
@@ -47,9 +48,21 @@ cloudinary.api-secret=yourSecret
     ```
 
 ### 4. Wejdź na:
-- Dokumentacja swagger: http://localhost:8080/swagger-ui/index.html
+
+Aby skorzystać z endpointów trzeba wejść:
+- Dokumentacja swagger: http://localhost:8080/swagger-ui/index.html  
+Dokonać należy autoryzacji dla enpontów nie publicznych, tzn, albo się zarejestrować, wtedy 
+Będzie konto z rolą `USER` i dostęp do większości endpointów, albo zalogować się, przykładowe 
+konto z Rolą `ADMINA` JEST W Body Request do logowania.
+
+Front działa tak samo, Tutaj dostęp ma `KAŻDY`:
 - Panel klienta: http://localhost:5174/
-- Panel ADMINA: http://localhost:5174/admin
+
+Tutaj dostęp ma tylko `ADMIN`:  
+
+- Panel ADMINA: http://localhost:5174/admin  
+
+Front obsługuje większość, ale nie wszystkie endpointy.
 
 ---
 
@@ -118,7 +131,7 @@ TiresShopApp/
 
 ## Testy
 
-Aplikacja została otestowana w 81%, za pomocą `testów jednostkowych` i `testów integracyjnych`
+Aplikacja backendowa została otestowana w 81%, za pomocą `testów jednostkowych` i `testów integracyjnych`
 
 Wyniki Jacoco:
 ![img.png](img.png)
