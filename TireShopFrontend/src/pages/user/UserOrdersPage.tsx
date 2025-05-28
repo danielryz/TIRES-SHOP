@@ -4,7 +4,7 @@ import { OrderResponse } from "../../types/Order";
 import AlertStack from "../../components/alert/AlertStack";
 import ConfirmModal from "../../components/ConfirmModal";
 import { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom"; // <== nowość
+import { useNavigate } from "react-router-dom";
 import "./UserOrdersPage.css";
 
 function UserOrdersPage() {

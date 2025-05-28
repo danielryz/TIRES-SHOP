@@ -50,10 +50,10 @@ export interface OrderResponse {
   };
   items: OrderItemResponse[];
   createdAt: string;
-  guestEmail: string;
-  guestFirstName: string;
-  guestLastName: string;
-  guestPhoneNumber: string;
+  questEmail: string;
+  questFirstName: string;
+  questLastName: string;
+  questPhoneNumber: string;
   isPaid: boolean;
   paidAt?: string;
 }

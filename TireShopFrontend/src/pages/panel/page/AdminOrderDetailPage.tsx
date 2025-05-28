@@ -91,19 +91,19 @@ function AdminOrderDetailPage() {
                     <td>
                       {order.user
                         ? `${order.user.firstName} ${order.user.lastName}`
-                        : `${order.guestFirstName} ${order.guestLastName}`}
+                        : `${order.questFirstName} ${order.questLastName}`}
                     </td>
                   </tr>
                   <tr>
                     <th>Email</th>
-                    <td>{order.user ? order.user.email : order.guestEmail}</td>
+                    <td>{order.user ? order.user.email : order.questEmail}</td>
                   </tr>
                   <tr>
                     <th>Telefon</th>
                     <td>
                       {order.user
                         ? order.user.phoneNumber
-                        : order.guestPhoneNumber}
+                        : order.questPhoneNumber}
                     </td>
                   </tr>
                 </tbody>
