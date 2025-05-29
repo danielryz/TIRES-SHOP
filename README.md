@@ -3,13 +3,10 @@
 System sprzedaży opon, felg i akcesoriów motoryzacyjnych planowo, z panelem 
 klienta i administracyjnym. Projekt stworzony jako aplikacja webowa REST 
 z wykorzystaniem Spring Boot, Spring Security, Hibernate, JWT 
-oraz dokumentacji Swagger UI.  
-
+oraz dokumentacją Swagger UI.
 Aplikacja frontowa zbudowana z wykorzystaniem Reacta, TS, Vite, komunikuje się z backendem 
-z wykorzystaniem axiosInstance.  
-
-Aplikacja posiada klucz autoryzacyjny `bearerAuth  (http, Bearer) JWT auth`, a także `clintId` dla klienta niezalogowanego, jest 
-to uuid generowane przez front.
+z wykorzystaniem axiosInstance.
+2 klucze authoryzacyjne `bearerAuth  (http, Bearer) JWT auth` oraz `clintId` dla klienta niezalogowanego.
 
 ---
 
@@ -50,21 +47,9 @@ cloudinary.api-secret=yourSecret
     ```
 
 ### 4. Wejdź na:
-
-Aby skorzystać z endpointów trzeba wejść:
-- Dokumentacja swagger: http://localhost:8080/swagger-ui/index.html  
-Dokonać należy autoryzacji dla enpontów nie publicznych, tzn, albo się zarejestrować, wtedy 
-Będzie konto z rolą `USER` i dostęp do większości endpointów, albo zalogować się, przykładowe 
-konto z Rolą `ADMINA` JEST W Body Request do logowania.
-
-Front działa tak samo, Tutaj dostęp ma `KAŻDY`:
+- Dokumentacja swagger: http://localhost:8080/swagger-ui/index.html
 - Panel klienta: http://localhost:5174/
-
-Tutaj dostęp ma tylko `ADMIN`:  
-
-- Panel ADMINA: http://localhost:5174/admin  
-
-Front obsługuje większość, ale nie wszystkie endpointy.
+- Panel ADMINA: http://localhost:5174/admin
 
 ---
 
@@ -133,7 +118,7 @@ TiresShopApp/
 
 ## Testy
 
-Aplikacja backendowa została otestowana w 81%, za pomocą `testów jednostkowych` i `testów integracyjnych`
+Aplikacja została otestowana w 81%, za pomocą `testów jednostkowych` i `testów integracyjnych`
 
 Wyniki Jacoco:
 ![img.png](img.png)
@@ -174,10 +159,6 @@ I uruchomić testy:
 ```bash
 mvn clean verify 
 ```
----
-## Schemat bazy danych
-
-![img_1.png](img_1.png)
 
 ---
 
