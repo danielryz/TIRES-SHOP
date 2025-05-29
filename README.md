@@ -3,9 +3,11 @@
 System sprzedaży opon, felg i akcesoriów motoryzacyjnych planowo, z panelem 
 klienta i administracyjnym. Projekt stworzony jako aplikacja webowa REST 
 z wykorzystaniem Spring Boot, Spring Security, Hibernate, JWT 
-oraz dokumentacją Swagger UI.
+oraz dokumentacji Swagger UI.  
+
 Aplikacja frontowa zbudowana z wykorzystaniem Reacta, TS, Vite, komunikuje się z backendem 
-z wykorzystaniem axiosInstance.
+z wykorzystaniem axiosInstance.  
+
 Aplikacja posiada klucz autoryzacyjny `bearerAuth  (http, Bearer) JWT auth`, a także `clintId` dla klienta niezalogowanego, jest 
 to uuid generowane przez front.
 
@@ -172,6 +174,10 @@ I uruchomić testy:
 ```bash
 mvn clean verify 
 ```
+---
+## Schemat bazy danych
+
+![img_1.png](img_1.png)
 
 ---
 
