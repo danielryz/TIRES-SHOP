@@ -3,10 +3,12 @@
 System sprzedaży opon, felg i akcesoriów motoryzacyjnych planowo, z panelem 
 klienta i administracyjnym. Projekt stworzony jako aplikacja webowa REST 
 z wykorzystaniem Spring Boot, Spring Security, Hibernate, JWT 
-oraz dokumentacją Swagger UI.
+oraz dokumentacji Swagger UI.  
+
 Aplikacja frontowa zbudowana z wykorzystaniem Reacta, TS, Vite, komunikuje się z backendem 
 z wykorzystaniem axiosInstance.
-2 klucze authoryzacyjne `bearerAuth  (http, Bearer) JWT auth` oraz `clintId` dla klienta niezalogowanego.
+
+Aplukacja wykorzystuje token: `bearerAuth  (http, Bearer) JWT auth` oraz `clintId` dla klienta niezalogowanego.
 
 ---
 
@@ -24,13 +26,13 @@ z wykorzystaniem axiosInstance.
 ### 1. Sklonuj repozytorium
 
 ```bash
-git clone https://github.com/TwojaNazwaUzytkownika/TiresShop.git
-cd TIRES-SHOP
+    git clone https://github.com/TwojaNazwaUzytkownika/TiresShop.git
+    cd TIRES-SHOP
 ```
 
 ### 2. Ustaw dane dostępowe do cloudinary do dodawania zdjęć w clodinary (opcjonalne) `src/main/resources/application.properties`  
 
-   Jeśli nie ustawisz nie będzie dało się korzystać z enpointu do Uploadu zdjęć.
+   Jeśli nie ustawisz nie będzie dało się korzystać z endpointu do Uploadu zdjęć.
 
 ```properties
 cloudinary.cloud-name=yourCloudName
@@ -41,10 +43,10 @@ cloudinary.api-secret=yourSecret
 
 ### 3. Uruchom aplikację:
 
-    ```bash
-      docker-compose build  
-      docker-compose up
-    ```
+```bash
+    docker-compose build  
+    docker-compose up
+```
 
 ### 4. Wejdź na:
 - Dokumentacja swagger: http://localhost:8080/swagger-ui/index.html
@@ -161,6 +163,11 @@ mvn clean verify
 ```
 
 ---
+## Schemat Bazy
+
+![img_1.png](img_1.png)
+
+---
 
 ## Autor
 
@@ -170,6 +177,5 @@ Daniel Ryż
 
 ## Status
 
-Projekt w trakcie rozwoju(do poprawy nie które endpointy, żeby były wydajniejsze dla frontu, 
-szczególnie gety żeby nie szło tak dużo zapytań do bazy, bo teraz front wysyła mnustwo zapytań o zdjęcia produktów.)
+Projekt w trakcie rozwoju.
 
