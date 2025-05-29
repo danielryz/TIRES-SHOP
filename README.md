@@ -26,7 +26,7 @@ Aplukacja wykorzystuje token: `bearerAuth  (http, Bearer) JWT auth` oraz `clintI
 ### 1. Sklonuj repozytorium
 
 ```bash
-    git clone https://github.com/TwojaNazwaUzytkownika/TiresShop.git
+    git clone https://github.com/danielryz/TIRES-SHOP
     cd TIRES-SHOP
 ```
 
@@ -43,10 +43,17 @@ cloudinary.api-secret=yourSecret
 
 ### 3. Uruchom aplikację:
 
+#### Instalacja dockera
+1. Windows: https://docs.docker.com/desktop/setup/install/windows-install/
+2. Mac: https://docs.docker.com/desktop/setup/install/mac-install/
+3. Linux: https://docs.docker.com/desktop/setup/install/linux/
+
 ```bash
     docker-compose build  
     docker-compose up
 ```
+
+
 
 ### 4. Wejdź na:
 - Dokumentacja swagger: http://localhost:8080/swagger-ui/index.html
