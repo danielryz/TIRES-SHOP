@@ -32,7 +32,8 @@ public class OrderController {
 
   private final OrderService orderService;
 
-  @Operation(summary = "Placing an order.", description = "PUBLIC.")
+  @Operation(summary = "Placing an order.", description = "PUBLIC.\n" +
+          "To place an order, you must first add products to your cart. If you are logged in, you do not need to provide X-Client-Id (uuid) and quest data.")
   @ApiResponses({
       @ApiResponse(responseCode = "201", description = "Order placed successfully.",
           content = @Content(mediaType = "application/json",

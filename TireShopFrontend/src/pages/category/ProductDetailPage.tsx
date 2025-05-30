@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Product, ProductType } from "../../types/Product";
 import { Tire } from "../../types/Tire";
@@ -347,9 +347,21 @@ function ProductDetailPage() {
               onChange={(e) => handleQuantityChange(e)}
               className="buybox-quantity"
             />
-            <button className="buybox-button" onClick={handleAddToCart}>
-              Dodaj do koszyka
-            </button>
+            {formData.stock > 0 ? (
+              <button
+                className="buybox-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  {
+                    handleAddToCart();
+                  }
+                }}
+              >
+                Dodaj do koszyka
+              </button>
+            ) : (
+              <span className="out-of-stock">Brak w magazynie</span>
+            )}
           </div>
         </div>
       </div>
