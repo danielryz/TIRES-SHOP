@@ -8,7 +8,7 @@ oraz dokumentacji Swagger UI.
 Aplikacja frontowa zbudowana z wykorzystaniem Reacta, TS, Vite, komunikuje się z backendem 
 z wykorzystaniem axiosInstance.
 
-Aplukacja wykorzystuje token: `bearerAuth  (http, Bearer) JWT auth` oraz `clintId` dla klienta niezalogowanego.
+Aplikacja wykorzystuje token: `bearerAuth  (http, Bearer) JWT auth` oraz Header `X-Client-Id` dla klienta niezalogowanego.
 
 ---
 
@@ -17,7 +17,7 @@ Aplukacja wykorzystuje token: `bearerAuth  (http, Bearer) JWT auth` oraz `clintI
 - **Frontend**: React, TypeScript, Vite, React Router
 - **Backend**: Spring Boot, Spring Security, JWT, Hibernate, JPA, Maven
 - **Baza danych**: PostgreSQL
-- **DevOps**: Docker, Flyway, Cloudinary, GitHub Actions (CI/CD)
+- **DevOps**: Docker, Flyway, Cloudinary
 
 ---
 
@@ -97,6 +97,7 @@ TiresShopFrontend/
 ├── Dockerfile # Obraz frontendu
 └── nginx.conf # Konfiguracja Nginx do serwowania frontendu
 </pre>
+
 ### 🧠 Backend – `TiresShopApp`
 
 Technologie: `Spring Boot`, `Maven`, `JWT`, `JPA`, `Flyway`, `Cloudinary`, `Docker`
@@ -123,6 +124,26 @@ TiresShopApp/
 ├── Dockerfile # Obraz backendu
 └── pom.xml # Zależności Maven
 </pre>
+---
+
+## Opis funkcjonalności
+
+Użytkownik nie zalogowany:
+1. Logowanie i Rejestracja z wykorzystaniem Spring Security, po zalogowaniu i rejestracji tworzy się Token JWT, na froncie jest on zapisywany w `local storage`.
+2. Przeglądanie produktów, filtrowanie produktów, odzielne endpointy dla Product, Tire, Rim, Accessory.
+3. Dodawanie do koszyka, składanie zamówienia, do których jest wykorzystywany Header `X-Client-Id`.
+
+Użytkownik zalogowany tylko z `ROLE_USER`:
+1. Wszystkie opisane wyżej.
+2. Dostęp do niektórych, endpointów z UserController oraz do wszystkich z AddressController.
+3. Dostęp na froncie do Strony Profilowej, w której może, usunąć konto, dodać, usunąć, zaktualizować Adresy, a także zmienić niektóe dane użytkownika, a także zmienić hasło.
+
+Użytkownik zalogowany z `ROLE_ADMIN`:
+1. Dostęp do endpointów Admina - nie jest dublowany jeśli nie ma roli `ROLE_USER`, to nie będzie miał dostępu do endpointów dla USERA.
+2. Dodawanie i Aktualizacja produktów, na froncie dostęp do Panelu Admina
+3. Usuwanie i zmiana roli użytkownikom, podgląd użytkowników
+4. Podgląd zamówień, zmiana statusu zamówień.
+
 ---
 
 ## Testy
